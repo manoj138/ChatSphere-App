@@ -1,8 +1,13 @@
 const router = require("express").Router();
 
-const messagesController = require("../controllers/messageController")
+const messagesController = require("../controllers/messageController");
+const protectRoute = require("../moddleware/authMiddleware");
 
-// router.post("/signup",messagesController.signup)
+router.get("/contacts",protectRoute, messagesController.getAllContacts);
+router.get("/chats", messagesController.getChatPartners);
+router.get("/:id", messagesController.getMessagesByUserId);
+router.post("/send/:id", messagesController.sendMessage);
+
 
 
 module.exports = router;
