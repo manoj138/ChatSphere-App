@@ -1,5 +1,5 @@
 const genarateToken = require("../config/utils");
-const sendWelcomeEmail = require("../emails/emailHnadler");
+const sendWelcomeEmail = require("../emails/emailHandler");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
@@ -52,6 +52,14 @@ const signup = async (req, res) => {
         genarateToken(newUser._id, res);
         await newUser.save();
 
+        try {
+          await sendWelcomeEmail(email, fullName, process.env.CLIENT_URL)  
+        } catch (error) {
+            console.log("Error in sendWelcomeEmail:", error);
+            // We don't necessarily want to fail the whole signup if the email fails, 
+            // but we should at least log it.
+        }
+
         return res.status(201).json({
           _id: newUser._id,
           name: newUser.fullName,
@@ -59,20 +67,10 @@ const signup = async (req, res) => {
           profilePhoto: newUser.profilePhoto,
         })
   
-        try {
-          await sendWelcomeEmail(email, fullName, process.env.CLIENT_URL)  
-        } catch (error) {
-            console.log("Error in sendWelcomeEmail:", error);
-            res.status(500).json({
-                success: false,
-                message: "Error in sendWelcomeEmail"
-            })
-        }
-
       }else{
         return res.status(400).json({
             success: false,
-            message: "Invalid u ser credentials"
+            message: "Invalid user credentials"
         })
       }
     } catch (error) {

@@ -9,11 +9,16 @@ const sendWelcomeEmail = async (email, name, clientUrl) => {
             subject: "Welcome to ChatSphere",
             html: createWelcomeEmailTemplate(name, clientUrl)
         })
-    } catch (error) {
-        console.log("Error in sendWelcomeEmail:", error);
-        if(error){
-            throw new Error("Failed to send welcome email");
+
+        if (error) {
+            console.error("Resend Error:", error);
+            throw new Error(error.message || "Failed to send welcome email");
         }
+
+        console.log("Welcome email sent successfully:", data.id);
+    } catch (error) {
+        console.error("Error in sendWelcomeEmail:", error);
+        throw error;
     }
 
 }
