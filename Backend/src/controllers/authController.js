@@ -146,4 +146,12 @@ const logout = async (_, res)=>{
     }
 }
 
-module.exports = {signup, login, logout}
+const updateProfile = async (req, res)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}
+
+module.exports = {signup, login, logout, updateProfile}

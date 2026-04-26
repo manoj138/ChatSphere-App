@@ -3,13 +3,15 @@ require("dotenv").config();
 const app = express();
 // const path = require("path");
 const PORT = process.env.PORT ;
+const cookieParser = require("cookie-parser");
+const connectDB = require("./src/config/db");
 
 app.use(express.json());
+app.use(cookieParser())
 // const __dirname = path.resolve();
 
 const authRouted = require("./src/routes/authRoutes")
 const messagesRoute = require("./src/routes/messagesRoute");
-const connectDB = require("./src/config/db");
 
 app.use("/api/auth", authRouted);
 app.use("/api/messages", messagesRoute);
