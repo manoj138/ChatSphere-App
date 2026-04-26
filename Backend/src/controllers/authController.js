@@ -1,4 +1,5 @@
 const genarateToken = require("../config/utils");
+const sendWelcomeEmail = require("../emails/emailHnadler");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
@@ -57,6 +58,17 @@ const signup = async (req, res) => {
           email: newUser.email,
           profilePhoto: newUser.profilePhoto,
         })
+  
+        try {
+          await sendWelcomeEmail(email, fullName, process.env.CLIENT_URL)  
+        } catch (error) {
+            console.log("Error in sendWelcomeEmail:", error);
+            res.status(500).json({
+                success: false,
+                message: "Error in sendWelcomeEmail"
+            })
+        }
+
       }else{
         return res.status(400).json({
             success: false,
