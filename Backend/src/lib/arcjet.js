@@ -1,4 +1,4 @@
-const arcjet = require("@arcjet/node");
+const arcjet = require("@arcjet/node").default;
 const { shield, detectBot, slidingWindow } = require("@arcjet/node");
 
 const aj = arcjet({
