@@ -5,9 +5,14 @@ const app = express();
 const PORT = process.env.PORT ;
 const cookieParser = require("cookie-parser");
 const connectDB = require("./src/config/db");
+const cors = require("cors");
 
 app.use(express.json());
 app.use(cookieParser())
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 // const __dirname = path.resolve();
 
 const authRouted = require("./src/routes/authRoutes")
