@@ -14,7 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const authRoutes = require("./src/routes/authRoutes");
+const messageRoutes = require("./src/routes/messageRoutes");
+
 app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
     res.send("Chat Server is running");
