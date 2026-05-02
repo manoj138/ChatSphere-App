@@ -7,17 +7,33 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000"],
+        origin: ["http://localhost:3000"],  // forontend url will add here after deployment
     },
 });
 
-// Real-time connections handle karne
+const userSocketMap = {};  // {userId : socketId}
+
+const getReceiverSocketId = (userId) => {    // get receiver socket id
+    return userSocketMap[userId];
+}
+
+
 io.on("connection", (socket) => {
     console.log("A user connected", socket.id);
 
+    const userId = socket.handshake.auth.userId; // user id is coming from frontend
+    if (userId) {
+        userSocketMap[userId] = socket.id; // store user id and socket id in userSocketMap
+    }
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
+
+
     socket.on("disconnect", () => {
         console.log("A user disconnected", socket.id);
+        delete userSocketMap[userId]; // remove user id and socket id from userSocketMap
+        io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
     });
 });
 
-module.exports = { io, app, server };
+module.exports = { io, app, server, getReceiverSocketId };
