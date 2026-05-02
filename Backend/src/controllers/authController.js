@@ -62,4 +62,14 @@ const logout = async (req, res) => {
     }
 }
 
-module.exports = { signup, login, logout }
+
+const checkAuth = async (req,res) =>{
+    try {
+        handle200(res, req.user)
+    } catch (error) {
+        console.log("Error in checkAuth controller: ", error);
+        formatMongoError(res, error);
+    }
+}
+
+module.exports = { signup, login, logout, checkAuth }
