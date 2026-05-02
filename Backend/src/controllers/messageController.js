@@ -33,4 +33,33 @@ const getMessages = async(req, res)=>{
   }
 }
 
-module.exports = { getUsersForSlideBar, getMessages };
+const sendMessage = async(req, res)=>{
+    try {
+        const {text, image}= req.body;
+        const {id:receiverId}= req.params;
+        const senderId = req.user._id;
+
+        let imageUrl;
+
+        if(image){
+            const uploadResponse = await cloudinary.uploader.upload(image);
+            imageUrl = uploadResponse.secure_url;
+        }
+
+        const newMessage = new Message({
+            senderId, 
+            receiverId,
+            text, image: imageUrl
+        })
+
+        await newMessage.save();
+
+        return handle200(res, newMessage, "Message sent successfully")
+        
+    } catch (error) {
+        console.log("Error in sendMessage: ", error.message);
+        handle500(res, error);
+    }
+}
+
+module.exports = { getUsersForSlideBar, getMessages, sendMessage };
