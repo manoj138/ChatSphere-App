@@ -8,8 +8,7 @@ const messageSchema = new mongoose.Schema({
     },
     receiverId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+        ref:"User"
     },
     text:{
         type:String,
@@ -21,6 +20,11 @@ const messageSchema = new mongoose.Schema({
     isSeen:{
         type:Boolean,
         default:false
+    },
+    groupId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Group",
+        default:null
     }
 }, {timestamps:true})
 
