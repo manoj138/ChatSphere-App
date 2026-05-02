@@ -1,5 +1,7 @@
 const { handle500 } = require("../helper/errorHandler");
-const { handle200 } = require("../helper/successHandler");
+const { handle200, handle201 } = require("../helper/successHandler");
+const cloudinary = require("../lib/cloudinary");
+
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 
@@ -54,7 +56,7 @@ const sendMessage = async(req, res)=>{
 
         await newMessage.save();
 
-        return handle200(res, newMessage, "Message sent successfully")
+        return handle201(res, newMessage, "Message sent successfully")
         
     } catch (error) {
         console.log("Error in sendMessage: ", error.message);
