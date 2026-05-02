@@ -21,10 +21,16 @@ const getMessages = async(req, res)=>{
     const {id: userToChatId} = req.params;
      const myId = req.user._id;
    
-     const messages = await Message.find
+     const messages = await Message.find({$or:[
+        {senderId:myId, receiverId:userToChatId},
+        {senderId:userToChatId, receiverId:myId}
+     ]})
+
+     return handle200(res, messages, "Messages fetched successfully")
   } catch (error) {
-    
+    console.log("Error in getMessages: ", error);
+    handle500(res, error);
   }
 }
 
-module.exports = { getUsersForSlideBar };
+module.exports = { getUsersForSlideBar, getMessages };
