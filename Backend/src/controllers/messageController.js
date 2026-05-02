@@ -1,6 +1,7 @@
 const { handle500 } = require("../helper/errorHandler");
 const { handle200, handle201 } = require("../helper/successHandler");
 const cloudinary = require("../lib/cloudinary");
+const { getReceiverSocketId, io } = require("../lib/socket");
 
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
@@ -55,6 +56,12 @@ const sendMessage = async(req, res)=>{
         })
 
         await newMessage.save();
+
+        const receiverSocketId = getReceiverSocketId(receiverId);
+
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
 
         return handle201(res, newMessage, "Message sent successfully")
         

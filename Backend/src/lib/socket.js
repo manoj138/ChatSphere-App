@@ -28,6 +28,26 @@ io.on("connection", (socket) => {
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
 
+    socket.on("typing", (data) => {
+
+        const receiverSocketId = getReceiverSocketId(data.receiverId); // get receiver socket id
+
+        if (receiverSocketId) {
+            socket.to(receiverSocketId).emit("usertyping", {
+                senderId: data.senderId,
+                typing: data.typing
+            }); // emit typing to receiver
+        }
+    })
+
+    socket.on("stopTyping",(data)=>{
+        const receiverSocketId = getReceiverSocketId(data.receiverId);
+        if(receiverSocketId){
+            socket.to(receiverSocketId).emit("userStopTyping",{
+                senderId: data.senderId
+            })
+        }
+    })
 
     socket.on("disconnect", () => {
         console.log("A user disconnected", socket.id);
