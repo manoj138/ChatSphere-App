@@ -129,6 +129,31 @@ const markMessagesAsSeen = async(req, res)=>{
     }
 }
 
+const searchUsers = async(req, res)=>{
+    try {
+        const {search}= req.query;
 
+        const loggedInUserId = req.user._id;
 
-module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen };
+          if(!search){
+            return handle404(res, "Search query is required");
+          }
+
+          const users = await User.find({
+            // Exclude yourself from the search results.
+            _id:{$ne: loggedInUserId},
+            // This allows you to search by username or email
+            $or: [
+                { username: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
+            ],
+        }).select("-password") // Exclude password from the search results
+
+        return handle200(res, users, "Users fetched successfully");
+    } catch (error) {
+        console.log("Error in searchUsers: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen, searchUsers };
