@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
+const User = require("../models/userModel");
 
 const app = express();
 const server = http.createServer(app);
@@ -50,9 +51,13 @@ io.on("connection", (socket) => {
         }
     })
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async() => {
         console.log("A user disconnected", socket.id);
-        delete userSocketMap[userId]; // remove user id and socket id from userSocketMap
+
+        if(userId){
+            await User.findByIdAndUpdate(userId, {lastSeen: Date.now()});
+            delete userSocketMap[userId];
+        }
         io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
     });
 });
