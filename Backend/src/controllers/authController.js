@@ -3,6 +3,7 @@ const { generateToken } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
 const { formatMongoError, handle422 } = require("../helper/errorHandler");
 const { handle201, handle200 } = require("../helper/successHandler");
+const cloudinary = require("../lib/cloudinary");
 
 const signup = async (req, res) => {
     const { username, email, password } = req.body;
@@ -63,7 +64,7 @@ const logout = async (req, res) => {
 }
 
 
-const checkAuth = async (req,res) =>{
+const checkAuth = async (req, res) => {
     try {
         handle200(res, req.user)
     } catch (error) {
@@ -72,4 +73,28 @@ const checkAuth = async (req,res) =>{
     }
 }
 
-module.exports = { signup, login, logout, checkAuth }
+const updateProfilePic = async (req, res) => {
+    try {
+        const { profilePicture } = req.body;
+
+        const userId = req.user._id;
+
+        if (!profilePicture) {
+            return handle422(res, "Profile picture is required")
+        }
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePicture);
+
+        const updateUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { profilePicture: uploadResponse.secure_url },
+            { new: true }
+        )
+
+        handle200(res, updateUser, "Profile picture updated successfully");
+    } catch (error) {
+        console.log("Error in updateProfilePic controller: ", error);
+        formatMongoError(res, error);
+    }
+}
+module.exports = { signup, login, logout, checkAuth, updateProfilePic }
