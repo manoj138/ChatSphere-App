@@ -16,6 +16,15 @@ const getUsersForSlideBar = async(req, res)=>{
     }
 }
 
-
+const getMessages = async(req, res)=>{
+  try {
+    const {id: userToChatId} = req.params;
+     const myId = req.user._id;
+   
+     const messages = await Message.find
+  } catch (error) {
+    
+  }
+}
 
 module.exports = { getUsersForSlideBar };
