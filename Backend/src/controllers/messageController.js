@@ -71,4 +71,41 @@ const sendMessage = async(req, res)=>{
     }
 }
 
-module.exports = { getUsersForSlideBar, getMessages, sendMessage };
+const deleteMessage = async(req, res)=>{
+    try{
+ const {id:messageId} = req.params;
+
+ const userId = req.user._id;
+
+ const message = await Message.findById(messageId);
+// check if message found
+ if(!message){
+    return handle404(res, "Message not found");
+ }
+// check if sender is authorized to delete the message 
+ if(message.senderId.toString() !== userId.toString()){
+    return handle401(res, "You are not authorized to delete this message");
+ }
+// delete image from cloudinary
+ if(message.image){
+    const publicId = message.image.split("/").pop().split(".")[0];
+    await cloudinary.uploader.destroy(publicId);
+ }
+// delete message from database
+ await Message.findByIdAndDelete(messageId);
+
+// emit delete message to receiver
+ const receiverSocketId = getReceiverSocketId(message.receiverId);
+
+ if(receiverSocketId){
+    io.to(receiverSocketId).emit("deleteMessage", messageId);
+ }
+
+return handle200(res, null, "Message deleted successfully")
+    }catch(error){
+        console.log("Error in deleteMessage: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage };

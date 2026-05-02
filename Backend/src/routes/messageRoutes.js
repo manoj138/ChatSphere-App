@@ -7,5 +7,6 @@ const messageController = require("../controllers/messageController");
 router.get("/users-sidebar", protectRoute, messageController.getUsersForSlideBar);
 router.get("/:id", protectRoute, messageController.getMessages);
 router.post("/send/:id", protectRoute, messageController.sendMessage);
+router.delete("/delete/:id", protectRoute, messageController.deleteMessage);
 
 module.exports = router;
