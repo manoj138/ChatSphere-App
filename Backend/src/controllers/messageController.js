@@ -108,4 +108,27 @@ return handle200(res, null, "Message deleted successfully")
     }
 }
 
-module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage };
+const markMessagesAsSeen = async(req, res)=>{
+    try{
+        const {id:senderId} = req.params;
+
+        const recipientId = req.user._id;
+
+        await Message.updateMany({senderId:senderId, receiverId:recipientId, isSeen:false},{$set:{isSeen:true}});
+
+        const senderSocketId = getReceiverSocketId(senderId);
+
+        if(senderSocketId){
+            io.to(senderSocketId).emit("messagesSeen", {senderId, recipientId});
+        }
+
+        return handle200(res, null, "Messages marked as seen successfully")
+    }catch(error){
+        console.log("Error in markMessagesAsSeen: ", error);
+        handle500(res, error);
+    }
+}
+
+
+
+module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen };

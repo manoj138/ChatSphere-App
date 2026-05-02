@@ -40,12 +40,13 @@ io.on("connection", (socket) => {
         }
     })
 
+
     socket.on("stopTyping",(data)=>{
         const receiverSocketId = getReceiverSocketId(data.receiverId);
         if(receiverSocketId){
             socket.to(receiverSocketId).emit("userStopTyping",{
                 senderId: data.senderId
-            })
+            }) // emit stop typing to receiver
         }
     })
 
