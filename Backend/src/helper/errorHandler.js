@@ -61,10 +61,10 @@ const handle422 = (res, errors = {}) => {
  * 500
  */
 const handle500 = (res, error) => {
-  console.error("Internal Server Error:", error);
-
+  console.error("DEBUG - Internal Server Error:", error); // Stack trace log kela
   return sendError(res, 500, {
-    server: error?.message || "Internal Server Error"
+    server: error?.message || "Internal Server Error",
+    stack: process.env.NODE_ENV === "development" ? error?.stack : undefined // Dev madhe stack pan pathvu
   });
 };
 

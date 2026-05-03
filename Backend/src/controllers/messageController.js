@@ -1,4 +1,4 @@
-const { handle500 } = require("../helper/errorHandler");
+const { handle500, handle404, handle401 } = require("../helper/errorHandler");
 const { handle200, handle201 } = require("../helper/successHandler");
 const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");

@@ -12,10 +12,11 @@ export const useChatStore = create((set, get) => ({
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const res = await axiosInstance.get("/messages/users");
+      const res = await axiosInstance.get("/messages/users-sidebar");
       set({ users: res.data.data });
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       set({ isUsersLoading: false });
     }
@@ -27,7 +28,8 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data.data });
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       set({ isMessagesLoading: false });
     }
@@ -39,7 +41,8 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
       set({ messages: [...messages, res.data.data] });
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
     }
   },
 
