@@ -21,12 +21,12 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    signup: async (data, navigate) => { // Added navigate
+    signup: async (data, navigate) => {
         set({ isSigningUp: true });
         try {
             await axiosInstance.post("/auth/signup", data);
             toast.success("Account created successfully. Please login.");
-            navigate("/login"); // Redirect to login after signup
+            navigate("/login");
         } catch (error) {
             toast.error(error.response.data.message || "An error occurred");
         } finally {
@@ -52,8 +52,12 @@ export const useAuthStore = create((set) => ({
             await axiosInstance.post("/auth/logout");
             set({ authUser: null });
             toast.success("Logged out successfully");
+            // आपण युजरला पुन्हा लॉगिन पेजवर जाण्यासाठी भाग पाडू शकतो
+            window.location.href = "/login"; 
         } catch (error) {
             toast.error(error.response.data.message || "An error occurred");
+            // एरर आला तरी फ्रंटएंडवर युजर क्लियर करा
+            set({ authUser: null });
         }
     },
 }));
