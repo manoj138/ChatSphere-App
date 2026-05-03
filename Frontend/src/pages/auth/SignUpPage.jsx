@@ -28,11 +28,11 @@ const SignUpPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const success = validateForm();
-    if (success === true) signup(formData, navigate); // Passing navigate here
+    if (success === true) signup(formData, navigate);
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-[#050505] text-white font-sans selection:bg-[#bef264] selection:text-black">
+    <div className="h-screen grid lg:grid-cols-2 bg-[#050505] text-white font-sans selection:bg-[#bef264] selection:text-black relative">
       {/* Back Button */}
       <button 
         onClick={() => navigate("/")}
@@ -42,18 +42,18 @@ const SignUpPage = () => {
         Back
       </button>
 
-      {/* Left Side - Visual Section */}
+      {/* Left Side Visual Section */}
       <div className="hidden lg:flex flex-col items-center justify-center bg-[#0a0a0a] relative overflow-hidden p-12 border-r border-white/5">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[#bef264]/5 rounded-full animate-pulse" />
         <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
           <img src="/signup-png.png" alt="SignUp Visual" className="w-full h-auto object-contain drop-shadow-[0_0_80px_rgba(190,242,100,0.1)]" />
           <div className="text-center space-y-4 mt-12">
-             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase text-[#bef264]">Revolution.</h2>
+             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase italic text-[#bef264]">Revolution.</h2>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Form Section */}
+      {/* Right Side Form Section */}
       <div className="flex flex-col justify-center items-center p-8 sm:p-20 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#bef264]/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="w-full max-w-sm space-y-10 relative">
@@ -62,10 +62,10 @@ const SignUpPage = () => {
               <div className="w-10 h-10 rounded-full bg-[#bef264] flex items-center justify-center shadow-[0_0_20px_rgba(190,242,100,0.4)]">
                 <MessageSquare className="w-5 h-5 text-black fill-black" />
               </div>
-              <span className="text-xl font-bold tracking-tight">ChatSphere.</span>
+              <span className="text-xl font-bold tracking-tight text-white">ChatSphere.</span>
             </div>
             <div className="space-y-2">
-              <h1 className="text-5xl font-bold tracking-tighter leading-none">Register.</h1>
+              <h1 className="text-5xl font-bold tracking-tighter leading-none text-white">Register.</h1>
               <p className="text-gray-500 font-medium">Be part of the most secure chat network.</p>
             </div>
           </div>
@@ -75,7 +75,7 @@ const SignUpPage = () => {
               <div className="relative group">
                 <input
                   type="text"
-                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent"
+                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent text-white"
                   placeholder="Username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -85,7 +85,7 @@ const SignUpPage = () => {
               <div className="relative group">
                 <input
                   type="email"
-                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent"
+                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent text-white"
                   placeholder="Email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -95,7 +95,7 @@ const SignUpPage = () => {
               <div className="relative group">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent"
+                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent text-white"
                   placeholder="Password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -113,7 +113,7 @@ const SignUpPage = () => {
 
             <button
               type="submit"
-              className="group relative w-full py-4 bg-[#bef264] text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50"
+              className="group relative w-full py-4 bg-[#bef264] text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50 cursor-pointer"
               disabled={isSigningUp}
             >
               <span className="relative z-10">{isSigningUp ? "Joining..." : "Create Account"}</span>

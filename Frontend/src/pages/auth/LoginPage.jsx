@@ -18,7 +18,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-[#050505] text-white font-sans selection:bg-[#bef264] selection:text-black">
+    <div className="h-screen grid lg:grid-cols-2 bg-[#050505] text-white font-sans selection:bg-[#bef264] selection:text-black relative">
       {/* Back Button */}
       <button 
         onClick={() => navigate("/")}
@@ -33,6 +33,7 @@ const LoginPage = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#bef264]/5 blur-[120px] rounded-full pointer-events-none" />
         
         <div className="w-full max-w-sm space-y-12 relative">
+          {/* Brand Identity */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#bef264] flex items-center justify-center shadow-[0_0_20px_rgba(190,242,100,0.4)]">
@@ -46,6 +47,7 @@ const LoginPage = () => {
             </div>
           </div>
 
+          {/* Form Section */}
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <div className="relative group">
