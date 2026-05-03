@@ -38,7 +38,7 @@ const getMessages = async(req, res)=>{
 
 const sendMessage = async(req, res)=>{
     try {
-        const {text, image}= req.body;
+        const {text, image, groupId}= req.body;
         const {id:receiverId}= req.params;
         const senderId = req.user._id;
 
@@ -51,17 +51,25 @@ const sendMessage = async(req, res)=>{
 
         const newMessage = new Message({
             senderId, 
-            receiverId,
+            receiverId:groupId ? null : receiverId,
+            groupId:groupId || null,
             text, image: imageUrl
         })
 
         await newMessage.save();
 
+         if(groupId){ 
+            io.to(groupId).emit("newGroupMessage", newMessage)
+         } else{
+
         const receiverSocketId = getReceiverSocketId(receiverId);
+
 
         if(receiverSocketId){
             io.to(receiverSocketId).emit("newMessage", newMessage);
         }
+
+    }
 
         return handle201(res, newMessage, "Message sent successfully")
         
@@ -156,4 +164,15 @@ const searchUsers = async(req, res)=>{
     }
 }
 
-module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen, searchUsers };
+const getGroupMessages = async (req, res)=>{
+    try {
+        const {id:groupId} = req.params;
+        const messages =  await Message.find({groupId:groupId}).populate("senderId", "username profilePicture");
+        return handle200(res, messages, "Group messages fetched successfully")
+    } catch (error) {
+        console.log("Error in getGroupMessages: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen, searchUsers, getGroupMessages };

@@ -15,9 +15,11 @@ app.use(cookieParser());
 
 const authRoutes = require("./src/routes/authRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
+const groupRoutes = require("./src/routes/groupRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/groups", groupRoutes);
 
 app.get("/", (req, res) => {
     res.send("Chat Server is running");
