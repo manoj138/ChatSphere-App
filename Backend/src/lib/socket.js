@@ -49,6 +49,16 @@ io.on("connection", (socket) => {
                 senderId: data.senderId
             }) // emit stop typing to receiver
         }
+    });
+
+    socket.on("joinGroup", (groupId)=>{
+        socket.join(groupId);
+        console.log(`user ${userId} joined group ${groupId}`);
+    })
+
+    socket.on("leaveGroup", (groupId)=>{
+        socket.leave(groupId);
+        console.log(`user ${userId} left group ${groupId}`);
     })
 
     socket.on("disconnect", async() => {
