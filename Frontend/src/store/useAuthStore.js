@@ -48,16 +48,17 @@ export const useAuthStore = create((set) => ({
     },
 
     logout: async () => {
+        // आधी फ्रंटएंडवर युजर क्लियर करा
+        set({ authUser: null }); 
+        
         try {
             await axiosInstance.post("/auth/logout");
-            set({ authUser: null });
             toast.success("Logged out successfully");
-            // आपण युजरला पुन्हा लॉगिन पेजवर जाण्यासाठी भाग पाडू शकतो
-            window.location.href = "/login"; 
         } catch (error) {
-            toast.error(error.response.data.message || "An error occurred");
-            // एरर आला तरी फ्रंटएंडवर युजर क्लियर करा
-            set({ authUser: null });
+            console.log("Logout API error:", error);
+        } finally {
+            // शेवटी पेज रिफ्रेश करा
+            window.location.replace("/login");
         }
     },
 }));

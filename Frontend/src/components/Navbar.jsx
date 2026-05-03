@@ -5,6 +5,11 @@ import { LogOut, MessageSquare, Settings, User } from "lucide-react";
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
+  const handleLogout = () => {
+    console.log("Logout button clicked!");
+    logout();
+  };
+
   return (
     <header
       className="bg-[#0a0a0a] border-b border-white/5 fixed w-full top-0 z-40 backdrop-blur-lg bg-opacity-80"
@@ -36,7 +41,10 @@ const Navbar = () => {
                   <span className="hidden sm:inline text-sm font-medium">Profile</span>
                 </Link>
 
-                <button className="flex gap-2 items-center hover:bg-red-500/10 px-3 py-2 rounded-lg transition-colors text-red-500" onClick={logout}>
+                <button 
+                  className="flex gap-2 items-center hover:bg-red-500/10 px-3 py-2 rounded-lg transition-colors text-red-500 cursor-pointer" 
+                  onClick={handleLogout}
+                >
                   <LogOut className="size-5" />
                   <span className="hidden sm:inline text-sm font-bold">Logout</span>
                 </button>
