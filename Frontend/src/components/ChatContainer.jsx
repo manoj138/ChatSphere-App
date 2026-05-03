@@ -10,7 +10,7 @@ const ChatContainer = () => {
   useEffect(() => {
     if (selectedUser?._id) {
         getMessages(selectedUser._id);
-        markMessagesAsSeen(selectedUser._id); // Mark as seen when chat opens
+        markMessagesAsSeen(selectedUser._id);
     }
   }, [selectedUser?._id, getMessages, markMessagesAsSeen]);
 
@@ -19,6 +19,17 @@ const ChatContainer = () => {
         scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  // Function to check if a string contains ONLY emojis and return count
+  const getEmojiCount = (str) => {
+    const emojiRegex = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$/g;
+    const emojiMatch = str.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g);
+    
+    if (emojiMatch && emojiMatch.length === [...str].length) {
+      return emojiMatch.length;
+    }
+    return 0;
+  };
 
   if (isMessagesLoading) {
     return (
@@ -47,49 +58,70 @@ const ChatContainer = () => {
 
       {/* Messages List */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar pb-10">
-        {messages?.map((message) => (
-          <div
-            key={message?._id}
-            ref={scrollRef}
-            className={`flex flex-col ${message?.senderId === selectedUser?._id ? "items-start" : "items-end"}`}
-          >
+        {messages?.map((message) => {
+          const emojiCount = message.text ? getEmojiCount(message.text) : 0;
+          const isOnlyEmoji = emojiCount > 0 && emojiCount <= 3; // Up to 3 emojis show large
+
+          return (
             <div
-              className={`max-w-[70%] p-4 rounded-2xl shadow-2xl relative group transition-all ${
-                message?.senderId === selectedUser?._id
-                  ? "bg-[#111] border border-white/5 text-gray-200 rounded-tl-none"
-                  : "bg-[#bef264] text-black font-semibold rounded-tr-none"
-              }`}
+              key={message?._id}
+              ref={scrollRef}
+              className={`flex flex-col ${message?.senderId === selectedUser?._id ? "items-start" : "items-end"}`}
             >
-              {message?.text && <p className="leading-relaxed text-sm whitespace-pre-wrap">{message.text}</p>}
-              {message?.image && (
-                <img 
-                    src={message.image} 
-                    alt="Attachment" 
-                    className="max-w-[280px] sm:max-w-[350px] rounded-lg mt-2 shadow-xl border border-black/10 hover:scale-[1.02] transition-transform cursor-pointer" 
-                />
-              )}
-              
-              <div className={`flex items-center gap-1 mt-1.5 opacity-60 ${message?.senderId === selectedUser?._id ? "justify-start" : "justify-end"}`}>
-                 <p className="text-[9px] uppercase font-bold tracking-tighter italic">
-                    {message?.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
-                 </p>
-                 
-                 {/* Message Ticks logic */}
-                 {message?.senderId !== selectedUser?._id && (
-                    <div className="ml-1">
-                        {message?.isSeen ? (
-                            <CheckCheck size={14} className="text-blue-500" />
-                        ) : message?.isDelivered ? (
-                            <CheckCheck size={14} className="text-gray-500" />
-                        ) : (
-                            <Check size={14} className="text-gray-500" />
-                        )}
-                    </div>
-                 )}
+              <div
+                className={`max-w-[70%] relative group transition-all ${
+                  isOnlyEmoji 
+                  ? "bg-transparent shadow-none p-0" // Special style for only emojis
+                  : `p-4 rounded-2xl shadow-2xl ${
+                    message?.senderId === selectedUser?._id
+                      ? "bg-[#111] border border-white/5 text-gray-200 rounded-tl-none"
+                      : "bg-[#bef264] text-black font-semibold rounded-tr-none"
+                  }`
+                }`}
+              >
+                {message?.text && (
+                  <p className={`leading-relaxed whitespace-pre-wrap ${
+                    isOnlyEmoji 
+                    ? `text-5xl drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] ${emojiCount > 1 ? "text-4xl" : "text-6xl"}` 
+                    : "text-sm"
+                  }`}>
+                    {message.text}
+                  </p>
+                )}
+                
+                {message?.image && (
+                  <img 
+                      src={message.image} 
+                      alt="Attachment" 
+                      className="max-w-[280px] sm:max-w-[350px] rounded-lg mt-2 shadow-xl border border-black/10 hover:scale-[1.02] transition-transform cursor-pointer" 
+                  />
+                )}
+                
+                <div className={`flex items-center gap-1 mt-1.5 ${
+                  isOnlyEmoji 
+                  ? "absolute -bottom-6 right-0 bg-[#bef264] text-black px-2 py-0.5 rounded-full shadow-lg border border-[#bef264]/50" 
+                  : (message?.senderId === selectedUser?._id ? "justify-start opacity-60" : "justify-end opacity-60")
+                }`}>
+                   <p className="text-[9px] uppercase font-bold tracking-tighter italic">
+                      {message?.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                   </p>
+                   
+                   {message?.senderId !== selectedUser?._id && (
+                      <div className="ml-1">
+                          {message?.isSeen ? (
+                              <CheckCheck size={14} className="text-blue-500" />
+                          ) : message?.isDelivered ? (
+                              <CheckCheck size={14} className="text-gray-500" />
+                          ) : (
+                              <Check size={14} className="text-gray-500" />
+                          )}
+                      </div>
+                   )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         
         {(!messages || messages.length === 0) && (
           <div className="h-full flex flex-col items-center justify-center text-gray-700 space-y-4">
