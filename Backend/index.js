@@ -12,17 +12,19 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 
 const authRoutes = require("./src/routes/authRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
 const groupRoutes = require("./src/routes/groupRoutes");
+const friendRoutes = require("./src/routes/friendRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/friends", friendRoutes);
 
 app.get("/", (req, res) => {
     res.send("Chat Server is running");

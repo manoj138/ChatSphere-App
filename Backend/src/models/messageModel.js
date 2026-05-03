@@ -21,6 +21,10 @@ const messageSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    isDelivered:{
+        type:Boolean,
+        default:false
+    },
     groupId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Group",

@@ -5,17 +5,32 @@ const { getReceiverSocketId, io } = require("../lib/socket");
 
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
+const FriendRequest = require("../models/friendRequestModel");
 
 const getUsersForSlideBar = async(req, res)=>{
     try {
         const loggedInUserId = req.user._id;
 
-        const filteredUsers = await User.find({_id:{$ne:loggedInUserId}}).select("-password");
+        // Find all accepted friend requests involving the logged-in user
+        const acceptedRequests = await FriendRequest.find({
+            $or: [
+                { sender: loggedInUserId, status: "accepted" },
+                { receiver: loggedInUserId, status: "accepted" }
+            ]
+        });
 
-       return handle200(res, filteredUsers)
-        } catch (error) {
-          console.log("error in getUsersForSlideBar: ", error);
-          handle500(res, error);
+        // Extract friend IDs
+        const friendIds = acceptedRequests.map(req => 
+            req.sender.toString() === loggedInUserId.toString() ? req.receiver : req.sender
+        );
+
+        // Fetch user details for these friend IDs
+        const friends = await User.find({ _id: { $in: friendIds } }).select("-password");
+
+        return handle200(res, friends)
+    } catch (error) {
+        console.log("error in getUsersForSlideBar: ", error);
+        handle500(res, error);
     }
 }
 
@@ -49,30 +64,28 @@ const sendMessage = async(req, res)=>{
             imageUrl = uploadResponse.secure_url;
         }
 
+        const receiverSocketId = getReceiverSocketId(receiverId);
+
         const newMessage = new Message({
             senderId, 
             receiverId:groupId ? null : receiverId,
             groupId:groupId || null,
-            text, image: imageUrl
+            text: text || "",
+            image: imageUrl,
+            isDelivered: !!receiverSocketId // If receiver is online, it's delivered
         })
 
         await newMessage.save();
 
-         if(groupId){ 
+        if(groupId){ 
             io.to(groupId).emit("newGroupMessage", newMessage)
-         } else{
-
-        const receiverSocketId = getReceiverSocketId(receiverId);
-
-
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage", newMessage);
+        } else {
+            if(receiverSocketId){
+                io.to(receiverSocketId).emit("newMessage", newMessage);
+            }
         }
 
-    }
-
         return handle201(res, newMessage, "Message sent successfully")
-        
     } catch (error) {
         console.log("Error in sendMessage: ", error.message);
         handle500(res, error);
@@ -81,35 +94,28 @@ const sendMessage = async(req, res)=>{
 
 const deleteMessage = async(req, res)=>{
     try{
- const {id:messageId} = req.params;
+        const {id:messageId} = req.params;
+        const userId = req.user._id;
+        const message = await Message.findById(messageId);
+        
+        if(!message){
+            return handle404(res, "Message not found");
+        }
+        if(message.senderId.toString() !== userId.toString()){
+            return handle401(res, "You are not authorized to delete this message");
+        }
+        if(message.image){
+            const publicId = message.image.split("/").pop().split(".")[0];
+            await cloudinary.uploader.destroy(publicId);
+        }
+        await Message.findByIdAndDelete(messageId);
 
- const userId = req.user._id;
+        const receiverSocketId = getReceiverSocketId(message.receiverId);
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("deleteMessage", messageId);
+        }
 
- const message = await Message.findById(messageId);
-// check if message found
- if(!message){
-    return handle404(res, "Message not found");
- }
-// check if sender is authorized to delete the message 
- if(message.senderId.toString() !== userId.toString()){
-    return handle401(res, "You are not authorized to delete this message");
- }
-// delete image from cloudinary
- if(message.image){
-    const publicId = message.image.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(publicId);
- }
-// delete message from database
- await Message.findByIdAndDelete(messageId);
-
-// emit delete message to receiver
- const receiverSocketId = getReceiverSocketId(message.receiverId);
-
- if(receiverSocketId){
-    io.to(receiverSocketId).emit("deleteMessage", messageId);
- }
-
-return handle200(res, null, "Message deleted successfully")
+        return handle200(res, null, "Message deleted successfully")
     }catch(error){
         console.log("Error in deleteMessage: ", error);
         handle500(res, error);
@@ -119,13 +125,10 @@ return handle200(res, null, "Message deleted successfully")
 const markMessagesAsSeen = async(req, res)=>{
     try{
         const {id:senderId} = req.params;
-
         const recipientId = req.user._id;
 
         await Message.updateMany({senderId:senderId, receiverId:recipientId, isSeen:false},{$set:{isSeen:true}});
-
         const senderSocketId = getReceiverSocketId(senderId);
-
         if(senderSocketId){
             io.to(senderSocketId).emit("messagesSeen", {senderId, recipientId});
         }
@@ -140,22 +143,17 @@ const markMessagesAsSeen = async(req, res)=>{
 const searchUsers = async(req, res)=>{
     try {
         const {search}= req.query;
-
         const loggedInUserId = req.user._id;
 
-          if(!search){
-            return handle404(res, "Search query is required");
-          }
-
-          const users = await User.find({
-            // Exclude yourself from the search results.
-            _id:{$ne: loggedInUserId},
-            // This allows you to search by username or email
+        const searchFilter = search ? {
+            _id: { $ne: loggedInUserId },
             $or: [
                 { username: { $regex: search, $options: "i" } },
                 { email: { $regex: search, $options: "i" } },
             ],
-        }).select("-password") // Exclude password from the search results
+        } : { _id: { $ne: loggedInUserId } };
+
+        const users = await User.find(searchFilter).select("-password").limit(20);
 
         return handle200(res, users, "Users fetched successfully");
     } catch (error) {

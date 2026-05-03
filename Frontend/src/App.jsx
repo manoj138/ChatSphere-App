@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore";
+import { useChatStore } from "./store/useChatStore";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
@@ -11,10 +12,18 @@ import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (authUser) {
+      subscribeToEvents();
+    }
+    return () => unsubscribeFromEvents();
+  }, [authUser, subscribeToEvents, unsubscribeFromEvents]);
 
   if (isCheckingAuth && !authUser) return (
     <div className="flex items-center justify-center h-screen bg-[#050505]">
@@ -23,7 +32,7 @@ function App() {
   );
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white selection:bg-[#bef264] selection:text-black">
+    <div className="bg-[#050505] min-h-screen text-white selection:bg-[#bef264] selection:text-black font-sans">
       <main>
         <Routes>
           <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
