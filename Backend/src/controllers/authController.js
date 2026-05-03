@@ -47,7 +47,6 @@ const login = async (req, res) => {
 
         generateToken(user._id, res);
 
-        // Return user object so frontend can set authUser
         handle200(res, user, "User logged in successfully")
     } catch (error) {
         console.log("Error in login controller: ", error)
@@ -80,23 +79,36 @@ const updateProfile = async (req, res) => {
         const userId = req.user._id;
 
         const updateData = {};
+        
         if (profilePicture) {
-            const uploadResponse = await cloudinary.uploader.upload(profilePicture);
+            console.log("Attempting to upload to Cloudinary...");
+            const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
+                folder: "chatsphere_profiles"
+            });
+            console.log("Cloudinary Upload Success:", uploadResponse.secure_url);
             updateData.profilePicture = uploadResponse.secure_url;
         }
+
         if (bio !== undefined) updateData.bio = bio;
         if (username) updateData.username = username;
 
+        console.log("Updating User in DB with:", updateData);
+        
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            updateData,
+            { $set: updateData },
             { new: true }
         ).select("-password");
 
+        if (!updatedUser) {
+            return handle422(res, "User not found");
+        }
+
+        console.log("User updated successfully in DB");
         handle200(res, updatedUser, "Profile updated successfully");
     } catch (error) {
-        console.log("Error in updateProfile controller: ", error);
-        handle500(res, error);
+        console.error("Error in updateProfile controller:", error);
+        res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
     }
 }
 

@@ -22,7 +22,12 @@ const ProfilePage = () => {
     reader.onload = async () => {
       const base64Image = reader.result;
       setSelectedImg(base64Image);
-      await updateProfile({ profilePicture: base64Image });
+      try {
+        await updateProfile({ profilePicture: base64Image });
+        setSelectedImg(null); // Reset preview to show the new real URL
+      } catch (error) {
+        setSelectedImg(null);
+      }
     };
   };
 
