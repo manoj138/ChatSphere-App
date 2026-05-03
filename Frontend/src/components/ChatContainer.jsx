@@ -1,19 +1,19 @@
 import { useEffect, useRef } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, CheckCheck } from "lucide-react";
 import MessageInput from "./MessageInput";
 
 const ChatContainer = () => {
-  const { messages = [], getMessages, isMessagesLoading, selectedUser } = useChatStore();
+  const { messages = [], getMessages, isMessagesLoading, selectedUser, markMessagesAsSeen } = useChatStore();
   const scrollRef = useRef(null);
 
   useEffect(() => {
     if (selectedUser?._id) {
         getMessages(selectedUser._id);
+        markMessagesAsSeen(selectedUser._id); // Mark as seen when chat opens
     }
-  }, [selectedUser?._id, getMessages]);
+  }, [selectedUser?._id, getMessages, markMessagesAsSeen]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (scrollRef.current && messages) {
         scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -69,10 +69,23 @@ const ChatContainer = () => {
                 />
               )}
               
-              <div className={`flex items-center gap-1 mt-1.5 opacity-40 ${message?.senderId === selectedUser?._id ? "justify-start" : "justify-end"}`}>
+              <div className={`flex items-center gap-1 mt-1.5 opacity-60 ${message?.senderId === selectedUser?._id ? "justify-start" : "justify-end"}`}>
                  <p className="text-[9px] uppercase font-bold tracking-tighter italic">
                     {message?.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                  </p>
+                 
+                 {/* Message Ticks logic */}
+                 {message?.senderId !== selectedUser?._id && (
+                    <div className="ml-1">
+                        {message?.isSeen ? (
+                            <CheckCheck size={14} className="text-blue-500" />
+                        ) : message?.isDelivered ? (
+                            <CheckCheck size={14} className="text-gray-500" />
+                        ) : (
+                            <Check size={14} className="text-gray-500" />
+                        )}
+                    </div>
+                 )}
               </div>
             </div>
           </div>
@@ -88,7 +101,6 @@ const ChatContainer = () => {
         )}
       </div>
 
-      {/* Message Input Component */}
       <MessageInput />
     </div>
   );

@@ -123,5 +123,13 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
   },
 
+  markMessagesAsSeen: async (userId) => {
+    try {
+      await axiosInstance.put(`/messages/seen/${userId}`);
+    } catch (error) {
+      console.log("Error marking messages as seen");
+    }
+  },
+
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));
