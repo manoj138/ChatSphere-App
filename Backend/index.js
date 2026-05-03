@@ -5,10 +5,13 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./src/config/database");
 const { app, server, io } = require("./src/lib/socket");
 
-
 connectDB();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -25,9 +28,7 @@ app.get("/", (req, res) => {
     res.send("Chat Server is running");
 });
 
-
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-    console.log(` Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
-
