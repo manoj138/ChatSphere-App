@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const { generateToken } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
-const { formatMongoError, handle422 } = require("../helper/errorHandler");
+const { formatMongoError, handle422, handle500 } = require("../helper/errorHandler");
 const { handle201, handle200 } = require("../helper/successHandler");
 const cloudinary = require("../lib/cloudinary");
 
@@ -30,7 +30,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     try {
         if (!email || !password) {
-            return handle422(res, "All field are required")
+            return handle422(res, "All fields are required")
         }
 
         const user = await User.findOne({ email });
@@ -47,7 +47,8 @@ const login = async (req, res) => {
 
         generateToken(user._id, res);
 
-        handle200(res, "User logged in successfully")
+        // Return user object so frontend can set authUser
+        handle200(res, user, "User logged in successfully")
     } catch (error) {
         console.log("Error in login controller: ", error)
         formatMongoError(res, error);
@@ -57,7 +58,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
     try {
         res.cookie("jwt", "", { maxAge: 0 })
-        handle200(res, "User logged out successfully")
+        handle200(res, null, "User logged out successfully")
     } catch (error) {
         formatMongoError(res, error)
     }
@@ -73,28 +74,30 @@ const checkAuth = async (req, res) => {
     }
 }
 
-const updateProfilePic = async (req, res) => {
+const updateProfile = async (req, res) => {
     try {
-        const { profilePicture } = req.body;
-
+        const { profilePicture, bio, username } = req.body;
         const userId = req.user._id;
 
-        if (!profilePicture) {
-            return handle422(res, "Profile picture is required")
+        const updateData = {};
+        if (profilePicture) {
+            const uploadResponse = await cloudinary.uploader.upload(profilePicture);
+            updateData.profilePicture = uploadResponse.secure_url;
         }
+        if (bio !== undefined) updateData.bio = bio;
+        if (username) updateData.username = username;
 
-        const uploadResponse = await cloudinary.uploader.upload(profilePicture);
-
-        const updateUser = await User.findByIdAndUpdate(
-            req.user._id,
-            { profilePicture: uploadResponse.secure_url },
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateData,
             { new: true }
-        )
+        ).select("-password");
 
-        handle200(res, updateUser, "Profile picture updated successfully");
+        handle200(res, updatedUser, "Profile updated successfully");
     } catch (error) {
-        console.log("Error in updateProfilePic controller: ", error);
-        formatMongoError(res, error);
+        console.log("Error in updateProfile controller: ", error);
+        handle500(res, error);
     }
 }
-module.exports = { signup, login, logout, checkAuth, updateProfilePic }
+
+module.exports = { signup, login, logout, checkAuth, updateProfile }

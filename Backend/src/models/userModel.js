@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default:""
     },
+    bio: {
+        type: String,
+        default: "Hey there! I am using ChatSphere."
+    },
     lastSeen:{
         type:Date,
         default:Date.now
