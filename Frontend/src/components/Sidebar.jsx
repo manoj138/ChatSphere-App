@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { useFriendStore } from "../store/useFriendStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import { Users, MessageSquare, Settings, LogOut, Plus, Users as GroupsIcon, Search, UserCircle, User, Sparkles, Bell } from "lucide-react";
+import { Users, MessageSquare, Settings, LogOut, Plus, Users as GroupsIcon, Search, UserCircle, User, Sparkles, Bell, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -41,19 +41,15 @@ const Sidebar = () => {
 
   const isOnline = (userId) => onlineUsers.includes(userId);
 
-  const getAvatar = (item) => {
+  const getAvatarSrc = (item) => {
     const photo = activeTab === "groups" ? item.groupImage : item.profilePicture;
-    const name = activeTab === "groups" ? item.name : item.username;
+    if (photo) return photo;
     
-    if (photo) return <img src={photo} className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />;
+    // Deterministic 3D Avatar Fallback
+    if (activeTab === "groups") return "/favicon.svg"; 
     
-    // Premium 3D Style Fallback
-    return (
-      <div className="w-full h-full flex items-center justify-center text-white font-black text-lg uppercase italic shadow-inner" 
-           style={{ background: `linear-gradient(135deg, ${themeColor}44 0%, #111 100%)` }}>
-        {name?.charAt(0)}
-      </div>
-    );
+    const idNum = item._id ? item._id.charCodeAt(item._id.length - 1) : 0;
+    return idNum % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3";
   };
 
   const filteredItems = (
@@ -123,7 +119,7 @@ const Sidebar = () => {
               {friendRequests.map(req => (
                 <div key={req._id} className="p-3 bg-red-500/5 border border-red-500/10 rounded-2xl flex items-center justify-between gap-3">
                    <div className="size-8 rounded-lg overflow-hidden border border-red-500/20">
-                      {req.sender?.profilePicture ? <img src={req.sender.profilePicture} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-red-500/20 flex items-center justify-center text-[10px] font-black">{req.sender?.username?.charAt(0)}</div>}
+                      <img src={req.sender?.profilePicture || (req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3")} className="w-full h-full object-cover" />
                    </div>
                    <p className="flex-1 text-[10px] font-black text-white truncate uppercase">{req.sender?.username}</p>
                    <div className="flex gap-1">
@@ -150,7 +146,7 @@ const Sidebar = () => {
                  
                  <div className="relative flex-shrink-0">
                    <div className={`size-11 rounded-xl overflow-hidden border transition-all ${isSelected ? "border-white/20 shadow-2xl" : "border-white/5"}`}>
-                      {getAvatar(item)}
+                      <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
                    </div>
                    {online && <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full" />}
                  </div>
@@ -195,8 +191,8 @@ const Sidebar = () => {
          </div>
 
          <div className="flex items-center gap-3 p-2.5 bg-white/5 rounded-xl border border-white/5">
-            <div className="size-9 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
-               {authUser?.profilePicture ? <img src={authUser.profilePicture} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] font-black italic" style={{ color: themeColor }}>{authUser?.username?.charAt(0)}</div>}
+            <div className="size-9 rounded-lg overflow-hidden border border-white/10 bg-white/5">
+               <img src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3")} className="w-full h-full object-cover" />
             </div>
             <div className="hidden lg:block flex-1 min-w-0">
                <p className="text-[10px] font-black text-white truncate uppercase">{authUser?.username}</p>
@@ -207,6 +203,24 @@ const Sidebar = () => {
             </div>
          </div>
       </div>
+
+      {showCreateGroup && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+           <div className="bg-[#0f0f0f] w-full max-w-sm rounded-[2.5rem] border border-white/10 p-8 space-y-6">
+              <div className="flex items-center justify-between">
+                 <h3 className="font-black uppercase tracking-tighter text-xl">New Community</h3>
+                 <button onClick={() => setShowCreateGroup(false)} className="p-2 hover:bg-white/5 rounded-xl"><X size={18} /></button>
+              </div>
+              <input 
+                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none" 
+                placeholder="Name your sphere..." 
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+              />
+              <button onClick={handleCreateGroup} className="w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg" style={{ backgroundColor: themeColor, color: "#000" }}>Establish Sphere</button>
+           </div>
+        </div>
+      )}
     </aside>
   );
 };

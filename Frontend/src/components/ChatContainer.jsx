@@ -41,12 +41,11 @@ const ChatContainer = () => {
     return 0;
   };
 
-  const getAvatarFallback = (name) => (
-    <div className="w-full h-full flex items-center justify-center text-white font-black text-lg uppercase italic shadow-inner" 
-         style={{ background: `linear-gradient(135deg, ${themeColor}44 0%, #111 100%)` }}>
-      {name?.charAt(0)}
-    </div>
-  );
+  const getAvatarSrc = (user) => {
+    if (user.profilePicture) return user.profilePicture;
+    const idNum = user._id ? user._id.charCodeAt(user._id.length - 1) : 0;
+    return idNum % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3";
+  };
 
   if (isMessagesLoading) {
     return (
@@ -66,9 +65,7 @@ const ChatContainer = () => {
       <header className="p-4 border-b border-white/5 flex items-center gap-4 bg-[#0a0a0a]/80 backdrop-blur-xl z-20">
         <div className="size-11 rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0">
            {selectedUser ? (
-              selectedUser.profilePicture ? (
-                <img src={selectedUser.profilePicture} className="w-full h-full object-cover" alt="" />
-              ) : getAvatarFallback(selectedUser.username)
+              <img src={getAvatarSrc(selectedUser)} className="w-full h-full object-cover" alt="" />
            ) : (
               <div className="w-full h-full bg-white/5 flex items-center justify-center text-gray-500">
                  <Users size={20} />
