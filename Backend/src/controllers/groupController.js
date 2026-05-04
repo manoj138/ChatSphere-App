@@ -14,10 +14,16 @@ const createGroup = async (req, res)=>{
 
         let imageUrl = "";
         if (groupImage) {
-            const uploadResponse = await cloudinary.uploader.upload(groupImage, {
-                folder: "chatsphere_groups"
-            });
-            imageUrl = uploadResponse.secure_url;
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(groupImage, {
+                    folder: "chatsphere_groups",
+                    resource_type: "auto"
+                });
+                imageUrl = uploadResponse.secure_url;
+            } catch (cloudErr) {
+                console.error("Cloudinary ERROR in group creation:", cloudErr.message);
+                imageUrl = groupImage; // Fallback to raw data
+            }
         }
 
         const allMembers = [...new Set([...members, adminId])];
@@ -83,14 +89,27 @@ const updateGroup = async (req, res) => {
 
         if (name) group.name = name;
         if (groupImage) {
-            const uploadResponse = await cloudinary.uploader.upload(groupImage, {
-                folder: "chatsphere_groups"
-            });
-            group.groupImage = uploadResponse.secure_url;
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(groupImage, {
+                    folder: "chatsphere_groups",
+                    resource_type: "auto"
+                });
+                group.groupImage = uploadResponse.secure_url;
+            } catch (cloudErr) {
+                console.error("Cloudinary ERROR in group update:", cloudErr.message);
+                // Fallback: save raw data if cloudinary fails
+                group.groupImage = groupImage; 
+            }
         }
 
         await group.save();
-        return handle200(res, group, "Group updated successfully");
+        
+        // Populate before sending back
+        const updatedGroup = await Group.findById(group._id)
+            .populate("admin", "username email profilePicture")
+            .populate("members", "username profilePicture");
+
+        return handle200(res, updatedGroup, "Group updated successfully");
     } catch (error) {
         console.log("Error in updateGroup: ", error);
         handle500(res, error);
@@ -119,4 +138,35 @@ const deleteGroup = async (req, res) => {
     }
 }
 
-module.exports = { createGroup, getMyGroups, updateGroup, deleteGroup };
+const kickMember = async (req, res) => {
+    try {
+        const { id: groupId } = req.params;
+        const { userId: memberToKick } = req.body;
+        const adminId = req.user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+
+        if (group.admin.toString() !== adminId.toString()) {
+            return res.status(401).json({ message: "Only admin can kick members" });
+        }
+
+        if (group.admin.toString() === memberToKick.toString()) {
+            return res.status(400).json({ message: "Admin cannot kick themselves. Use delete group instead." });
+        }
+
+        group.members = group.members.filter(m => m.toString() !== memberToKick.toString());
+        await group.save();
+
+        const updatedGroup = await Group.findById(groupId)
+            .populate("admin", "username email profilePicture")
+            .populate("members", "username profilePicture");
+
+        return handle200(res, updatedGroup, "Member kicked successfully");
+    } catch (error) {
+        console.log("Error in kickMember: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { createGroup, getMyGroups, updateGroup, deleteGroup, kickMember };
