@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useThemeStore } from "../../store/useThemeStore";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
 
@@ -10,6 +11,7 @@ const LoginPage = () => {
     password: "",
   });
   const { login, isLoggingIn } = useAuthStore();
+  const { themeColor, isLightMode } = useThemeStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,32 +20,35 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-[#050505] text-white font-sans selection:bg-[#bef264] selection:text-black relative">
+    <div className="h-screen grid lg:grid-cols-2 bg-primary text-primary font-sans selection:bg-accent selection:text-black relative transition-colors duration-500">
+      
+      {/* Background Ambience */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-[0.05] blur-[120px] rounded-full pointer-events-none" style={{ backgroundColor: themeColor }} />
+
       {/* Back Button */}
       <button 
         onClick={() => navigate("/")}
-        className="absolute top-8 left-8 z-50 flex items-center gap-2 text-gray-500 hover:text-[#bef264] transition-colors font-bold uppercase tracking-widest text-xs"
+        className="absolute top-8 left-8 z-50 flex items-center gap-2 text-secondary hover:text-accent transition-colors font-bold uppercase tracking-widest text-xs"
       >
         <ArrowLeft size={16} />
         Back
       </button>
 
       {/* Left Side - Form Section (50%) */}
-      <div className="flex flex-col justify-center items-center p-8 sm:p-20 relative border-r border-white/5">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#bef264]/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="flex flex-col justify-center items-center p-8 sm:p-20 relative border-r border-primary">
         
         <div className="w-full max-w-sm space-y-12 relative">
           {/* Brand Identity */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#bef264] flex items-center justify-center shadow-[0_0_20px_rgba(190,242,100,0.4)]">
+              <div className="size-10 rounded-full bg-accent flex items-center justify-center shadow-[0_0_20px_rgba(var(--accent-rgb),0.4)]">
                 <MessageSquare className="w-5 h-5 text-black fill-black" />
               </div>
-              <span className="text-xl font-bold tracking-tight">ChatSphere.</span>
+              <span className="text-xl font-bold tracking-tight text-primary">ChatSphere.</span>
             </div>
             <div className="space-y-2">
-              <h1 className="text-5xl font-bold tracking-tighter leading-none">Sign In.</h1>
-              <p className="text-gray-500 font-medium">Step inside your personal chat space.</p>
+              <h1 className="text-5xl font-bold tracking-tighter leading-none text-primary">Sign In.</h1>
+              <p className="text-secondary font-medium opacity-60">Step inside your personal chat space.</p>
             </div>
           </div>
 
@@ -54,12 +59,12 @@ const LoginPage = () => {
                 <input
                   type="email"
                   required
-                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent"
+                  className="peer w-full py-3 bg-transparent border-b-2 border-primary focus:border-accent outline-none transition-all text-lg placeholder-transparent text-primary"
                   placeholder="Email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
-                <label className="absolute left-0 -top-3.5 text-gray-500 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[#bef264] peer-focus:text-sm pointer-events-none">
+                <label className="absolute left-0 -top-3.5 text-secondary text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent peer-focus:text-sm pointer-events-none opacity-50 peer-focus:opacity-100">
                   Email Address
                 </label>
               </div>
@@ -68,17 +73,17 @@ const LoginPage = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  className="peer w-full py-3 bg-transparent border-b-2 border-gray-800 focus:border-[#bef264] outline-none transition-all text-lg placeholder-transparent"
+                  className="peer w-full py-3 bg-transparent border-b-2 border-primary focus:border-accent outline-none transition-all text-lg placeholder-transparent text-primary"
                   placeholder="Password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
-                <label className="absolute left-0 -top-3.5 text-gray-500 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[#bef264] peer-focus:text-sm pointer-events-none">
+                <label className="absolute left-0 -top-3.5 text-secondary text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent peer-focus:text-sm pointer-events-none opacity-50 peer-focus:opacity-100">
                   Password
                 </label>
                 <button
                   type="button"
-                  className="absolute right-0 top-3 text-gray-600 hover:text-[#bef264] transition-colors"
+                  className="absolute right-0 top-3 text-secondary opacity-40 hover:text-accent hover:opacity-100 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -88,7 +93,7 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              className="group relative w-full py-4 bg-[#bef264] text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50"
+              className="group relative w-full py-4 bg-accent text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50"
               disabled={isLoggingIn}
             >
               <span className="relative z-10">{isLoggingIn ? "Connecting..." : "Access Account"}</span>
@@ -99,9 +104,9 @@ const LoginPage = () => {
           </form>
 
           <div className="text-center pt-4">
-            <p className="text-gray-500">
+            <p className="text-secondary opacity-60">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-white font-bold hover:text-[#bef264] transition-colors border-b border-white hover:border-[#bef264]">
+              <Link to="/signup" className="text-primary font-bold hover:text-accent transition-colors border-b border-primary hover:border-accent">
                 Join Now
               </Link>
             </p>
@@ -110,12 +115,12 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side Section */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-[#0a0a0a] relative overflow-hidden p-12">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[#bef264]/5 rounded-full animate-pulse" />
+      <div className="hidden lg:flex flex-col items-center justify-center bg-secondary relative overflow-hidden p-12 transition-colors duration-500">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-primary opacity-20 rounded-full animate-pulse" />
         <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
-          <img src="/login-png.png" alt="Visual" className="w-full h-auto object-contain drop-shadow-[0_0_80px_rgba(190,242,100,0.1)]" />
+          <img src="/login-png.png" alt="Visual" className="w-full h-auto object-contain drop-shadow-[0_0_80px_rgba(var(--accent-rgb),0.1)]" />
           <div className="text-center space-y-4 mt-12">
-             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase italic">Redefining <br /><span className="text-[#bef264]">Messaging.</span></h2>
+             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase italic text-primary">Redefining <br /><span className="text-accent">Messaging.</span></h2>
           </div>
         </div>
       </div>
