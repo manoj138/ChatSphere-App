@@ -26,9 +26,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "Hey there! I am using ChatSphere."
     },
-    lastSeen:{
-        type:Date,
-        default:Date.now
+    lastSeen: {
+        type: Date,
+        default: Date.now
+    },
+    fcmToken: {
+        type: String,
+        default: ""
     }
 }, {timestamps:true});
 

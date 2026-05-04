@@ -3,7 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { 
   X, Mail, Info, Users, Shield, User, Calendar, 
-  Edit2, Camera, Check, Loader2, UserMinus, Trash2, AlertTriangle 
+  Edit2, Camera, Check, Loader2, UserMinus, Trash2, AlertTriangle, Clock
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -29,6 +29,18 @@ const ChatInfoModal = ({ onClose }) => {
     if (item.profilePicture) return item.profilePicture;
     const idNum = item._id ? item._id.toString().charCodeAt(item._id.toString().length - 1) : 0;
     return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png` : `/girl_${(idNum % 4) + 1}.png`;
+  };
+
+  const formatLastSeen = (date) => {
+    if (!date) return "UNKNOWN";
+    const lastSeen = new Date(date);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - lastSeen) / 1000);
+
+    if (diffInSeconds < 60) return "JUST NOW";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}M AGO`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}H AGO`;
+    return lastSeen.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
 
   const handleImageChange = async (e) => {
@@ -121,7 +133,18 @@ const ChatInfoModal = ({ onClose }) => {
                     {isAdmin && <button onClick={() => setIsEditing(true)} className="p-1.5 text-gray-700 hover:text-white"><Edit2 size={16} /></button>}
                  </div>
               )}
-              <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mt-2">{isGroup ? `SECURE CELL ID: ${info._id.substring(0,8)}` : (onlineUsers.includes(info._id) ? "NODE STATUS: ACTIVE" : "NODE STATUS: STANDBY")}</p>
+              
+              <div className="flex flex-col items-center gap-1 mt-2">
+                 <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em]">
+                    {isGroup ? `SECURE CELL ID: ${info._id.substring(0,8)}` : (onlineUsers.includes(info._id) ? "NODE STATUS: ACTIVE" : "NODE STATUS: STANDBY")}
+                 </p>
+                 {!isGroup && !onlineUsers.includes(info._id) && (
+                    <div className="flex items-center gap-1.5 opacity-50">
+                       <Clock size={10} className="text-gray-600" />
+                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Offline Since {formatLastSeen(info.lastSeen)}</span>
+                    </div>
+                 )}
+              </div>
            </div>
 
            <div className="space-y-6">
@@ -136,8 +159,11 @@ const ChatInfoModal = ({ onClose }) => {
                           const isMemberAdmin = member._id === (info.admin?._id || info.admin);
                           return (
                              <div key={member._id} className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-all">
-                                <div className="size-9 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
+                                <div className="size-9 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 relative">
                                    <img src={member.profilePicture || (member._id.charCodeAt(member._id.length-1)%2===0 ? "/boy_1.png" : "/girl_1.png")} className="w-full h-full object-cover" />
+                                   {onlineUsers.includes(member._id) && (
+                                      <div className="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full border-2 border-[#0a0a0a]" />
+                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                    <p className="text-xs font-bold text-gray-300 truncate">@{member.username}</p>
@@ -147,7 +173,6 @@ const ChatInfoModal = ({ onClose }) => {
                                    <button 
                                      onClick={() => handleKick(member._id, member.username)}
                                      className="p-2 text-gray-700 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-                                     title="Kick Member"
                                    >
                                       <UserMinus size={16} />
                                    </button>
@@ -157,7 +182,6 @@ const ChatInfoModal = ({ onClose }) => {
                        })}
                     </div>
                     
-                    {/* Admin Delete Action */}
                     {isAdmin && (
                        <button 
                          onClick={() => setShowDeleteConfirm(true)}
@@ -171,14 +195,14 @@ const ChatInfoModal = ({ onClose }) => {
               ) : (
                  <div className="space-y-4">
                     <div className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                       <div className="size-10 rounded-xl bg-white/[0.03] flex items-center justify-center text-gray-500"><Mail size={18} /></div>
+                       <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500"><Mail size={18} /></div>
                        <div className="flex-1 min-w-0 text-left">
                           <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest mb-0.5">Email Protocol</p>
                           <p className="text-sm font-bold text-gray-300 truncate">{info.email}</p>
                        </div>
                     </div>
                     <div className="flex items-start gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                       <div className="size-10 rounded-xl bg-white/[0.03] flex items-center justify-center text-gray-500 flex-shrink-0"><Info size={18} /></div>
+                       <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 flex-shrink-0"><Info size={18} /></div>
                        <div className="flex-1 text-left">
                           <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest mb-0.5">User Bio</p>
                           <p className="text-sm font-bold text-gray-300 leading-relaxed">{info.bio || "No encryption signature detected."}</p>

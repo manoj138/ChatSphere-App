@@ -122,4 +122,17 @@ const updateProfile = async (req, res) => {
     }
 }
 
-module.exports = { signup, login, logout, checkAuth, updateProfile }
+const updateFCMToken = async (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) return handle422(res, "FCM Token is required");
+
+        await User.findByIdAndUpdate(req.user._id, { fcmToken: token });
+        return handle200(res, null, "FCM Token updated successfully");
+    } catch (error) {
+        console.log("Error in updateFCMToken: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { signup, login, logout, updateProfile, checkAuth, updateFCMToken }

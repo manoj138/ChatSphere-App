@@ -1,113 +1,185 @@
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
-import { Check, ArrowLeft, Moon, Bell, Shield, Palette, Volume2, Settings as SettingsIcon } from "lucide-react";
+import { 
+  User, Mail, Shield, Zap, Palette, 
+  ChevronRight, Camera, Info, LogOut, ArrowLeft
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 
-const PRESET_THEMES = [
-  { name: "Lime", color: "#bef264" },
-  { name: "Electric", color: "#3b82f6" },
-  { name: "Rose", color: "#fb7185" },
-  { name: "Amber", color: "#fbbf24" },
-  { name: "Purple", color: "#a855f7" },
+const NEON_PRESETS = [
+  { name: "LIME", color: "#bef264" },
+  { name: "CYAN", color: "#00ffff" },
+  { name: "PINK", color: "#ff4dff" },
+  { name: "GOLD", color: "#ffcc00" },
+  { name: "RUBY", color: "#ff4d4d" },
+  { name: "NOVA", color: "#bf40bf" }
 ];
 
 const SettingsPage = () => {
+  const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
   const { themeColor, setThemeColor } = useThemeStore();
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      await updateProfile({ profilePicture: base64Image });
+    };
+  };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#bef264] pb-10">
-      
-      <div className="max-w-4xl mx-auto px-6 pt-10">
-        <div className="flex items-center justify-between bg-[#0a0a0a] p-6 rounded-3xl border border-white/5 shadow-2xl mb-8">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="p-2 hover:bg-white/5 rounded-xl transition-colors" style={{ color: themeColor }}>
-              <ArrowLeft size={24} />
-            </Link>
-            <div>
-               <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Settings</h1>
-               <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Customize your experience</p>
-            </div>
-          </div>
-          <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400">
-             <SettingsIcon size={24} />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-           
-           <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-2">
-                 <Palette style={{ color: themeColor }} size={20} />
-                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Appearance</h2>
-              </div>
-              
-              <div className="bg-[#0a0a0a] rounded-3xl border border-white/5 p-8 shadow-2xl space-y-8">
-                 <div>
-                    <p className="text-sm font-bold mb-4">Accent Color</p>
-                    <div className="flex gap-4">
-                       {PRESET_THEMES.map((t) => (
-                         <button 
-                          key={t.name}
-                          onClick={() => setThemeColor(t.color)}
-                          className="size-8 rounded-full border-2 border-[#050505] shadow-lg transition-transform hover:scale-125 relative group"
-                          style={{ backgroundColor: t.color }}
-                         >
-                            {themeColor === t.color && (
-                              <div className="absolute inset-0 flex items-center justify-center text-black">
-                                <Check size={14} />
-                              </div>
-                            )}
-                            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity">{t.name}</span>
-                         </button>
-                       ))}
-                    </div>
+    <div className="h-screen bg-[#050505] overflow-y-auto custom-scrollbar pt-24 pb-20 px-4">
+      <div className="max-w-3xl mx-auto space-y-8">
+        
+        {/* Navigation & Header */}
+        <div className="flex flex-col items-center text-center space-y-6 mb-12">
+           <div className="w-full flex justify-start">
+              <Link 
+                to="/" 
+                className="flex items-center gap-2 text-gray-500 hover:text-white transition-all group"
+              >
+                 <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-white/10">
+                    <ArrowLeft size={18} />
                  </div>
-
-                 <div className="flex items-center justify-between border-t border-white/5 pt-6">
-                    <div>
-                       <p className="text-sm font-bold">Dark Mode</p>
-                       <p className="text-[10px] text-gray-500 font-medium">Immersive OLED experience</p>
-                    </div>
-                    <div className="size-12 rounded-2xl flex items-center justify-center text-black shadow-lg" style={{ backgroundColor: themeColor, boxShadow: `0 0 20px ${themeColor}33` }}>
-                       <Moon size={20} fill="currentColor" />
-                    </div>
-                 </div>
-              </div>
+                 <span className="text-[10px] font-black uppercase tracking-widest">Back to Grid</span>
+              </Link>
            </div>
 
-           <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-2">
-                 <Bell style={{ color: themeColor }} size={20} />
-                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Preferences</h2>
+           <div className="space-y-2">
+              <h1 className="text-4xl font-black text-white uppercase tracking-tighter">System Configuration</h1>
+              <p className="text-gray-700 text-[10px] font-black uppercase tracking-[0.5em]">Adjust your node settings</p>
+           </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
+           
+           {/* Profile Section */}
+           <div className="space-y-6 animate-in slide-in-from-left-8 duration-500">
+              <div className="p-8 bg-white/[0.02] border border-white/10 rounded-[3rem] relative overflow-hidden group">
+                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                    <User size={120} strokeWidth={1} />
+                 </div>
+                 
+                 <div className="relative flex flex-col items-center text-center space-y-6">
+                    <div className="relative group/avatar">
+                       <div className="size-32 rounded-[2.5rem] overflow-hidden border-4 border-white/5 shadow-2xl relative z-10">
+                          <img 
+                            src={authUser.profilePicture || "/boy_1.png"} 
+                            className={`w-full h-full object-cover transition-all duration-700 ${isUpdatingProfile ? "blur-sm opacity-50" : "group-hover/avatar:scale-110"}`} 
+                            alt="" 
+                          />
+                       </div>
+                       <button 
+                         onClick={() => fileInputRef.current?.click()}
+                         disabled={isUpdatingProfile}
+                         className="absolute bottom-1 right-1 p-3 bg-white text-black rounded-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 disabled:opacity-50"
+                       >
+                          <Camera size={18} />
+                       </button>
+                       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                    </div>
+
+                    <div className="space-y-1">
+                       <h2 className="text-xl font-black text-white uppercase tracking-tight">{authUser.username}</h2>
+                       <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest">{authUser.email}</p>
+                    </div>
+
+                    <div className="w-full h-[1px] bg-white/5" />
+                    
+                    <div className="w-full text-left space-y-4">
+                       <div>
+                          <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest mb-1.5">Encryption Bio</p>
+                          <p className="text-sm font-bold text-gray-400 leading-relaxed italic">
+                             "{authUser.bio || "No bio established."}"
+                          </p>
+                       </div>
+                    </div>
+                 </div>
               </div>
 
-              <div className="bg-[#0a0a0a] rounded-3xl border border-white/5 p-8 shadow-2xl space-y-6">
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                       <div className="p-2.5 bg-white/5 rounded-xl text-gray-400"><Volume2 size={18} /></div>
-                       <p className="text-sm font-bold">Sound Effects</p>
+              <button 
+                onClick={logout}
+                className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-red-500 hover:text-white transition-all group"
+              >
+                 <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
+                 Disconnect Node
+              </button>
+           </div>
+
+           {/* Appearance Section */}
+           <div className="space-y-6 animate-in slide-in-from-right-8 duration-500">
+              
+              <div className="p-8 bg-white/[0.02] border border-white/10 rounded-[3rem] space-y-8">
+                 <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                       <Palette size={20} style={{ color: themeColor }} />
                     </div>
-                    <div className="w-12 h-6 rounded-full relative p-1 cursor-pointer" style={{ backgroundColor: themeColor }}>
-                       <div className="size-4 bg-black rounded-full absolute right-1" />
+                    <div>
+                       <h3 className="text-sm font-black text-white uppercase tracking-widest">Neon Accent</h3>
+                       <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest">Select your UI frequency</p>
                     </div>
                  </div>
 
-                 <div className="flex items-center justify-between border-t border-white/5 pt-6">
-                    <div className="flex items-center gap-4">
-                       <div className="p-2.5 bg-white/5 rounded-xl text-gray-400"><Shield size={18} /></div>
-                       <p className="text-sm font-bold">Privacy Lock</p>
-                    </div>
-                    <div className="w-12 h-6 bg-white/10 rounded-full relative p-1 cursor-pointer">
-                       <div className="size-4 bg-gray-500 rounded-full absolute left-1" />
-                    </div>
+                 <div className="grid grid-cols-3 gap-3">
+                    {NEON_PRESETS.map((preset) => (
+                       <button
+                         key={preset.name}
+                         onClick={() => setThemeColor(preset.color)}
+                         className={`relative group h-16 rounded-2xl border transition-all overflow-hidden flex items-center justify-center ${
+                           themeColor === preset.color ? "border-white" : "border-white/5 hover:border-white/20"
+                         }`}
+                       >
+                          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity" style={{ backgroundColor: preset.color }} />
+                          <div className="size-4 rounded-full shadow-lg relative z-10" style={{ backgroundColor: preset.color }} />
+                          {themeColor === preset.color && (
+                             <div className="absolute bottom-1 text-[8px] font-black uppercase tracking-widest text-white animate-in slide-in-from-bottom-1">
+                                Active
+                             </div>
+                          )}
+                       </button>
+                    ))}
                  </div>
 
-                 <div className="mt-8 p-4 rounded-2xl border" style={{ backgroundColor: `${themeColor}0D`, borderColor: `${themeColor}1A` }}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-center leading-relaxed" style={{ color: themeColor }}>
-                       Settings are automatically synced to your account cloud.
-                    </p>
+                 <div className="pt-4 flex items-center justify-between p-4 bg-black/40 border border-white/5 rounded-2xl">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Custom Frequency</span>
+                    <input 
+                      type="color" 
+                      value={themeColor} 
+                      onChange={(e) => setThemeColor(e.target.value)}
+                      className="size-10 bg-transparent border-none cursor-pointer" 
+                    />
                  </div>
               </div>
+
+              <div className="p-8 bg-white/[0.02] border border-white/10 rounded-[3rem] space-y-6">
+                 <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                       <Zap size={20} className="text-yellow-500" />
+                    </div>
+                    <div>
+                       <h3 className="text-sm font-black text-white uppercase tracking-widest">Node Status</h3>
+                       <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest">Network integrity metrics</p>
+                    </div>
+                 </div>
+
+                 <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                       <span className="text-xs font-bold text-gray-400">Security Protocol</span>
+                       <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">E2E Active</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                       <span className="text-xs font-bold text-gray-400">Sync Version</span>
+                       <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">v1.2.0-Alpha</span>
+                    </div>
+                 </div>
+              </div>
+
            </div>
 
         </div>
