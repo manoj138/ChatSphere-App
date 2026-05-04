@@ -67,8 +67,15 @@ const sendMessage = async(req, res)=>{
 
         let imageUrl;
         if(image){
-            const uploadResponse = await cloudinary.uploader.upload(image);
-            imageUrl = uploadResponse.secure_url;
+            try {
+                console.log("Initiating Cloudinary upload...");
+                const uploadResponse = await cloudinary.uploader.upload(image);
+                imageUrl = uploadResponse.secure_url;
+                console.log("Cloudinary upload successful:", imageUrl);
+            } catch (uploadErr) {
+                console.error("Cloudinary Upload Error:", uploadErr.message);
+                return res.status(400).json({ message: `Cloudinary Error: ${uploadErr.message}` });
+            }
         }
 
         const receiverSocketId = getReceiverSocketId(receiverId);

@@ -74,7 +74,7 @@ const ChatContainer = () => {
   };
 
   const filteredMessages = messages.filter(m => 
-    m.text?.toLowerCase().includes(searchQuery.toLowerCase())
+    !searchQuery || (m.text && m.text.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (isMessagesLoading) {
