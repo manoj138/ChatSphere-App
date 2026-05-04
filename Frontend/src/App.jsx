@@ -24,6 +24,9 @@ function App() {
 
   useEffect(() => {
     if (authUser) {
+      import("./lib/firebase").then(({ requestForToken }) => {
+        requestForToken();
+      });
       subscribeToEvents();
     }
     return () => unsubscribeFromEvents();

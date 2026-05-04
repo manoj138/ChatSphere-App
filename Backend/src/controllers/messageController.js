@@ -98,12 +98,25 @@ const sendMessage = async(req, res)=>{
 
         await newMessage.save();
 
+        const { sendNotification } = require("../lib/firebaseAdmin");
+
         if(groupId){ 
             const populatedMessage = await Message.findById(newMessage._id).populate("senderId", "username profilePicture");
             io.to(groupId).emit("newGroupMessage", populatedMessage)
         } else {
             if(receiverSocketId){
                 io.to(receiverSocketId).emit("newMessage", newMessage);
+            } else {
+                // If offline, send FCM notification
+                const receiver = await User.findById(receiverId);
+                if (receiver && receiver.fcmToken) {
+                    await sendNotification(
+                        receiver.fcmToken, 
+                        `New Transmission from ${req.user.username}`, 
+                        text || "Shared an encrypted asset",
+                        { senderId: senderId.toString() }
+                    );
+                }
             }
         }
 
