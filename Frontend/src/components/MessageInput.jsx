@@ -3,7 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { Image, Send, X, Smile, Paperclip } from "lucide-react";
 import toast from "react-hot-toast";
-import { EMOJI_MAP, EMOJI_LIST } from "../lib/emojis";
+import { EMOJI_MAP, EMOJI_CATEGORIES } from "../lib/emojis";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
@@ -153,7 +153,7 @@ const MessageInput = () => {
               <button onClick={() => setShowEmojiPicker(false)} className="p-1 hover:bg-white/10 rounded-lg"><X size={14} /></button>
            </div>
            <div className="p-4 grid grid-cols-5 gap-2 overflow-y-auto h-[calc(100%-60px)] custom-scrollbar">
-              {EMOJI_LIST.map((category) => (
+              {EMOJI_CATEGORIES.map((category) => (
                 category.emojis.map(emoji => (
                   <button 
                     key={emoji}
