@@ -1,18 +1,17 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { useThemeStore } from "../store/useThemeStore";
-import { Image, Send, X, Smile, Paperclip } from "lucide-react";
+import { Image, Send, X, Smile, Zap } from "lucide-react";
 import toast from "react-hot-toast";
-import { EMOJI_MAP, EMOJI_CATEGORIES } from "../lib/emojis";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import { useThemeStore } from "../store/useThemeStore";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [suggestion, setSuggestion] = useState(null);
-  
   const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const { sendMessage, sendTypingStatus } = useChatStore();
   const { themeColor } = useThemeStore();
 
   const handleImageChange = (e) => {
@@ -35,7 +34,7 @@ const MessageInput = () => {
   };
 
   const handleSendMessage = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
     if (!text.trim() && !imagePreview) return;
 
     try {
@@ -44,142 +43,133 @@ const MessageInput = () => {
         image: imagePreview,
       });
 
+      // Clear form
       setText("");
       setImagePreview(null);
-      setSuggestion(null);
+      setShowEmojiPicker(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      sendTypingStatus(false);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
   };
 
-  const handleInputChange = (e) => {
-    const val = e.target.value;
-    setText(val);
-
-    // Trigger typing status
-    const { sendTypingStatus } = useChatStore.getState();
-    if (val.trim().length > 0) {
-        sendTypingStatus(true);
-        // Reset typing status after 2 seconds of inactivity
-        if (window.typingTimeout) clearTimeout(window.typingTimeout);
-        window.typingTimeout = setTimeout(() => {
-            sendTypingStatus(false);
-        }, 2000);
+  const handleTyping = (e) => {
+    setText(e.target.value);
+    if (e.target.value.length > 0) {
+      sendTypingStatus(true);
     } else {
-        sendTypingStatus(false);
-    }
-
-    const words = val.split(" ");
-    const lastWord = words[words.length - 1].toLowerCase();
-    
-    if (lastWord.length > 2 && EMOJI_MAP[lastWord]) {
-      setSuggestion({ word: lastWord, emoji: EMOJI_MAP[lastWord] });
-    } else {
-      setSuggestion(null);
+      sendTypingStatus(false);
     }
   };
 
-  const applySuggestion = () => {
-    if (!suggestion) return;
-    const words = text.split(" ");
-    words[words.length - 1] = suggestion.emoji;
-    setText(words.join(" ") + " ");
-    setSuggestion(null);
+  const addEmoji = (emoji) => {
+    setText(text + emoji.native);
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto">
-      {/* Suggestions Badge */}
-      {suggestion && (
-        <button 
-          onClick={applySuggestion}
-          className="absolute -top-12 left-4 bg-[#1a1a1a] border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-3 animate-in slide-in-from-bottom-2 shadow-2xl group"
-        >
-           <span className="text-xl">{suggestion.emoji}</span>
-           <div className="text-left">
-              <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">Press to insert</p>
-              <p className="text-[10px] font-bold text-white">Replace "{suggestion.word}"</p>
-           </div>
-        </button>
-      )}
-
-      {/* Image Preview Overlay */}
+    <div className="w-full relative animate-in slide-in-from-bottom-8 duration-700">
+      
+      {/* Image Preview Floating Card */}
       {imagePreview && (
-        <div className="absolute -top-32 left-0 p-4 bg-[#0a0a0a] border border-white/10 rounded-[2rem] shadow-2xl flex items-center gap-4 animate-in zoom-in-95">
-          <div className="relative size-20 rounded-2xl overflow-hidden border border-white/10">
-            <img src={imagePreview} className="w-full h-full object-cover" alt="" />
-            <button onClick={removeImage} className="absolute top-1 right-1 bg-black/60 p-1 rounded-lg hover:bg-black transition-colors">
-              <X size={12} />
+        <div className="absolute bottom-full left-0 mb-4 animate-in zoom-in-95 duration-300">
+          <div className="relative group p-2 bg-[#0a0a0a] border border-white/10 rounded-[2rem] shadow-2xl">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="size-32 object-cover rounded-[1.5rem] border border-white/5"
+            />
+            <button
+              onClick={removeImage}
+              className="absolute -top-3 -right-3 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+              type="button"
+            >
+              <X size={16} strokeWidth={3} />
             </button>
           </div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Image Ready</p>
         </div>
       )}
 
-      {/* Main Input Capsule */}
-      <form onSubmit={handleSendMessage} className="bg-[#111]/80 backdrop-blur-3xl border border-white/10 p-2 rounded-[2.5rem] flex items-center gap-2 shadow-2xl relative z-30">
+      {/* Emoji Picker Overlay */}
+      {showEmojiPicker && (
+        <div className="absolute bottom-full right-0 mb-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
+           <div className="rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+              <Picker 
+                data={data} 
+                onEmojiSelect={addEmoji} 
+                theme="dark"
+                skinTonePosition="none"
+                previewPosition="none"
+              />
+           </div>
+        </div>
+      )}
+
+      {/* Main Console Input */}
+      <form onSubmit={handleSendMessage} className="relative group">
         
-        <button 
-          type="button"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="p-3.5 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
-        >
-          <Smile size={22} />
-        </button>
+        {/* Glow Effect */}
+        <div className="absolute -inset-1 rounded-[2.5rem] blur-md opacity-20 group-focus-within:opacity-40 transition-opacity" style={{ backgroundColor: themeColor }} />
 
-        <input
-          type="text"
-          className="flex-1 bg-transparent border-none outline-none py-3 px-2 text-sm font-medium placeholder:text-gray-600"
-          placeholder="Enter your message..."
-          value={text}
-          onChange={handleInputChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-        />
+        <div className="relative flex items-center gap-3 bg-[#0a0a0a]/90 backdrop-blur-2xl border border-white/10 p-3 rounded-[2.5rem] shadow-2xl overflow-hidden">
+           
+           {/* Utility Buttons Area */}
+           <div className="flex items-center gap-1 ml-2">
+              <button
+                type="button"
+                className={`p-3 rounded-full transition-all ${imagePreview ? "text-green-500 bg-green-500/10" : "text-gray-600 hover:text-white hover:bg-white/5"}`}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Image size={20} />
+              </button>
+              <button
+                type="button"
+                className={`p-3 rounded-full transition-all ${showEmojiPicker ? "text-yellow-500 bg-yellow-500/10" : "text-gray-600 hover:text-white hover:bg-white/5"}`}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile size={20} />
+              </button>
+           </div>
 
-        <div className="flex items-center gap-1 pr-2">
-           <button 
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="p-3 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
+           <input
+             type="file"
+             accept="image/*"
+             className="hidden"
+             ref={fileInputRef}
+             onChange={handleImageChange}
+           />
+
+           {/* Command Input Area */}
+           <div className="flex-1 relative">
+              <input
+                type="text"
+                className="w-full bg-transparent border-none text-white text-sm font-bold placeholder:text-gray-800 placeholder:uppercase placeholder:tracking-[0.2em] focus:outline-none py-3 px-2"
+                placeholder="Transmit Signal..."
+                value={text}
+                onChange={handleTyping}
+              />
+           </div>
+
+           {/* Transmission Button */}
+           <button
+             type="submit"
+             disabled={!text.trim() && !imagePreview}
+             className="p-4 rounded-2xl transition-all shadow-xl flex items-center justify-center group/btn disabled:opacity-20 disabled:grayscale"
+             style={{ backgroundColor: themeColor }}
            >
-             <Paperclip size={20} />
-             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+             <Send size={20} className="text-black group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" strokeWidth={3} />
            </button>
 
-           <button 
-            type="submit"
-            disabled={!text.trim() && !imagePreview}
-            className="size-12 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:grayscale shadow-lg active:scale-90"
-            style={{ backgroundColor: themeColor, color: "#000" }}
-           >
-             <Send size={20} fill="currentColor" />
-           </button>
+           <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white/[0.02] to-transparent pointer-events-none" />
         </div>
       </form>
 
-      {/* Aesthetic Emoji Picker */}
-      {showEmojiPicker && (
-        <div className="absolute bottom-20 left-0 w-72 h-80 bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 z-40">
-           <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Pick Emotion</span>
-              <button onClick={() => setShowEmojiPicker(false)} className="p-1 hover:bg-white/10 rounded-lg"><X size={14} /></button>
-           </div>
-           <div className="p-4 grid grid-cols-5 gap-2 overflow-y-auto h-[calc(100%-60px)] custom-scrollbar">
-              {EMOJI_CATEGORIES.map((category) => (
-                category.emojis.map(emoji => (
-                  <button 
-                    key={emoji}
-                    onClick={() => { setText(prev => prev + emoji); setShowEmojiPicker(false); }}
-                    className="text-2xl p-2 hover:bg-white/5 rounded-xl transition-all hover:scale-125"
-                  >
-                    {emoji}
-                  </button>
-                ))
-              ))}
-           </div>
-        </div>
-      )}
+      {/* Security Tagline */}
+      <div className="flex items-center justify-center gap-2 mt-4 opacity-20">
+         <Zap size={10} style={{ color: themeColor }} />
+         <p className="text-[8px] font-black uppercase tracking-[0.4em]">Proprietary Sphere Protocol v3.1</p>
+      </div>
+
     </div>
   );
 };

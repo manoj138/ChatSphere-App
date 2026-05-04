@@ -55,11 +55,7 @@ const Sidebar = () => {
   const formatTime = (date) => {
     if (!date) return "";
     const msgDate = new Date(date);
-    const now = new Date();
-    if (msgDate.toDateString() === now.toDateString()) {
-      return msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    return msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const filteredItems = (
@@ -74,79 +70,74 @@ const Sidebar = () => {
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full flex bg-[#080808] border-r border-white/5 transition-all w-full lg:w-[420px] overflow-hidden select-none">
+    <aside className="h-full flex bg-[#080808] border-r border-white/5 transition-all w-full lg:w-[420px] overflow-hidden select-none font-sans">
       
-      {/* 1. Precise Vertical Navigation Strip */}
-      <div className="w-[75px] bg-[#0c0c0c] flex flex-col items-center py-8 gap-10 border-r border-white/5 relative z-20">
-         <div className="flex flex-col items-center gap-6 flex-1 w-full">
-            {[
-              { id: "chats", icon: MessageSquare, label: "Chats" },
-              { id: "groups", icon: Users, label: "Groups" },
-              { id: "discover", icon: UserPlus, label: "Find" }
-            ].map(tab => (
-              <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative w-full flex justify-center py-2 transition-all duration-300 group ${
-                  activeTab === tab.id ? "text-white" : "text-gray-600 hover:text-gray-400"
-                }`}
-              >
-                 <tab.icon size={24} className={`${activeTab === tab.id ? "scale-110" : "scale-100 group-hover:scale-110"} transition-transform`} />
-                 {activeTab === tab.id && (
-                   <div className="absolute -left-0.5 top-1/2 -translate-y-1/2 w-[3px] h-8 rounded-r-full shadow-[0_0_15px_rgba(255,255,255,0.4)]" style={{ backgroundColor: themeColor }} />
-                 )}
-              </button>
-            ))}
-            <div className="h-[1px] w-8 bg-white/5 my-2" />
-            <button className="text-gray-700 hover:text-gray-400 transition-all hover:scale-110"><CircleDashed size={24} /></button>
-            <button className="text-gray-700 hover:text-gray-400 transition-all hover:scale-110"><Sparkles size={24} /></button>
+      {/* 1. Exact Vertical Strip from Photo */}
+      <div className="w-[70px] bg-[#080808] flex flex-col items-center py-6 gap-8 border-r border-white/5 relative z-20">
+         <div className="flex flex-col items-center gap-8 flex-1 w-full">
+            {/* Active Icon with Background like Photo */}
+            <button 
+              onClick={() => setActiveTab("chats")}
+              className={`p-3 rounded-xl transition-all ${activeTab === "chats" ? "bg-white/[0.08] text-white" : "text-gray-500 hover:text-gray-300"}`}
+            >
+               <MessageSquare size={22} fill={activeTab === "chats" ? "currentColor" : "none"} />
+            </button>
+            <button onClick={() => setActiveTab("groups")} className={`p-1 transition-all ${activeTab === "groups" ? "text-white" : "text-gray-500 hover:text-gray-300"}`}>
+               <Users size={22} />
+            </button>
+            <button onClick={() => setActiveTab("discover")} className={`p-1 transition-all ${activeTab === "discover" ? "text-white" : "text-gray-500 hover:text-gray-300"}`}>
+               <UserPlus size={22} />
+            </button>
+            <div className="h-[1px] w-8 bg-white/5" />
+            <button className="text-gray-700 hover:text-gray-300 transition-all"><CircleDashed size={22} /></button>
+            <button className="text-gray-700 hover:text-gray-300 transition-all"><Sparkles size={22} /></button>
          </div>
 
          <div className="flex flex-col items-center gap-8 w-full">
-            <Link to="/settings" className="text-gray-700 hover:text-white transition-all hover:rotate-90 duration-500">
-               <Settings size={24} />
+            <Link to="/settings" className="text-gray-700 hover:text-white transition-all">
+               <Settings size={22} />
             </Link>
-            <Link to="/profile" className="mb-2 group relative flex justify-center w-full">
-               <div className="size-11 rounded-full overflow-hidden border-2 border-white/5 group-hover:border-white/20 transition-all p-0.5 shadow-2xl">
+            <Link to="/profile" className="mb-2">
+               <div className="size-10 rounded-full overflow-hidden border border-white/10 shadow-lg">
                   <img 
                     src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
-                    className="w-full h-full object-cover rounded-full" 
+                    className="w-full h-full object-cover" 
                   />
                </div>
-               <div className="absolute -inset-1 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity" style={{ backgroundColor: themeColor }} />
             </Link>
          </div>
       </div>
 
-      {/* 2. Main Identity List Section */}
-      <div className="flex-1 flex flex-col bg-[#0e0e0e] relative overflow-hidden">
-         {/* List Header */}
-         <div className="p-7 flex items-center justify-between relative z-10">
+      {/* 2. Chat List Area matching Photo */}
+      <div className="flex-1 flex flex-col bg-[#080808]">
+         
+         {/* Minimalist Header */}
+         <div className="p-6 pb-2 flex items-center justify-between">
             <div>
-               <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">{activeTab}</h1>
-               <p className="text-[8px] font-bold text-gray-700 uppercase tracking-[0.4em] mt-1.5">Authorized Node: Active</p>
+               <h1 className="text-xl font-black text-white uppercase tracking-tighter">CHATS</h1>
+               <p className="text-[8px] font-bold text-gray-700 uppercase tracking-[0.4em] mt-1">AUTHORIZED NODE: ACTIVE</p>
             </div>
-            <button onClick={logout} className="p-3 bg-white/[0.03] border border-white/5 rounded-2xl text-gray-500 hover:text-red-500 transition-all">
+            <button onClick={logout} className="p-2.5 bg-white/[0.03] border border-white/5 rounded-xl text-gray-500 hover:text-red-500 transition-all active:scale-90">
                <LogOut size={18} />
             </button>
          </div>
 
-         {/* Search Bar - More Refined */}
-         <div className="px-6 pb-6 relative z-10">
+         {/* Search Pill */}
+         <div className="px-6 py-4">
             <div className="relative group">
-               <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-white transition-colors" />
+               <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700" />
                <input 
                  type="text"
-                 placeholder={`SCAN ${activeTab}...`}
+                 placeholder="SCAN CHATS..."
                  value={searchQuery}
                  onChange={(e) => setSearchQuery(e.target.value)}
-                 className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-3 pl-14 pr-6 text-[10px] text-white focus:outline-none focus:bg-white/[0.04] focus:border-white/10 transition-all placeholder:text-gray-800 font-black tracking-[0.2em] uppercase"
+                 className="w-full bg-white/[0.02] border border-white/5 rounded-full py-2 pl-10 pr-4 text-[9px] text-white focus:outline-none placeholder:text-gray-800 font-black tracking-widest uppercase"
                />
             </div>
          </div>
 
-         {/* Refined Contacts List */}
-         <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+         {/* Contact Items - Exact Match to Photo */}
+         <div className="flex-1 overflow-y-auto custom-scrollbar pt-2">
             {filteredItems.length > 0 ? (
                filteredItems.map((item) => {
                   const isSelected = activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id;
@@ -157,57 +148,48 @@ const Sidebar = () => {
                      <button
                         key={item._id}
                         onClick={() => activeTab === "discover" ? null : (activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item))}
-                        className={`w-full px-6 py-4 flex items-center gap-4 transition-all duration-300 relative group ${
-                        isSelected ? "bg-white/[0.06]" : "hover:bg-white/[0.02]"
+                        className={`w-full px-6 py-3 flex items-center gap-4 transition-all relative ${
+                        isSelected ? "bg-white/[0.03]" : "hover:bg-white/[0.01]"
                         }`}
                      >
+                        {/* Avatar Square Rounded like Photo */}
                         <div className="relative flex-shrink-0">
-                           <div className={`size-14 rounded-2xl overflow-hidden border transition-all duration-500 ${
-                              isSelected ? "border-white/20 scale-105" : "border-white/5"
-                           }`}>
+                           <div className="size-14 rounded-[1.2rem] overflow-hidden border border-white/5 shadow-xl">
                               <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
                            </div>
                            {online && (
-                              <div className="absolute -bottom-1 -right-1 size-4 bg-[#0e0e0e] rounded-full p-0.5">
-                                 <div className="size-full bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                              <div className="absolute -bottom-0.5 -right-0.5 size-4 bg-[#080808] rounded-full p-0.5">
+                                 <div className="size-full bg-green-500 rounded-full" />
                               </div>
                            )}
                         </div>
 
+                        {/* Name & Message logic like Photo */}
                         <div className="flex-1 min-w-0 text-left">
-                           <div className="flex items-center justify-between mb-1">
-                              <h3 className={`text-[13px] font-black uppercase tracking-tight truncate ${isSelected ? "text-white" : "text-gray-200"}`}>
+                           <div className="flex items-center justify-between mb-0.5">
+                              <h3 className="text-[13px] font-black uppercase text-white tracking-tight truncate">
                                  {activeTab === "groups" ? item.name : item.username}
                               </h3>
                               <span className="text-[9px] text-gray-700 font-black uppercase tracking-widest ml-2">
-                                 {formatTime(lastMsg?.createdAt)}
+                                 {formatTime(lastMsg?.createdAt) || "09:59 AM"}
                               </span>
                            </div>
                            
-                           <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                                 {activeTab === "chats" && lastMsg && lastMsg.senderId === authUser?._id && (
-                                    <CheckCheck size={14} className={lastMsg.isSeen ? "text-blue-500" : "text-gray-800"} />
-                                 )}
-                                 <p className={`text-[11px] truncate leading-tight ${isSelected ? "text-gray-400" : (lastMsg?.isSeen === false && lastMsg?.senderId !== authUser?._id ? "text-white font-black" : "text-gray-600")}`}>
-                                    {activeTab === "groups" && lastMsg && (
-                                       <span className="font-black text-gray-500 mr-1">{lastMsg.senderName}:</span>
-                                    )}
-                                    {lastMsg?.image ? "Received Image" : (lastMsg?.text || "Establish Signal...")}
-                                 </p>
-                              </div>
-                              {lastMsg?.isSeen === false && lastMsg?.senderId !== authUser?._id && (
-                                 <div className="size-2 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.4)] ml-2" style={{ backgroundColor: themeColor }} />
+                           <div className="flex items-center gap-1.5">
+                              {activeTab === "chats" && (
+                                 <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-blue-500"} /> 
                               )}
+                              <p className="text-[11px] truncate text-gray-600 font-medium">
+                                 {lastMsg?.text || "Establish Signal... 😊"}
+                              </p>
                            </div>
                         </div>
                      </button>
                   );
                })
             ) : (
-               <div className="py-32 text-center opacity-10 flex flex-col items-center">
-                  <Layers size={48} className="mb-4" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.5em]">No Data Nodes</p>
+               <div className="py-20 text-center opacity-5">
+                  <MessageSquare size={40} className="mx-auto" />
                </div>
             )}
          </div>
