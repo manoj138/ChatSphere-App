@@ -108,17 +108,25 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.on("newMessage", (newMessage) => {
-      const isChattingWithSender = get().selectedUser?._id === newMessage.senderId;
-      if (isChattingWithSender) {
-        set({ messages: [...get().messages, newMessage] });
-      }
+        const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
+        if (isMessageFromSelectedUser) {
+            set({
+                messages: [...get().messages, newMessage],
+            });
+        }
+        // Refresh sidebar to show last message
+        get().getUsers();
     });
 
     socket.on("newGroupMessage", (newMessage) => {
-      const isChattingInGroup = get().selectedGroup?._id === newMessage.groupId;
-      if (isChattingInGroup) {
-        set({ messages: [...get().messages, newMessage] });
-      }
+        const isMessageForSelectedGroup = newMessage.groupId === get().selectedGroup?._id;
+        if (isMessageForSelectedGroup) {
+            set({
+                messages: [...get().messages, newMessage],
+            });
+        }
+        // Refresh sidebar for groups
+        get().getGroups();
     });
 
     socket.on("usertyping", ({ senderId, typing }) => {

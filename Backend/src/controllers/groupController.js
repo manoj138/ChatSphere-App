@@ -33,6 +33,8 @@ const createGroup = async (req, res)=>{
     }
 }
 
+const Message = require("../models/messageModel");
+
 const getMyGroups = async(req, res)=>{
     try {
         const userId = req.user._id;
@@ -40,9 +42,26 @@ const getMyGroups = async(req, res)=>{
         const groups = await Group.find({
             members: userId
         }).populate("admin", "username email profilePicture")
-          .populate("members", "username profilePicture");
+          .populate("members", "username profilePicture").lean();
 
-        return handle200(res, groups, "Groups fetched successfully")
+        // For each group, find the last message
+        const groupsWithLastMessage = await Promise.all(groups.map(async (group) => {
+            const lastMessage = await Message.findOne({
+                groupId: group._id
+            }).sort({ createdAt: -1 }).populate("senderId", "username");
+
+            return {
+                ...group,
+                lastMessage: lastMessage ? {
+                    text: lastMessage.text,
+                    image: !!lastMessage.image,
+                    createdAt: lastMessage.createdAt,
+                    senderName: lastMessage.senderId?.username || "Member"
+                } : null
+            };
+        }));
+
+        return handle200(res, groupsWithLastMessage, "Groups fetched successfully")
     } catch (error) {
         console.log("Error in getMyGroups: ", error);
         handle500(res, error);
