@@ -81,16 +81,21 @@ const updateProfile = async (req, res) => {
         const updateData = {};
         
         if (profilePicture) {
-            if (profilePicture.startsWith("data:image")) {
-                console.log("Attempting Cloudinary upload...");
+            console.log("Profile Picture data received:", profilePicture.substring(0, 50) + "...");
+            
+            const isBase64 = profilePicture.startsWith("data:image");
+            
+            if (isBase64) {
+                console.log("Base64 image detected. Starting Cloudinary upload...");
                 try {
                     const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
                         folder: "chatsphere_profiles",
                         resource_type: "auto"
                     });
                     updateData.profilePicture = uploadResponse.secure_url;
+                    console.log("Cloudinary upload successful:", updateData.profilePicture);
                 } catch (cloudErr) {
-                    console.error("Cloudinary Detailed Error:", cloudErr);
+                    console.error("Cloudinary ERROR:", cloudErr.message);
                     return res.status(403).json({ 
                         success: false, 
                         message: "Cloudinary Authorization Failed (403). Please check your API credentials.",
@@ -98,7 +103,8 @@ const updateProfile = async (req, res) => {
                     });
                 }
             } else {
-                updateData.profilePicture = profilePicture; // Set the direct path for 3D avatars
+                console.log("Direct avatar path detected. Saving path:", profilePicture);
+                updateData.profilePicture = profilePicture; 
             }
         }
 
