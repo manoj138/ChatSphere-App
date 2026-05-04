@@ -96,11 +96,9 @@ const updateProfile = async (req, res) => {
                     console.log("Cloudinary upload successful:", updateData.profilePicture);
                 } catch (cloudErr) {
                     console.error("Cloudinary ERROR:", cloudErr.message);
-                    return res.status(403).json({ 
-                        success: false, 
-                        message: "Cloudinary Authorization Failed (403). Please check your API credentials.",
-                        error: cloudErr.message 
-                    });
+                    console.log("FALLBACK: Saving image data directly to database...");
+                    // If cloudinary fails, save the base64 directly to DB as a fallback
+                    updateData.profilePicture = profilePicture; 
                 }
             } else {
                 console.log("Direct avatar path detected. Saving path:", profilePicture);

@@ -24,10 +24,31 @@ const getUsersForSlideBar = async(req, res)=>{
             req.sender.toString() === loggedInUserId.toString() ? req.receiver : req.sender
         );
 
-        // Fetch user details for these friend IDs
-        const friends = await User.find({ _id: { $in: friendIds } }).select("-password");
+        // Fetch user details for these friend IDs and attach last message
+        const friends = await User.find({ _id: { $in: friendIds } }).select("-password").lean();
 
-        return handle200(res, friends)
+        // For each friend, find the last message
+        const friendsWithLastMessage = await Promise.all(friends.map(async (friend) => {
+            const lastMessage = await Message.findOne({
+                $or: [
+                    { senderId: loggedInUserId, receiverId: friend._id },
+                    { senderId: friend._id, receiverId: loggedInUserId }
+                ]
+            }).sort({ createdAt: -1 });
+
+            return {
+                ...friend,
+                lastMessage: lastMessage ? {
+                    text: lastMessage.text,
+                    image: !!lastMessage.image,
+                    createdAt: lastMessage.createdAt,
+                    senderId: lastMessage.senderId,
+                    isSeen: lastMessage.isSeen
+                } : null
+            };
+        }));
+
+        return handle200(res, friendsWithLastMessage);
     } catch (error) {
         console.log("error in getUsersForSlideBar: ", error);
         handle500(res, error);
