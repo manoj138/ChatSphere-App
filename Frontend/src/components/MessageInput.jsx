@@ -57,6 +57,19 @@ const MessageInput = () => {
     const val = e.target.value;
     setText(val);
 
+    // Trigger typing status
+    const { sendTypingStatus } = useChatStore.getState();
+    if (val.trim().length > 0) {
+        sendTypingStatus(true);
+        // Reset typing status after 2 seconds of inactivity
+        if (window.typingTimeout) clearTimeout(window.typingTimeout);
+        window.typingTimeout = setTimeout(() => {
+            sendTypingStatus(false);
+        }, 2000);
+    } else {
+        sendTypingStatus(false);
+    }
+
     const words = val.split(" ");
     const lastWord = words[words.length - 1].toLowerCase();
     

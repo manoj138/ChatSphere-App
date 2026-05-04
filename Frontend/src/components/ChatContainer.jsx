@@ -8,12 +8,14 @@ import MessageInput from "./MessageInput";
 const ChatContainer = () => {
   const { 
     messages = [], getMessages, getGroupMessages, isMessagesLoading, 
-    selectedUser, selectedGroup, markMessagesAsSeen 
+    selectedUser, selectedGroup, markMessagesAsSeen, typingStatus 
   } = useChatStore();
   
   const { authUser } = useAuthStore();
   const { themeColor } = useThemeStore();
   const scrollRef = useRef(null);
+
+  const isTyping = selectedUser && typingStatus[selectedUser._id];
 
   useEffect(() => {
     if (selectedUser?._id) {
@@ -28,7 +30,7 @@ const ChatContainer = () => {
     if (scrollRef.current && messages?.length > 0) {
         scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const getEmojiCount = (str) => {
     if (!str) return 0;
@@ -65,13 +67,26 @@ const ChatContainer = () => {
               </div>
            )}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
            <h3 className="text-sm font-black text-white truncate uppercase tracking-tight">
               {selectedUser ? selectedUser.username : selectedGroup.name}
            </h3>
-           <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: themeColor }}>
-              {selectedUser ? "Direct Connection" : `${selectedGroup.members?.length || 0} Members active`}
-           </p>
+           <div className="flex items-center gap-2 mt-0.5">
+              {isTyping ? (
+                 <div className="flex items-center gap-1">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] animate-pulse" style={{ color: themeColor }}>typing</span>
+                    <div className="flex gap-0.5">
+                       <div className="size-0.5 rounded-full animate-bounce" style={{ backgroundColor: themeColor }} />
+                       <div className="size-0.5 rounded-full animate-bounce [animation-delay:0.2s]" style={{ backgroundColor: themeColor }} />
+                       <div className="size-0.5 rounded-full animate-bounce [animation-delay:0.4s]" style={{ backgroundColor: themeColor }} />
+                    </div>
+                 </div>
+              ) : (
+                 <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
+                    {selectedUser ? "Secure Direct Link" : `${selectedGroup.members?.length || 0} Nodes Connected`}
+                 </p>
+              )}
+           </div>
         </div>
       </header>
 
@@ -79,7 +94,6 @@ const ChatContainer = () => {
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar pb-32">
         {messages && messages.length > 0 ? (
           messages.map((message) => {
-            // Robust identification of own message
             const senderId = typeof message.senderId === 'string' ? message.senderId : message.senderId?._id;
             const isMine = senderId === authUser?._id;
             
@@ -138,6 +152,15 @@ const ChatContainer = () => {
              <MessageSquare size={48} />
              <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sphere is silent</p>
           </div>
+        )}
+        
+        {isTyping && (
+           <div className="flex items-center gap-2 opacity-50 ml-2 animate-in fade-in slide-in-from-bottom-2">
+              <div className="size-6 rounded-lg bg-white/5 flex items-center justify-center">
+                 <Loader2 size={12} className="animate-spin" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest italic">Interpreting signal...</span>
+           </div>
         )}
       </div>
 

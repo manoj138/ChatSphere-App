@@ -4,9 +4,9 @@ import { useAuthStore } from "../store/useAuthStore";
 
 const NoChatSelected = () => {
   const { themeColor } = useThemeStore();
-  const { onlineUsers, authUser } = useAuthStore();
+  const { onlineUsers = [], authUser } = useAuthStore();
   
-  const isConnected = onlineUsers.includes(authUser?._id);
+  const isConnected = onlineUsers && Array.isArray(onlineUsers) && onlineUsers.includes(authUser?._id);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-[#080808] relative overflow-hidden">

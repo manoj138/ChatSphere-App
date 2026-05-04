@@ -12,6 +12,7 @@ export const useAuthStore = create((set, get) => ({
     isUpdatingProfile: false,
     isCheckingAuth: true,
     socket: null,
+    onlineUsers: [],
 
     checkAuth: async () => {
         try {
@@ -33,7 +34,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Account created successfully. Please login.");
             navigate("/login");
         } catch (error) {
-            toast.error(error.response?.data?.message || "Server connection failed. Please check if backend is running.");
+            toast.error(error.response?.data?.message || "Server connection failed");
         } finally {
             set({ isSigningUp: false });
         }
@@ -47,7 +48,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Logged in successfully");
             get().connectSocket();
         } catch (error) {
-            toast.error(error.response?.data?.message || "Server connection failed. Please check if backend is running.");
+            toast.error(error.response?.data?.message || "Server connection failed");
         } finally {
             set({ isLoggingIn: false });
         }
@@ -69,14 +70,12 @@ export const useAuthStore = create((set, get) => ({
     updateProfile: async (data) => {
         set({ isUpdatingProfile: true });
         try {
-            console.log("Sending update request with data:", data);
             const res = await axiosInstance.put("/auth/update-profile", data);
-            console.log("Update Response from server:", res.data);
             set({ authUser: res.data.data });
             toast.success("Profile updated successfully");
         } catch (error) {
             console.log("Error in updateProfile:", error);
-            toast.error(error.response?.data?.message || "Server connection failed");
+            toast.error(error.response?.data?.message || "Update failed");
         } finally {
             set({ isUpdatingProfile: false });
         }
@@ -90,6 +89,10 @@ export const useAuthStore = create((set, get) => ({
             auth: { userId: authUser._id }
         });
 
+        newSocket.on("getOnlineUsers", (userIds) => {
+            set({ onlineUsers: userIds });
+        });
+
         newSocket.connect();
         set({ socket: newSocket });
     },
@@ -98,7 +101,7 @@ export const useAuthStore = create((set, get) => ({
         const { socket } = get();
         if (socket?.connected) {
             socket.disconnect();
-            set({ socket: null });
+            set({ socket: null, onlineUsers: [] });
         }
     }
 }));

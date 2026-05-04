@@ -12,6 +12,7 @@ export const useChatStore = create((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   isGroupsLoading: false,
+  typingStatus: {}, // { userId: boolean }
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -41,7 +42,7 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/groups/create", groupData);
       set({ groups: [...get().groups, res.data.data] });
-      toast.success("Group created successfully");
+      toast.success("Group established successfully");
       return res.data.data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Error creating group");
@@ -76,7 +77,7 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser, selectedGroup, messages } = get();
     try {
       const endpoint = selectedGroup 
-        ? `/messages/send/${selectedGroup._id}?groupId=true` 
+        ? `/messages/send/${selectedGroup._id}` 
         : `/messages/send/${selectedUser._id}`;
       
       const payload = selectedGroup 
@@ -87,6 +88,18 @@ export const useChatStore = create((set, get) => ({
       set({ messages: [...messages, res.data.data] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending message");
+    }
+  },
+
+  sendTypingStatus: (isTyping) => {
+    const { selectedUser, selectedGroup } = get();
+    const socket = useAuthStore.getState().socket;
+    if (!socket || !selectedUser) return;
+
+    if (isTyping) {
+        socket.emit("typing", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id, typing: true });
+    } else {
+        socket.emit("stopTyping", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id });
     }
   },
 
@@ -108,13 +121,23 @@ export const useChatStore = create((set, get) => ({
       }
     });
 
-    socket.on("messagesSeen", ({ senderId, recipientId }) => {
+    socket.on("usertyping", ({ senderId, typing }) => {
+        set((state) => ({
+            typingStatus: { ...state.typingStatus, [senderId]: typing }
+        }));
+    });
+
+    socket.on("userStopTyping", ({ senderId }) => {
+        set((state) => ({
+            typingStatus: { ...state.typingStatus, [senderId]: false }
+        }));
+    });
+
+    socket.on("messagesSeen", ({ senderId }) => {
         const { selectedUser, messages } = get();
         if (selectedUser?._id === senderId) {
             set({
-                messages: messages.map(m => 
-                    m.senderId !== selectedUser._id ? { ...m, isSeen: true } : m
-                )
+                messages: messages.map(m => ({ ...m, isSeen: true }))
             });
         }
     });
@@ -125,6 +148,8 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
     socket.off("newMessage");
     socket.off("newGroupMessage");
+    socket.off("usertyping");
+    socket.off("userStopTyping");
     socket.off("messagesSeen");
   },
 
