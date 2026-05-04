@@ -273,4 +273,16 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response?.data?.message || "Error deleting group");
     }
   },
+  kickMember: async (groupId, userId) => {
+    try {
+      const res = await axiosInstance.put(`/groups/kick/${groupId}`, { userId });
+      set((state) => ({
+        groups: state.groups.map((g) => (g._id === groupId ? { ...g, ...res.data.data } : g)),
+        selectedGroup: state.selectedGroup?._id === groupId ? { ...state.selectedGroup, ...res.data.data } : state.selectedGroup,
+      }));
+      toast.success("Node removed from cell");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error kicking member");
+    }
+  },
 }));
