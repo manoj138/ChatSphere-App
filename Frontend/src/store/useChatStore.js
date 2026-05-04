@@ -156,7 +156,8 @@ export const useChatStore = create((set, get) => ({
         // Silent refresh on receiving message
         get().getUsers(true);
         
-        if (!isMessageFromSelectedUser) {
+        const myId = useAuthStore.getState().authUser?._id;
+        if (newMessage.senderId !== myId) {
             const audio = new Audio("/recieve-tone.mp3");
             audio.play().catch(e => console.log("Receive sound failed"));
         }

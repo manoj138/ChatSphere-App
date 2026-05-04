@@ -236,7 +236,26 @@ const SettingsPage = () => {
                           <span className="text-[10px] text-secondary/70">FCM Engine:</span>
                           <span className="text-[10px] font-bold text-accent">ACTIVE</span>
                        </div>
+                       <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-secondary/70">Audio Output:</span>
+                          <span className="text-[10px] font-bold text-accent">READY</span>
+                       </div>
                     </div>
+
+                    <button 
+                      onClick={() => {
+                        const audio = new Audio("/recieve-tone.mp3");
+                        audio.play()
+                          .then(() => toast.success("Audio transmission successful!"))
+                          .catch(() => toast.error("Audio blocked by browser. Click again!"));
+                      }}
+                      className="w-full flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl hover:bg-primary/10 transition-all group"
+                    >
+                       <span className="text-xs font-bold text-primary">Test Audio Signal</span>
+                       <div className="size-6 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Shield size={12} className="text-primary" />
+                       </div>
+                    </button>
                  </div>
               </div>
 
