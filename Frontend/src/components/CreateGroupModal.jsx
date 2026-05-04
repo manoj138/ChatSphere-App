@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useFriendStore } from "../store/useFriendStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { X, Search, Users, Image as ImageIcon, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+import { optimizeImageFile } from "../lib/image";
 
 const CreateGroupModal = ({ onClose }) => {
   const { createGroup } = useChatStore();
@@ -15,18 +16,29 @@ const CreateGroupModal = ({ onClose }) => {
   const [groupImage, setGroupImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
   const filteredFriends = users.filter(u => 
     u.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setGroupImage(reader.result);
-    };
-    reader.readAsDataURL(file);
+
+    try {
+      const optimizedImage = await optimizeImageFile(file);
+      setGroupImage(optimizedImage);
+    } catch (error) {
+      toast.error(error.message || "Failed to process image");
+    }
   };
 
   const toggleMember = (userId) => {
@@ -55,7 +67,12 @@ const CreateGroupModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div
+      className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <div className="w-full max-w-md bg-secondary border border-primary rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.4)] overflow-hidden transition-colors duration-500">
         
         <div className="p-8 border-b border-primary flex items-center justify-between">
@@ -86,7 +103,7 @@ const CreateGroupModal = ({ onClose }) => {
                  <input id="group-img-upload" type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
               </div>
               <div className="flex-1">
-                 <label className="text-[9px] font-black text-secondary uppercase tracking-widest mb-2 block opacity-40">Group Name</label>
+                 <label className="text-xs font-semibold text-secondary mb-2 block opacity-80">Group name</label>
                  <input 
                     type="text"
                     placeholder="ENTER CELL NAME..."
@@ -111,7 +128,7 @@ const CreateGroupModal = ({ onClose }) => {
                    placeholder="SCAN FOR AGENTS..."
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
-                   className="w-full bg-surface border border-primary rounded-full py-3 pl-10 pr-4 text-[10px] text-primary focus:outline-none placeholder:text-secondary opacity-40 font-black tracking-widest uppercase"
+                   className="w-full bg-surface border border-primary rounded-full py-3 pl-10 pr-4 text-sm text-primary focus:outline-none placeholder:text-secondary opacity-80"
                  />
               </div>
 

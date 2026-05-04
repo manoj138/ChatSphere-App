@@ -1,13 +1,28 @@
 import { X, AlertTriangle, LogOut, Trash2 } from "lucide-react";
 import { useThemeStore } from "../store/useThemeStore";
+import { useEffect } from "react";
 
 const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "danger" }) => {
   const { themeColor } = useThemeStore();
   
   const isLogout = title.toLowerCase().includes("logout") || title.toLowerCase().includes("disconnect");
 
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") onCancel();
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onCancel]);
+
   return (
-    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div
+      className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+    >
       <div className="w-full max-w-sm bg-secondary border border-primary rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden relative">
         
         {/* Glow Background */}

@@ -3,8 +3,8 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { 
-  Loader2, CheckCheck, Users, MessageSquare, Zap, Info, 
-  ShieldCheck, ArrowLeft, Trash2, SmilePlus, MoreVertical, Search, X, Forward
+  CheckCheck, MessageSquare, Info, 
+  ShieldCheck, ArrowLeft, Trash2, SmilePlus, Search, Forward
 } from "lucide-react";
 import MessageInput from "./MessageInput";
 import ForwardModal from "./ForwardModal";
@@ -84,7 +84,7 @@ const ChatContainer = () => {
            <div className="size-16 rounded-full border-t-2 border-r-2 animate-spin" style={{ borderColor: themeColor }} />
            <MessageSquare className="absolute inset-0 m-auto text-primary opacity-20" size={24} />
         </div>
-        <p className="mt-6 text-[10px] text-secondary font-black uppercase tracking-[0.5em] animate-pulse">Establishing Signal...</p>
+        <p className="mt-6 text-sm text-secondary font-semibold animate-pulse">Loading messages...</p>
       </div>
     );
   }
@@ -100,7 +100,7 @@ const ChatContainer = () => {
       <div className={`absolute inset-0 opacity-[0.02] pointer-events-none ${isLightMode ? "bg-black" : "bg-white"}`} style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }} />
 
       {/* Header */}
-      <header className="px-4 lg:px-8 py-5 border-b border-primary flex items-center justify-between bg-secondary/40 backdrop-blur-2xl z-30 transition-all duration-500">
+      <header className="px-3 sm:px-4 lg:px-8 py-4 sm:py-5 border-b border-primary flex items-center justify-between bg-secondary/40 backdrop-blur-2xl z-30 transition-all duration-500 gap-3">
         {!isSearching ? (
            <div className="flex items-center gap-3 lg:gap-4 animate-in slide-in-from-left-4 duration-300">
               <button 
@@ -130,7 +130,7 @@ const ChatContainer = () => {
                  </div>
                  
                  <div className="min-w-0">
-                    <h3 className="text-base font-black text-primary truncate uppercase tracking-tight leading-none mb-1.5 group-hover:text-accent transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-primary truncate tracking-tight leading-none mb-1.5 group-hover:text-accent transition-colors">
                        {selectedUser ? selectedUser.username : selectedGroup.name}
                     </h3>
                     <div className="flex items-center gap-2">
@@ -141,17 +141,17 @@ const ChatContainer = () => {
                                 <span className="size-1 rounded-full animate-bounce [animation-delay:0.2s]" style={{ backgroundColor: themeColor }} />
                                 <span className="size-1 rounded-full animate-bounce [animation-delay:0.4s]" style={{ backgroundColor: themeColor }} />
                              </div>
-                             <span className="text-[9px] font-black uppercase tracking-widest italic" style={{ color: themeColor }}>Synchronizing...</span>
+                             <span className="text-[11px] font-semibold" style={{ color: themeColor }}>Typing...</span>
                           </div>
                        ) : selectedUser && useAuthStore.getState().onlineUsers.includes(selectedUser._id) ? (
                           <div className="flex items-center gap-1.5">
                              <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-green-500">Node Online</span>
+                             <span className="text-[11px] font-semibold text-green-500">Online</span>
                           </div>
                        ) : (
                           <div className="flex items-center gap-1.5">
                              <ShieldCheck size={10} className="text-secondary opacity-40" />
-                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-secondary opacity-40">Secure Protocol</span>
+                             <span className="text-[11px] font-semibold text-secondary opacity-60">Offline</span>
                        </div>
                        )}
                     </div>
@@ -168,10 +168,10 @@ const ChatContainer = () => {
                  <input 
                     type="text"
                     autoFocus
-                    placeholder="Search in transmission history..."
+                    placeholder="Search messages..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-xs text-primary focus:outline-none placeholder:text-secondary opacity-40 uppercase font-black tracking-widest"
+                    className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-sm text-primary focus:outline-none placeholder:text-secondary"
                  />
               </div>
            </div>
@@ -193,7 +193,7 @@ const ChatContainer = () => {
       </header>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-10 custom-scrollbar pb-44 relative z-10">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-8 space-y-6 sm:space-y-10 custom-scrollbar pb-40 sm:pb-44 relative z-10">
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message, idx) => {
             const senderIdString = (message.senderId?._id || message.senderId)?.toString();
@@ -209,7 +209,7 @@ const ChatContainer = () => {
                 className={`flex w-full mb-6 ${isMine ? "justify-end" : "justify-start"} group/msg relative`}
               >
                 
-                <div className={`flex items-end gap-3 max-w-[85%] lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+                <div className={`flex items-end gap-2 sm:gap-3 max-w-[92%] sm:max-w-[85%] lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                    
                    {!isMine && (selectedGroup || message.groupId) && (
                       <div className="size-9 rounded-xl overflow-hidden border border-primary flex-shrink-0 mb-6 shadow-xl relative z-10">
@@ -221,10 +221,10 @@ const ChatContainer = () => {
                       
                       {!isMine && (selectedGroup || message.groupId) && (
                          <span 
-                           className="text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1"
+                           className="text-[11px] font-semibold mb-1.5 ml-1"
                            style={{ color: getUserColor(message.senderId?.username) }}
                          >
-                            {message.senderId?.username || "Authorized Agent"}
+                            {message.senderId?.username || "Unknown user"}
                          </span>
                       )}
 
@@ -248,7 +248,7 @@ const ChatContainer = () => {
                            className={`relative transition-all duration-500 ${
                              isBigEmoji 
                              ? "bg-transparent" 
-                             : `px-6 py-4 rounded-[2rem] shadow-2xl ${
+                                 : `px-4 sm:px-6 py-3 sm:py-4 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl ${
                                  isMine 
                                  ? "bg-surface text-primary border border-primary rounded-tr-none" 
                                  : "bg-secondary/40 border border-primary text-primary rounded-tl-none"
@@ -293,7 +293,7 @@ const ChatContainer = () => {
                               <p className={`leading-relaxed whitespace-pre-wrap relative z-10 ${
                                 isBigEmoji 
                                 ? `text-6xl drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] ${emojiCount > 1 ? "text-5xl" : "text-7xl"}` 
-                                : "text-[13px] font-bold tracking-tight"
+                                : "text-[14px] font-medium tracking-tight"
                               }`}>
                                 {searchQuery ? (
                                   message.text.split(new RegExp(`(${searchQuery})`, 'gi')).map((part, i) => (
@@ -315,7 +315,7 @@ const ChatContainer = () => {
                       </div>
                       
                       <div className={`flex items-center gap-3 mt-2.5 px-3 ${isMine ? "justify-end" : "justify-start"}`}>
-                         <span className="text-[9px] font-black uppercase tracking-widest text-secondary opacity-40">
+                         <span className="text-[10px] font-medium text-secondary opacity-60">
                             {message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "NOW"}
                          </span>
                          {isMine && !selectedGroup && !message.isDeleted && (
@@ -330,11 +330,11 @@ const ChatContainer = () => {
             );
           })
         ) : (
-          <div className="h-full flex flex-col items-center justify-center space-y-6 opacity-5 select-none">
+          <div className="h-full flex flex-col items-center justify-center space-y-6 opacity-30 select-none px-4 text-center">
              <div className="p-10 border-2 border-dashed border-primary rounded-[3rem]">
                 <MessageSquare size={80} className="text-primary" />
              </div>
-             <p className="text-sm font-black uppercase tracking-[1em] text-primary">Secure Zone Empty</p>
+             <p className="text-sm font-semibold text-primary">No messages yet.</p>
           </div>
         )}
         <div ref={scrollRef} className="h-32 w-full" />
@@ -353,8 +353,8 @@ const ChatContainer = () => {
 
       {messageToDelete && (
         <ConfirmationModal 
-          title="Erase Transmission?"
-          description="This action will permanently delete this message from the grid. Are you sure you want to proceed?"
+          title="Delete message?"
+          description="This message will be removed. Do you want to continue?"
           onConfirm={() => {
             deleteMessage(messageToDelete);
             setMessageToDelete(null);
@@ -364,7 +364,7 @@ const ChatContainer = () => {
         />
       )}
 
-      <div className="absolute bottom-0 left-0 w-full p-4 lg:p-6 bg-gradient-to-t from-primary via-primary/95 to-transparent z-40">
+      <div className="absolute bottom-0 left-0 w-full p-3 sm:p-4 lg:p-6 bg-gradient-to-t from-primary via-primary/95 to-transparent z-40">
         <div className="max-w-4xl mx-auto">
            <MessageInput />
         </div>

@@ -14,6 +14,16 @@ export const useChatStore = create((set, get) => ({
   isGroupsLoading: false,
   typingStatus: {}, // { userId: boolean }
 
+  appendMessageIfMissing: (message) => {
+    if (!message?._id) return;
+
+    set((state) => {
+      const alreadyExists = state.messages.some((item) => item._id === message._id);
+      if (alreadyExists) return state;
+      return { messages: [...state.messages, message] };
+    });
+  },
+
   getUsers: async (silent = false) => {
     if (!silent) set({ isUsersLoading: true });
     try {
@@ -74,7 +84,7 @@ export const useChatStore = create((set, get) => ({
   },
 
   sendMessage: async (messageData, targetId = null) => {
-    const { selectedUser, selectedGroup, messages } = get();
+    const { selectedUser, selectedGroup } = get();
     try {
       const finalTargetId = targetId || (selectedGroup ? selectedGroup._id : selectedUser?._id);
       if(!finalTargetId) return;
@@ -89,7 +99,7 @@ export const useChatStore = create((set, get) => ({
 
       const res = await axiosInstance.post(endpoint, payload);
       const newMessage = res.data.data;
-      set({ messages: [...messages, newMessage] });
+      get().appendMessageIfMissing(newMessage);
       
       const sendAudio = new Audio("/send-tone.mp3");
       sendAudio.volume = 0.5;
@@ -100,6 +110,7 @@ export const useChatStore = create((set, get) => ({
       if (selectedGroup) get().getGroups(true);
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending message");
+      throw error;
     }
   },
 
@@ -146,12 +157,18 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
+    socket.off("newMessage");
+    socket.off("newGroupMessage");
+    socket.off("messageDeleted");
+    socket.off("messageReaction");
+    socket.off("usertyping");
+    socket.off("userStopTyping");
+    socket.off("messagesSeen");
+
     socket.on("newMessage", (newMessage) => {
         const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
         if (isMessageFromSelectedUser) {
-            set({
-                messages: [...get().messages, newMessage],
-            });
+            get().appendMessageIfMissing(newMessage);
         }
         // Silent refresh on receiving message
         get().getUsers(true);
@@ -166,9 +183,7 @@ export const useChatStore = create((set, get) => ({
     socket.on("newGroupMessage", (newMessage) => {
         const isMessageForSelectedGroup = newMessage.groupId === get().selectedGroup?._id;
         if (isMessageForSelectedGroup) {
-            set({
-                messages: [...get().messages, newMessage],
-            });
+            get().appendMessageIfMissing(newMessage);
         }
         get().getGroups(true);
 

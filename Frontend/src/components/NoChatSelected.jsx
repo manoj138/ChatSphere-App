@@ -1,6 +1,6 @@
 import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { ShieldCheck, Globe, Zap, Sparkles, UserPlus, Settings, MessageSquarePlus } from "lucide-react";
+import { ShieldCheck, Globe, UserPlus, MessageSquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const NoChatSelected = () => {
@@ -8,13 +8,13 @@ const NoChatSelected = () => {
   const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-primary relative overflow-hidden font-sans transition-colors duration-500">
+    <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 bg-primary relative overflow-hidden font-sans transition-colors duration-500">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] blur-[150px] opacity-[0.1] pointer-events-none rounded-full" style={{ backgroundColor: themeColor }} />
       <div className={`absolute inset-0 opacity-[0.02] pointer-events-none ${isLightMode ? "bg-black" : "bg-white"}`} style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/black-linen.png')" }} />
 
-      <div className="max-w-2xl w-full space-y-10 relative z-10">
+      <div className="max-w-2xl w-full space-y-6 sm:space-y-10 relative z-10">
         
         {/* Compact Profile Identity */}
         <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-700">
@@ -30,8 +30,8 @@ const NoChatSelected = () => {
               </div>
            </div>
            <div className="text-center">
-              <h3 className="text-lg font-black text-primary uppercase tracking-tighter">Welcome, @{authUser?.username}</h3>
-              <p className="text-[9px] font-black text-secondary uppercase tracking-[0.3em] opacity-40">Grid Access: Authorized</p>
+              <h3 className="text-lg font-black text-primary tracking-tight">Welcome, @{authUser?.username}</h3>
+              <p className="text-xs font-medium text-secondary opacity-60">You are signed in and ready to chat.</p>
            </div>
         </div>
 
@@ -43,8 +43,8 @@ const NoChatSelected = () => {
                  <MessageSquarePlus size={20} />
               </div>
               <div>
-                 <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-1">Secure Transmission</h4>
-                 <p className="text-[10px] text-secondary font-bold leading-relaxed opacity-60">Initialize end-to-end encrypted signals with your nodes.</p>
+                 <h4 className="text-sm font-black text-primary mb-1">Start a conversation</h4>
+                 <p className="text-xs text-secondary font-medium leading-relaxed opacity-80">Select a friend from the sidebar to open your chat and continue where you left off.</p>
               </div>
            </div>
 
@@ -53,35 +53,39 @@ const NoChatSelected = () => {
                  <UserPlus size={20} />
               </div>
               <div>
-                 <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-1">Discover Nodes</h4>
-                 <p className="text-[10px] text-secondary font-bold leading-relaxed opacity-60">Expand your network by discovering authorized agents on the grid.</p>
+                 <h4 className="text-sm font-black text-primary mb-1">Discover people</h4>
+                 <p className="text-xs text-secondary font-medium leading-relaxed opacity-80">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
               </div>
            </div>
 
         </div>
 
         {/* Global Stats Bar */}
-        <div className="flex items-center justify-center gap-8 py-4 border-y border-primary/40 animate-in fade-in duration-1000 delay-500">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 py-4 border-y border-primary/40 animate-in fade-in duration-1000 delay-500">
            <div className="flex items-center gap-2">
               <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
-              <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">{onlineUsers.length} Nodes Online</span>
+              <span className="text-[11px] font-semibold text-secondary opacity-80">{onlineUsers.length} people online</span>
            </div>
            <div className="flex items-center gap-2">
               <ShieldCheck size={12} className="text-accent opacity-40" />
-              <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">Secure Protocol v1.2</span>
+              <span className="text-[11px] font-semibold text-secondary opacity-80">Secure messaging enabled</span>
            </div>
            <div className="flex items-center gap-2">
               <Globe size={12} className="text-blue-500 opacity-40" />
-              <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">Global Grid</span>
+              <span className="text-[11px] font-semibold text-secondary opacity-80">Realtime sync active</span>
            </div>
         </div>
 
         {/* Bottom CTA */}
         <div className="text-center animate-in fade-in duration-1000 delay-700">
-           <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.5em] mb-4">Please select a transmission node to begin</p>
-           <div className="flex items-center justify-center gap-2 text-gray-800">
-              <Zap size={12} />
-              <span className="text-[8px] font-black uppercase tracking-widest italic opacity-30">Waiting for uplink signal...</span>
+           <p className="text-sm font-semibold text-gray-500 mb-4">Choose a chat from the sidebar, or update your account first.</p>
+           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link to="/profile" className="px-5 py-3 rounded-2xl bg-surface border border-primary text-sm font-semibold text-primary hover:border-accent transition-all">
+                Open Profile
+              </Link>
+              <Link to="/settings" className="px-5 py-3 rounded-2xl text-sm font-semibold text-black hover:brightness-110 transition-all" style={{ backgroundColor: themeColor }}>
+                Open Settings
+              </Link>
            </div>
         </div>
 

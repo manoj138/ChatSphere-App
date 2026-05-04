@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, MessageSquare, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
 const SignUpPage = () => {
@@ -14,7 +14,7 @@ const SignUpPage = () => {
   });
 
   const { signup, isSigningUp } = useAuthStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { themeColor } = useThemeStore();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -34,7 +34,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-primary text-primary font-sans selection:bg-accent selection:text-black relative transition-colors duration-500">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-primary text-primary font-sans selection:bg-accent selection:text-black relative transition-colors duration-500">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-[0.05] blur-[120px] rounded-full pointer-events-none" style={{ backgroundColor: themeColor }} />
@@ -42,7 +42,7 @@ const SignUpPage = () => {
       {/* Back Button */}
       <button 
         onClick={() => navigate("/")}
-        className="absolute top-8 left-8 z-50 flex items-center gap-2 text-secondary hover:text-accent transition-colors font-bold uppercase tracking-widest text-xs"
+        className="absolute top-5 left-4 sm:top-8 sm:left-8 z-50 flex items-center gap-2 text-secondary hover:text-accent transition-colors font-semibold text-sm"
       >
         <ArrowLeft size={16} />
         Back
@@ -54,14 +54,14 @@ const SignUpPage = () => {
         <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
           <img src="/signup-png.png" alt="SignUp Visual" className="w-full h-auto object-contain drop-shadow-[0_0_80px_rgba(var(--accent-rgb),0.1)]" />
           <div className="text-center space-y-4 mt-12">
-             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase text-accent">Revolution.</h2>
+             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight text-accent">Join the conversation.</h2>
           </div>
         </div>
       </div>
 
       {/* Right Side Form Section */}
-      <div className="flex flex-col justify-center items-center p-8 sm:p-20 relative">
-        <div className="w-full max-w-sm space-y-10 relative">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-10 lg:p-20 relative">
+        <div className="w-full max-w-sm space-y-8 sm:space-y-10 relative pt-16 lg:pt-0">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-accent flex items-center justify-center shadow-[0_0_20px_rgba(var(--accent-rgb),0.4)]">
@@ -70,8 +70,8 @@ const SignUpPage = () => {
               <span className="text-xl font-bold tracking-tight text-primary">ChatSphere.</span>
             </div>
             <div className="space-y-2">
-              <h1 className="text-5xl font-bold tracking-tighter leading-none text-primary">Register.</h1>
-              <p className="text-secondary font-medium opacity-60">Be part of the most secure chat network.</p>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter leading-none text-primary">Create account</h1>
+              <p className="text-secondary font-medium opacity-70">Set up your profile and start chatting.</p>
             </div>
           </div>
 
@@ -121,7 +121,7 @@ const SignUpPage = () => {
               className="group relative w-full py-4 bg-accent text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50 cursor-pointer"
               disabled={isSigningUp}
             >
-              <span className="relative z-10">{isSigningUp ? "Joining..." : "Create Account"}</span>
+              <span className="relative z-10">{isSigningUp ? "Creating..." : "Create account"}</span>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all">
                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>

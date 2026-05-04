@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, MessageSquare, ArrowLeft } from "lucide-react";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,7 +11,7 @@ const LoginPage = () => {
     password: "",
   });
   const { login, isLoggingIn } = useAuthStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { themeColor } = useThemeStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,7 +20,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-primary text-primary font-sans selection:bg-accent selection:text-black relative transition-colors duration-500">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-primary text-primary font-sans selection:bg-accent selection:text-black relative transition-colors duration-500">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-[0.05] blur-[120px] rounded-full pointer-events-none" style={{ backgroundColor: themeColor }} />
@@ -28,16 +28,16 @@ const LoginPage = () => {
       {/* Back Button */}
       <button 
         onClick={() => navigate("/")}
-        className="absolute top-8 left-8 z-50 flex items-center gap-2 text-secondary hover:text-accent transition-colors font-bold uppercase tracking-widest text-xs"
+        className="absolute top-5 left-4 sm:top-8 sm:left-8 z-50 flex items-center gap-2 text-secondary hover:text-accent transition-colors font-semibold text-sm"
       >
         <ArrowLeft size={16} />
         Back
       </button>
 
       {/* Left Side - Form Section (50%) */}
-      <div className="flex flex-col justify-center items-center p-8 sm:p-20 relative border-r border-primary">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-10 lg:p-20 relative lg:border-r border-primary">
         
-        <div className="w-full max-w-sm space-y-12 relative">
+        <div className="w-full max-w-sm space-y-8 sm:space-y-12 relative pt-16 lg:pt-0">
           {/* Brand Identity */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
@@ -47,8 +47,8 @@ const LoginPage = () => {
               <span className="text-xl font-bold tracking-tight text-primary">ChatSphere.</span>
             </div>
             <div className="space-y-2">
-              <h1 className="text-5xl font-bold tracking-tighter leading-none text-primary">Sign In.</h1>
-              <p className="text-secondary font-medium opacity-60">Step inside your personal chat space.</p>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter leading-none text-primary">Sign in</h1>
+              <p className="text-secondary font-medium opacity-70">Welcome back. Continue your conversations.</p>
             </div>
           </div>
 
@@ -96,7 +96,7 @@ const LoginPage = () => {
               className="group relative w-full py-4 bg-accent text-black font-bold text-lg rounded-full overflow-hidden transition-all hover:pr-8 active:scale-95 disabled:opacity-50"
               disabled={isLoggingIn}
             >
-              <span className="relative z-10">{isLoggingIn ? "Connecting..." : "Access Account"}</span>
+              <span className="relative z-10">{isLoggingIn ? "Signing in..." : "Sign in"}</span>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all">
                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
@@ -107,7 +107,7 @@ const LoginPage = () => {
             <p className="text-secondary opacity-60">
               Don't have an account?{" "}
               <Link to="/signup" className="text-primary font-bold hover:text-accent transition-colors border-b border-primary hover:border-accent">
-                Join Now
+                Create one
               </Link>
             </p>
           </div>
@@ -120,7 +120,8 @@ const LoginPage = () => {
         <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
           <img src="/login-png.png" alt="Visual" className="w-full h-auto object-contain drop-shadow-[0_0_80px_rgba(var(--accent-rgb),0.1)]" />
           <div className="text-center space-y-4 mt-12">
-             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight italic uppercase italic text-primary">Redefining <br /><span className="text-accent">Messaging.</span></h2>
+             <h2 className="text-5xl font-extrabold tracking-tighter leading-tight text-primary">Private chat,
+             <br /><span className="text-accent">made simple.</span></h2>
           </div>
         </div>
       </div>

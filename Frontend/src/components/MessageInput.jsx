@@ -1,30 +1,35 @@
 import { useRef, useState } from "react"; 
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X, Smile, Zap } from "lucide-react";
+import { Image, Send, X, Smile } from "lucide-react";
 import toast from "react-hot-toast";
 import EmojiPicker from 'emoji-picker-react';
 import { useThemeStore } from "../store/useThemeStore";
+import { optimizeImageFile } from "../lib/image";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage, sendTypingStatus } = useChatStore();
   const { themeColor, isLightMode } = useThemeStore();
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
+    if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      setIsProcessingImage(true);
+      const optimizedImage = await optimizeImageFile(file);
+      setImagePreview(optimizedImage);
+    } catch (error) {
+      toast.error(error.message || "Failed to process image");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } finally {
+      setIsProcessingImage(false);
+    }
   };
 
   const removeImage = () => {
@@ -34,9 +39,10 @@ const MessageInput = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim() && !imagePreview) return;
+    if (isSending || isProcessingImage || (!text.trim() && !imagePreview)) return;
 
     try {
+      setIsSending(true);
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
@@ -50,6 +56,8 @@ const MessageInput = () => {
       sendTypingStatus(false);
     } catch (error) {
       console.error("Failed to send message:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -119,6 +127,7 @@ const MessageInput = () => {
                 type="button"
                 className={`p-2.5 rounded-full transition-all ${imagePreview ? "text-green-500 bg-green-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
                 onClick={() => fileInputRef.current?.click()}
+                disabled={isSending || isProcessingImage}
               >
                 <Image size={18} />
               </button>
@@ -126,6 +135,7 @@ const MessageInput = () => {
                 type="button"
                 className={`p-2.5 rounded-full transition-all ${showEmojiPicker ? "text-yellow-500 bg-yellow-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                disabled={isSending || isProcessingImage}
               >
                 <Smile size={18} />
               </button>
@@ -143,17 +153,18 @@ const MessageInput = () => {
            <div className="flex-1 relative">
               <input
                 type="text"
-                className="w-full bg-transparent border-none text-primary text-sm font-medium placeholder:text-secondary placeholder:opacity-30 placeholder:uppercase placeholder:tracking-[0.1em] focus:outline-none py-2 px-1"
+                className="w-full bg-transparent border-none text-primary text-[14px] font-medium placeholder:text-secondary placeholder:opacity-50 focus:outline-none py-2 px-1"
                 placeholder="Type a message..."
                 value={text}
                 onChange={handleTyping}
+                disabled={isSending}
               />
            </div>
 
            {/* Transmission Button - Compact Pill */}
            <button
              type="submit"
-             disabled={!text.trim() && !imagePreview}
+             disabled={isSending || isProcessingImage || (!text.trim() && !imagePreview)}
              className="size-10 rounded-full transition-all shadow-xl flex items-center justify-center group/btn disabled:opacity-20 disabled:grayscale mr-1 flex-shrink-0"
              style={{ backgroundColor: themeColor }}
            >

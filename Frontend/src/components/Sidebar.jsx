@@ -6,11 +6,9 @@ import { useFriendStore } from "../store/useFriendStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import {
   MessageSquare, Settings, LogOut, Plus,
-  Search, Bell, Layers, CheckCheck,
-  CircleDashed, Users, UserPlus, Sparkles, ChevronRight
+  Search, CheckCheck, Users, UserPlus
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import CreateGroupModal from "./CreateGroupModal";
 import ConfirmationModal from "./ConfirmationModal";
 
@@ -18,7 +16,6 @@ const Sidebar = () => {
   const {
     getUsers, users = [], selectedUser, setSelectedUser, isUsersLoading,
     getGroups, groups = [], selectedGroup, setSelectedGroup, isGroupsLoading,
-    subscribeToEvents, unsubscribeFromEvents
   } = useChatStore();
 
   const {
@@ -27,7 +24,7 @@ const Sidebar = () => {
   } = useFriendStore();
 
   const { authUser, logout, onlineUsers = [] } = useAuthStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { themeColor } = useThemeStore();
 
   const [activeTab, setActiveTab] = useState("chats");
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,9 +35,7 @@ const Sidebar = () => {
     getUsers();
     getGroups();
     getFriendRequests();
-    if (typeof subscribeToEvents === 'function') subscribeToEvents();
-    return () => { if (typeof unsubscribeFromEvents === 'function') unsubscribeFromEvents(); };
-  }, [getUsers, getGroups, getFriendRequests, subscribeToEvents, unsubscribeFromEvents]);
+  }, [getUsers, getGroups, getFriendRequests]);
 
   useEffect(() => {
     if (activeTab === "discover") getAllUsers();
@@ -77,8 +72,8 @@ const Sidebar = () => {
     <aside className="h-full flex bg-secondary border-r border-primary transition-all w-full lg:w-[420px] overflow-hidden select-none font-sans relative duration-500">
 
       {/* 1. Vertical Navigation Strip */}
-      <div className="w-[70px] bg-secondary flex flex-col items-center py-6 gap-8 border-r border-primary relative z-20">
-        <div className="flex flex-col items-center gap-8 flex-1 w-full">
+      <div className="w-[62px] sm:w-[70px] bg-secondary flex flex-col items-center py-4 sm:py-6 gap-5 sm:gap-8 border-r border-primary relative z-20">
+        <div className="flex flex-col items-center gap-5 sm:gap-8 flex-1 w-full">
           <button
             onClick={() => setActiveTab("chats")}
             className={`p-3 rounded-xl transition-all ${activeTab === "chats" ? "bg-surface text-primary shadow-[0_0_20px_rgba(255,255,255,0.05)]" : "text-secondary hover:text-primary"}`}
@@ -97,12 +92,9 @@ const Sidebar = () => {
           >
             <UserPlus size={22} />
           </button>
-          <div className="h-[1px] w-8 bg-primary opacity-10" />
-          <button className="text-secondary opacity-40 hover:text-primary transition-all"><CircleDashed size={22} /></button>
-          <button className="text-secondary opacity-40 hover:text-primary transition-all"><Sparkles size={22} /></button>
         </div>
 
-        <div className="flex flex-col items-center gap-8 w-full">
+        <div className="flex flex-col items-center gap-5 sm:gap-8 w-full">
           <Link to="/settings" className="text-secondary hover:text-primary transition-all">
             <Settings size={22} />
           </Link>
@@ -121,12 +113,12 @@ const Sidebar = () => {
       <div className="flex-1 flex flex-col bg-secondary">
 
         {/* Minimalist Header */}
-        <div className="p-6 pb-2 flex items-center justify-between">
+        <div className="p-4 sm:p-6 pb-2 flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-black text-primary uppercase tracking-tighter">
-              {activeTab === "chats" ? "CHATS" : activeTab === "groups" ? "GROUPS" : "DISCOVER"}
+            <h1 className="text-lg sm:text-xl font-black text-primary tracking-tight">
+              {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
             </h1>
-            <p className="text-[8px] font-bold text-secondary uppercase tracking-[0.4em] mt-1 opacity-50">AUTHORIZED NODE: ACTIVE</p>
+            <p className="text-xs text-secondary mt-1 opacity-70">Browse chats, groups, and people.</p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -145,15 +137,15 @@ const Sidebar = () => {
         </div>
 
         {/* Search Pill */}
-        <div className="px-6 py-4">
+        <div className="px-4 sm:px-6 py-3 sm:py-4">
           <div className="relative group">
             <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary opacity-40" />
             <input
               type="text"
-              placeholder={`SCAN ${activeTab.toUpperCase()}...`}
+              placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-[9px] text-primary focus:outline-none placeholder:text-secondary opacity-70 font-black tracking-widest uppercase"
+              className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-sm text-primary focus:outline-none placeholder:text-secondary"
             />
           </div>
         </div>
@@ -170,10 +162,10 @@ const Sidebar = () => {
                 <button
                   key={item._id}
                   onClick={() => activeTab === "discover" ? null : (activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item))}
-                  className={`w-full px-6 py-4 flex items-center gap-4 transition-all relative ${isSelected ? "bg-surface" : "hover:bg-surface/50"}`}
+                  className={`w-full px-4 sm:px-6 py-4 flex items-center gap-3 sm:gap-4 transition-all relative ${isSelected ? "bg-surface" : "hover:bg-surface/50"}`}
                 >
                   <div className="relative flex-shrink-0">
-                    <div className="size-14 rounded-[1.2rem] overflow-hidden border border-primary shadow-xl transition-transform group-hover:scale-105">
+                    <div className="size-12 sm:size-14 rounded-[1.2rem] overflow-hidden border border-primary shadow-xl transition-transform group-hover:scale-105">
                       <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
                     </div>
                     {online && (
@@ -185,10 +177,10 @@ const Sidebar = () => {
 
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex items-center justify-between mb-0.5">
-                      <h3 className="text-[13px] font-black uppercase text-primary tracking-tight truncate">
+                      <h3 className="text-sm font-black text-primary tracking-tight truncate">
                         {activeTab === "groups" ? item.name : item.username}
                       </h3>
-                      <span className="text-[9px] text-secondary font-black uppercase tracking-widest ml-2 opacity-60">
+                      <span className="text-[10px] text-secondary font-semibold ml-2 opacity-60">
                         {formatTime(lastMsg?.createdAt) || "NEW"}
                       </span>
                     </div>
@@ -197,8 +189,8 @@ const Sidebar = () => {
                       {activeTab === "chats" && lastMsg && (
                         <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-secondary opacity-30"} strokeWidth={3} />
                       )}
-                      <p className="text-[11px] truncate text-secondary font-bold uppercase tracking-tight opacity-70">
-                        {lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName}: ${lastMsg.text}` : lastMsg.text) : "Establish Signal..."}
+                      <p className="text-xs sm:text-[13px] truncate text-secondary font-medium opacity-80">
+                        {lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"}
                       </p>
                     </div>
                   </div>
@@ -209,9 +201,9 @@ const Sidebar = () => {
               );
             })
           ) : (
-            <div className="py-20 text-center opacity-5">
+            <div className="py-20 text-center opacity-30 px-4">
               <MessageSquare size={60} className="mx-auto" />
-              <p className="mt-4 text-[10px] font-black uppercase tracking-[1em]">Empty Node</p>
+              <p className="mt-4 text-sm font-semibold text-secondary">Nothing to show here yet.</p>
             </div>
           )}
         </div>
@@ -225,8 +217,8 @@ const Sidebar = () => {
       {/* Logout Confirmation */}
       {showLogoutConfirm && (
         <ConfirmationModal 
-          title="Disconnect Signal?"
-          description="You are about to terminate your active session on this node. Are you sure you want to log out?"
+          title="Log out?"
+          description="You are about to end your current session. Do you want to continue?"
           onConfirm={logout}
           onCancel={() => setShowLogoutConfirm(false)}
           type="danger"

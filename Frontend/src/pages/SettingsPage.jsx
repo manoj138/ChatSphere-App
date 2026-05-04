@@ -1,13 +1,14 @@
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { 
-  User, Mail, Shield, Zap, Palette, 
-  ChevronRight, Camera, Info, LogOut, ArrowLeft, Sun, Moon, Monitor
+  User, Shield, Zap, Palette, 
+  Camera, LogOut, ArrowLeft, Sun, Moon
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
+import { optimizeImageFile } from "../lib/image";
 
 const NEON_PRESETS = [
   { name: "LIME", color: "#bef264" },
@@ -27,21 +28,23 @@ const SettingsPage = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      await updateProfile({ profilePicture: base64Image });
-    };
+
+    try {
+      const optimizedImage = await optimizeImageFile(file);
+      await updateProfile({ profilePicture: optimizedImage });
+      toast.success("Profile image updated");
+    } catch (error) {
+      toast.error(error.message || "Failed to update profile image");
+    }
   };
 
   return (
-    <div className="h-screen bg-primary overflow-y-auto custom-scrollbar pt-24 pb-20 px-4 transition-colors duration-500">
+    <div className="min-h-screen bg-primary overflow-y-auto custom-scrollbar pt-16 sm:pt-24 pb-20 px-4 transition-colors duration-500">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Navigation & Header */}
         <div className="flex flex-col items-center text-center space-y-6 mb-12">
-           <div className="w-full flex justify-between items-center px-2">
+           <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-2 gap-4">
               <Link 
                 to="/" 
                 className="flex items-center gap-2 text-secondary hover:text-primary transition-all group"
@@ -49,7 +52,7 @@ const SettingsPage = () => {
                  <div className="size-10 rounded-xl bg-surface flex items-center justify-center group-hover:bg-white/10">
                     <ArrowLeft size={18} />
                  </div>
-                 <span className="text-[10px] font-black uppercase tracking-widest">Back to Grid</span>
+                 <span className="text-xs font-semibold">Back</span>
               </Link>
 
               {/* Theme Mode Toggle */}
@@ -60,20 +63,20 @@ const SettingsPage = () => {
                  {isLightMode ? (
                    <>
                      <Moon size={18} className="text-accent" />
-                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Night Protocol</span>
+                     <span className="text-xs font-semibold text-primary">Dark mode</span>
                    </>
                  ) : (
                    <>
                      <Sun size={18} className="text-accent" />
-                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Day Protocol</span>
+                     <span className="text-xs font-semibold text-primary">Light mode</span>
                    </>
                  )}
               </button>
            </div>
 
            <div className="space-y-2">
-              <h1 className="text-4xl font-black text-primary uppercase tracking-tighter">System Configuration</h1>
-              <p className="text-secondary text-[10px] font-black uppercase tracking-[0.5em]">Adjust your node settings</p>
+              <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-tight">Settings</h1>
+              <p className="text-secondary text-sm font-medium">Manage your profile, appearance, and notifications.</p>
            </div>
         </div>
 
@@ -114,7 +117,7 @@ const SettingsPage = () => {
                     
                     <div className="w-full text-left space-y-4">
                        <div>
-                          <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-1.5 text-center">Encryption Bio</p>
+                          <p className="text-xs font-semibold text-secondary mb-1.5 text-center">Bio</p>
                           <p className="text-sm font-bold text-secondary text-center leading-relaxed italic">
                              "{authUser.bio || "No bio established."}"
                           </p>
@@ -128,7 +131,7 @@ const SettingsPage = () => {
                 className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-red-500 hover:text-white transition-all group"
               >
                  <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
-                 Disconnect Node
+                 Log out
               </button>
            </div>
 
@@ -141,8 +144,8 @@ const SettingsPage = () => {
                        <Palette size={20} style={{ color: themeColor }} />
                     </div>
                     <div>
-                       <h3 className="text-sm font-black text-primary uppercase tracking-widest">Neon Accent</h3>
-                       <p className="text-[9px] font-black text-secondary uppercase tracking-widest">Select your UI frequency</p>
+                       <h3 className="text-sm font-black text-primary">Accent color</h3>
+                       <p className="text-xs font-medium text-secondary">Choose the main highlight color for the app.</p>
                     </div>
                  </div>
 
@@ -167,7 +170,7 @@ const SettingsPage = () => {
                  </div>
 
                  <div className="pt-4 flex items-center justify-between p-4 bg-primary opacity-40 border border-primary rounded-2xl">
-                    <span className="text-[10px] font-black text-secondary uppercase tracking-widest">Custom Frequency</span>
+                    <span className="text-xs font-semibold text-secondary">Custom color</span>
                     <input 
                       type="color" 
                       value={themeColor} 
@@ -183,18 +186,18 @@ const SettingsPage = () => {
                        <Zap size={20} className="text-yellow-500" />
                     </div>
                     <div>
-                       <h3 className="text-sm font-black text-primary uppercase tracking-widest">Node Status</h3>
-                       <p className="text-[9px] font-black text-secondary uppercase tracking-widest">Network integrity metrics</p>
+                       <h3 className="text-sm font-black text-primary">Quick checks</h3>
+                       <p className="text-xs font-medium text-secondary">Test notifications and audio on this device.</p>
                     </div>
                  </div>
 
                  <div className="space-y-3">
                     <div className="flex items-center justify-between p-4 bg-surface border border-primary rounded-2xl">
-                       <span className="text-xs font-bold text-secondary">Security Protocol</span>
-                       <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">E2E Active</span>
+                       <span className="text-xs font-bold text-secondary">Security</span>
+                       <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Active</span>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-surface border border-primary rounded-2xl">
-                       <span className="text-xs font-bold text-secondary">Sync Version</span>
+                       <span className="text-xs font-bold text-secondary">Version</span>
                        <span className="text-[10px] font-black text-secondary uppercase tracking-widest opacity-40">v1.2.0-Alpha</span>
                     </div>
                     <button 
@@ -203,7 +206,7 @@ const SettingsPage = () => {
                           toast.error("This browser does not support notifications");
                         } else if (Notification.permission === "granted") {
                           new Notification("📡 CHATSPHERE SIGNAL TEST", {
-                            body: "If you see this, your node is correctly configured for external transmissions.",
+                            body: "If you see this, notifications are working correctly.",
                             icon: "/favicon.svg"
                           });
                           toast.success("Test signal dispatched!");
@@ -219,13 +222,13 @@ const SettingsPage = () => {
                       }}
                       className="w-full flex items-center justify-between p-4 bg-accent/5 border border-accent/20 rounded-2xl hover:bg-accent/10 transition-all group"
                     >
-                       <span className="text-xs font-bold text-accent">Test Signal Notification</span>
+                       <span className="text-xs font-bold text-accent">Test notification</span>
                        <Shield size={14} className="text-accent group-hover:scale-110 transition-transform" />
                     </button>
 
                     {/* Notification Diagnostics */}
                     <div className="p-4 bg-surface/50 border border-primary/20 rounded-2xl space-y-2">
-                       <h4 className="text-[10px] font-black text-secondary uppercase tracking-tighter opacity-50 mb-2">Notification Diagnostics</h4>
+                       <h4 className="text-[10px] font-black text-secondary uppercase tracking-tighter opacity-50 mb-2">Notification status</h4>
                        <div className="flex items-center justify-between">
                           <span className="text-[10px] text-secondary/70">Browser Permission:</span>
                           <span className={`text-[10px] font-bold ${Notification.permission === 'granted' ? 'text-green-500' : 'text-orange-500'}`}>
@@ -233,11 +236,11 @@ const SettingsPage = () => {
                           </span>
                        </div>
                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-secondary/70">FCM Engine:</span>
+                          <span className="text-[10px] text-secondary/70">Push service:</span>
                           <span className="text-[10px] font-bold text-accent">ACTIVE</span>
                        </div>
                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-secondary/70">Audio Output:</span>
+                          <span className="text-[10px] text-secondary/70">Audio:</span>
                           <span className="text-[10px] font-bold text-accent">READY</span>
                        </div>
                     </div>
@@ -251,7 +254,7 @@ const SettingsPage = () => {
                       }}
                       className="w-full flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl hover:bg-primary/10 transition-all group"
                     >
-                       <span className="text-xs font-bold text-primary">Test Audio Signal</span>
+                       <span className="text-xs font-bold text-primary">Test sound</span>
                        <div className="size-6 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Shield size={12} className="text-primary" />
                        </div>
@@ -266,8 +269,8 @@ const SettingsPage = () => {
 
       {showLogoutConfirm && (
         <ConfirmationModal 
-          title="Disconnect Node?"
-          description="You are about to terminate your active session. Are you sure you want to log out of the grid?"
+          title="Log out?"
+          description="You are about to end your current session. Do you want to continue?"
           onConfirm={logout}
           onCancel={() => setShowLogoutConfirm(false)}
           type="danger"

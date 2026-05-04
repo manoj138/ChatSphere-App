@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
@@ -7,6 +7,7 @@ import {
   Edit2, Camera, Check, Loader2, UserMinus, Trash2, AlertTriangle, Clock
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { optimizeImageFile } from "../lib/image";
 
 const ChatInfoModal = ({ onClose }) => {
   const { selectedUser, selectedGroup, updateGroup, deleteGroup, kickMember } = useChatStore();
@@ -21,6 +22,18 @@ const ChatInfoModal = ({ onClose }) => {
 
   const info = selectedUser || selectedGroup;
   if (!info) return null;
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        if (showDeleteConfirm) setShowDeleteConfirm(false);
+        else onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose, showDeleteConfirm]);
 
   const isGroup = !!selectedGroup;
   const isAdmin = isGroup && String(selectedGroup.admin?._id || selectedGroup.admin) === String(authUser?._id);
@@ -48,14 +61,16 @@ const ChatInfoModal = ({ onClose }) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const base64Image = reader.result;
+
+    try {
+      const base64Image = await optimizeImageFile(file);
       setIsUpdating(true);
       await updateGroup(selectedGroup._id, { groupImage: base64Image });
+    } catch (error) {
+      toast.error(error.message || "Failed to update group image");
+    } finally {
       setIsUpdating(false);
-    };
+    }
   };
 
   const handleUpdateName = async () => {
@@ -78,7 +93,12 @@ const ChatInfoModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div
+      className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <div className="w-full max-w-md bg-secondary border border-primary rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.4)] overflow-hidden relative transition-colors duration-500">
         
         {/* Delete Confirmation Overlay */}
@@ -199,14 +219,14 @@ const ChatInfoModal = ({ onClose }) => {
                     <div className="flex items-center gap-4 p-4 bg-surface border border-primary rounded-2xl">
                        <div className="size-10 rounded-xl bg-primary opacity-10 flex items-center justify-center text-primary"><Mail size={18} /></div>
                        <div className="flex-1 min-w-0 text-left">
-                          <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-0.5 opacity-40">Email Protocol</p>
+                          <p className="text-xs font-semibold text-secondary mb-0.5 opacity-70">Email</p>
                           <p className="text-sm font-bold text-primary truncate">{info.email}</p>
                        </div>
                     </div>
                     <div className="flex items-start gap-4 p-4 bg-surface border border-primary rounded-2xl">
                        <div className="size-10 rounded-xl bg-primary opacity-10 flex items-center justify-center text-primary flex-shrink-0"><Info size={18} /></div>
                        <div className="flex-1 text-left">
-                          <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-0.5 opacity-40">User Bio</p>
+                          <p className="text-xs font-semibold text-secondary mb-0.5 opacity-70">Bio</p>
                           <p className="text-sm font-bold text-primary leading-relaxed">{info.bio || "No encryption signature detected."}</p>
                        </div>
                     </div>

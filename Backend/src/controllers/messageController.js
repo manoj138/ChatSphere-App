@@ -65,6 +65,10 @@ const sendMessage = async(req, res)=>{
         const {id:receiverId}= req.params;
         const senderId = req.user._id;
 
+        if (!text?.trim() && !image) {
+            return res.status(400).json({ message: "Message must contain text or image" });
+        }
+
         let imageUrl;
         if(image){
             try {
@@ -74,7 +78,12 @@ const sendMessage = async(req, res)=>{
                 console.log("Cloudinary upload successful:", imageUrl);
             } catch (uploadErr) {
                 console.error("Cloudinary Upload Error:", uploadErr.message);
-                return res.status(400).json({ message: `Cloudinary Error: ${uploadErr.message}` });
+                if (typeof image === "string" && image.startsWith("data:image")) {
+                    console.log("Cloudinary failed. Falling back to inline image storage.");
+                    imageUrl = image;
+                } else {
+                    return res.status(400).json({ message: `Cloudinary Error: ${uploadErr.message}` });
+                }
             }
         }
 
