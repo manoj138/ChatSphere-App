@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from "react"; 
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X, Smile, Zap } from "lucide-react";
 import toast from "react-hot-toast";
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
+import EmojiPicker from 'emoji-picker-react';
 import { useThemeStore } from "../store/useThemeStore";
 
 const MessageInput = () => {
@@ -63,8 +62,8 @@ const MessageInput = () => {
     }
   };
 
-  const addEmoji = (emoji) => {
-    setText(text + emoji.native);
+  const onEmojiClick = (emojiObject) => {
+    setText((prev) => prev + emojiObject.emoji);
   };
 
   return (
@@ -94,12 +93,11 @@ const MessageInput = () => {
       {showEmojiPicker && (
         <div className="absolute bottom-full right-0 mb-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
            <div className="rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-              <Picker 
-                data={data} 
-                onEmojiSelect={addEmoji} 
+              <EmojiPicker 
+                onEmojiClick={onEmojiClick}
                 theme="dark"
-                skinTonePosition="none"
-                previewPosition="none"
+                lazyLoadEmojis={true}
+                searchPlaceholder="Search emojis..."
               />
            </div>
         </div>
