@@ -11,13 +11,17 @@ import SignUpPage from "./pages/auth/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 
+import { useThemeStore } from "./store/useThemeStore";
+
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
+  const { themeColor } = useThemeStore();
 
   useEffect(() => {
+    document.documentElement.style.setProperty('--accent-color', themeColor);
     checkAuth();
-  }, [checkAuth]);
+  }, [checkAuth, themeColor]);
 
   useEffect(() => {
     if (authUser) {

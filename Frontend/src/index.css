@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+:root {
+  --accent-color: #bef264;
+}
+
+/* Custom Utilities */
+.bg-accent { background-color: var(--accent-color); }
+.text-accent { color: var(--accent-color); }
+.border-accent { border-color: var(--accent-color); }
+.shadow-accent { shadow-color: var(--accent-color); }
+
 .thin-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
@@ -14,7 +24,8 @@
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(190, 242, 100, 0.2);
+  background: var(--accent-color);
+  opacity: 0.2;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -40,5 +51,6 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(190, 242, 100, 0.1);
+  background: var(--accent-color);
+  opacity: 0.1;
 }
