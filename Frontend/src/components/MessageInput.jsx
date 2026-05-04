@@ -11,7 +11,7 @@ const MessageInput = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage, sendTypingStatus } = useChatStore();
-  const { themeColor } = useThemeStore();
+  const { themeColor, isLightMode } = useThemeStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -72,11 +72,11 @@ const MessageInput = () => {
       {/* Image Preview Floating Card */}
       {imagePreview && (
         <div className="absolute bottom-full left-0 mb-4 animate-in zoom-in-95 duration-300">
-          <div className="relative group p-1 bg-[#0a0a0a] border border-white/10 rounded-[1.5rem] shadow-2xl">
+          <div className="relative group p-1 bg-secondary border border-primary rounded-[1.5rem] shadow-2xl transition-colors duration-500">
             <img
               src={imagePreview}
               alt="Preview"
-              className="size-24 object-cover rounded-[1.2rem] border border-white/5"
+              className="size-24 object-cover rounded-[1.2rem] border border-primary opacity-90"
             />
             <button
               onClick={removeImage}
@@ -92,10 +92,10 @@ const MessageInput = () => {
       {/* Emoji Picker Overlay */}
       {showEmojiPicker && (
         <div className="absolute bottom-full right-0 mb-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
-           <div className="rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+           <div className="rounded-[2rem] overflow-hidden border border-primary shadow-[0_0_50px_rgba(0,0,0,0.4)]">
               <EmojiPicker 
                 onEmojiClick={onEmojiClick}
-                theme="dark"
+                theme={isLightMode ? "light" : "dark"}
                 lazyLoadEmojis={true}
                 searchPlaceholder="Search emojis..."
                 width={300}
@@ -105,26 +105,26 @@ const MessageInput = () => {
         </div>
       )}
 
-      {/* Main Console Input - Made more Compact */}
+      {/* Main Console Input */}
       <form onSubmit={handleSendMessage} className="relative group">
         
         {/* Glow Effect */}
         <div className="absolute -inset-1 rounded-full blur-md opacity-10 group-focus-within:opacity-30 transition-opacity" style={{ backgroundColor: themeColor }} />
 
-        <div className="relative flex items-center gap-2 bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 p-1.5 rounded-full shadow-2xl overflow-hidden">
+        <div className="relative flex items-center gap-2 bg-secondary/95 backdrop-blur-2xl border border-primary p-1.5 rounded-full shadow-2xl overflow-hidden transition-all duration-500">
            
            {/* Utility Buttons Area */}
            <div className="flex items-center gap-0.5 ml-1">
               <button
                 type="button"
-                className={`p-2.5 rounded-full transition-all ${imagePreview ? "text-green-500 bg-green-500/10" : "text-gray-600 hover:text-white hover:bg-white/5"}`}
+                className={`p-2.5 rounded-full transition-all ${imagePreview ? "text-green-500 bg-green-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Image size={18} />
               </button>
               <button
                 type="button"
-                className={`p-2.5 rounded-full transition-all ${showEmojiPicker ? "text-yellow-500 bg-yellow-500/10" : "text-gray-600 hover:text-white hover:bg-white/5"}`}
+                className={`p-2.5 rounded-full transition-all ${showEmojiPicker ? "text-yellow-500 bg-yellow-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               >
                 <Smile size={18} />
@@ -143,7 +143,7 @@ const MessageInput = () => {
            <div className="flex-1 relative">
               <input
                 type="text"
-                className="w-full bg-transparent border-none text-white text-sm font-medium placeholder:text-gray-700 placeholder:uppercase placeholder:tracking-[0.1em] focus:outline-none py-2 px-1"
+                className="w-full bg-transparent border-none text-primary text-sm font-medium placeholder:text-secondary placeholder:opacity-30 placeholder:uppercase placeholder:tracking-[0.1em] focus:outline-none py-2 px-1"
                 placeholder="Type a message..."
                 value={text}
                 onChange={handleTyping}
@@ -157,7 +157,7 @@ const MessageInput = () => {
              className="size-10 rounded-full transition-all shadow-xl flex items-center justify-center group/btn disabled:opacity-20 disabled:grayscale mr-1 flex-shrink-0"
              style={{ backgroundColor: themeColor }}
            >
-             <Send size={16} className="text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" strokeWidth={3} />
+              <Send size={16} className="text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" strokeWidth={3} />
            </button>
 
         </div>
