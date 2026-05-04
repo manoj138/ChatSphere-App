@@ -6,7 +6,6 @@ import { useThemeStore } from "./store/useThemeStore";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
-import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
@@ -33,17 +32,16 @@ function App() {
   if (isCheckingAuth && !authUser) return (
     <div className="flex items-center justify-center h-screen bg-[#050505]">
       <div className="relative">
-         <Loader className="size-12 animate-spin text-[#bef264]" style={{ color: themeColor }} />
-         <div className="absolute inset-0 blur-2xl opacity-20" style={{ backgroundColor: themeColor }} />
+         <Loader className="size-12 animate-spin" style={{ color: themeColor }} />
+         <div className="absolute inset-0 blur-3xl opacity-20" style={{ backgroundColor: themeColor }} />
       </div>
     </div>
   );
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white selection:bg-[#bef264] selection:text-black font-sans flex flex-col">
-      <Navbar />
+    <div className="bg-[#050505] h-screen text-white selection:bg-[#bef264] selection:text-black font-sans overflow-hidden">
       
-      <main className="flex-1 pt-16 h-screen overflow-hidden">
+      <main className="h-full">
         <Routes>
           <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
           <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
@@ -54,18 +52,19 @@ function App() {
       </main>
 
       <Toaster 
-        position="top-center"
+        position="bottom-right"
         toastOptions={{
           style: {
-            background: '#141414',
+            background: '#111',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '1rem',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: '1.2rem',
             padding: '1rem',
-            fontSize: '12px',
+            fontSize: '11px',
             fontWeight: '900',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em'
+            letterSpacing: '0.15em',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
           },
         }}
       />
