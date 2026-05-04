@@ -239,4 +239,4 @@ const getGroupMessages = async (req, res)=>{
     }
 }
 
-module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, markMessagesAsSeen, searchUsers, getGroupMessages };
+module.exports = { getUsersForSlideBar, getMessages, sendMessage, deleteMessage, reactToMessage, markMessagesAsSeen, searchUsers, getGroupMessages };
