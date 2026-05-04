@@ -1,65 +1,89 @@
 import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { MessageSquare, ShieldCheck, Zap, Globe, Sparkles } from "lucide-react";
+import { ShieldCheck, Globe, Zap, Sparkles, UserPlus, Settings, MessageSquarePlus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const NoChatSelected = () => {
   const { themeColor } = useThemeStore();
-  const { onlineUsers = [] } = useAuthStore();
+  const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (
-    <div className="w-full flex flex-1 flex-col items-center justify-center p-16 bg-[#050505] relative overflow-hidden">
+    <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-[#050505] relative overflow-hidden font-sans">
       
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-1/4 left-1/4 size-96 blur-[150px] opacity-10 animate-pulse pointer-events-none" style={{ backgroundColor: themeColor }} />
-      <div className="absolute bottom-1/4 right-1/4 size-96 blur-[150px] opacity-5 pointer-events-none" style={{ backgroundColor: themeColor }} />
+      {/* Background Ambience */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] blur-[150px] opacity-[0.1] pointer-events-none rounded-full" style={{ backgroundColor: themeColor }} />
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] opacity-[0.02] pointer-events-none" />
 
-      <div className="max-w-md text-center space-y-12 relative z-10">
+      <div className="max-w-2xl w-full space-y-10 relative z-10">
         
-        {/* Animated Brand Icon */}
-        <div className="flex justify-center">
-          <div className="relative group">
-            <div className="absolute -inset-4 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" style={{ backgroundColor: themeColor }} />
-            <div className="size-32 rounded-[2.5rem] bg-white/[0.03] border border-white/5 flex items-center justify-center relative shadow-2xl">
-               <MessageSquare size={54} style={{ color: themeColor }} className="drop-shadow-2xl" />
-            </div>
-            <div className="absolute -bottom-2 -right-2 p-3 bg-[#0a0a0a] rounded-2xl border border-white/5 shadow-xl">
-               <Zap size={20} className="text-yellow-500 animate-bounce" />
-            </div>
-          </div>
+        {/* Compact Profile Identity */}
+        <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-700">
+           <div className="relative group">
+              <div className="size-20 rounded-[1.5rem] overflow-hidden border-2 border-white/5 group-hover:border-white/20 transition-all p-0.5 shadow-2xl">
+                 <img 
+                   src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
+                   className="w-full h-full object-cover rounded-[1.3rem]" 
+                 />
+              </div>
+              <div className="absolute -inset-2 rounded-[1.7rem] blur-md opacity-20" style={{ backgroundColor: themeColor }} />
+           </div>
+           <div className="text-center">
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">Welcome, <span style={{ color: themeColor }}>{authUser?.username}</span></h1>
+              <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mt-1">Authorized User Node</p>
+           </div>
         </div>
 
-        {/* Text Content */}
-        <div className="space-y-4">
-           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.03] rounded-full border border-white/5 mb-2">
-              <Sparkles size={12} style={{ color: themeColor }} />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Welcome to the Sphere</span>
+        {/* Dashboard Grid - Compact & Stylish */}
+        <div className="grid grid-cols-2 gap-4">
+           <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[2rem] flex items-center gap-4 group hover:bg-white/[0.04] transition-all">
+              <div className="size-12 rounded-2xl bg-white/[0.03] flex items-center justify-center text-gray-500 group-hover:text-white transition-colors">
+                 <ShieldCheck size={24} />
+              </div>
+              <div>
+                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Signal</p>
+                 <p className="text-xs font-bold text-gray-300">Encrypted</p>
+              </div>
            </div>
-           <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Select a <span style={{ color: themeColor }}>Signal</span></h1>
-           <p className="text-sm font-medium text-gray-600 leading-relaxed max-w-xs mx-auto italic">
-              "Establish a secure end-to-end encrypted link with your contacts to begin data transmission."
+           
+           <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[2rem] flex items-center gap-4 group hover:bg-white/[0.04] transition-all">
+              <div className="size-12 rounded-2xl bg-white/[0.03] flex items-center justify-center text-gray-500 group-hover:text-white transition-colors">
+                 <Globe size={24} />
+              </div>
+              <div>
+                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Presence</p>
+                 <p className="text-xs font-bold text-gray-300">{onlineUsers.length} Online</p>
+              </div>
+           </div>
+        </div>
+
+        {/* Transmission Prompt */}
+        <div className="bg-white/[0.01] border border-white/[0.03] p-8 rounded-[2.5rem] text-center space-y-4">
+           <div className="flex justify-center mb-2">
+              <Zap size={20} className="text-yellow-500 animate-pulse" />
+           </div>
+           <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.5em] leading-relaxed">
+              "Select a terminal node to initiate encrypted transmission."
            </p>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-2 gap-4">
-           <div className="p-6 bg-white/[0.02] rounded-[2rem] border border-white/5 flex flex-col items-center gap-3 group hover:bg-white/[0.05] transition-all">
-              <ShieldCheck size={24} className="text-gray-700 group-hover:text-white transition-colors" />
-              <p className="text-[9px] font-black uppercase tracking-widest text-gray-600">Encrypted</p>
-           </div>
-           <div className="p-6 bg-white/[0.02] rounded-[2rem] border border-white/5 flex flex-col items-center gap-3 group hover:bg-white/[0.05] transition-all">
-              <Globe size={24} className="text-gray-700 group-hover:text-white transition-colors" />
-              <p className="text-[9px] font-black uppercase tracking-widest text-gray-600">{onlineUsers.length} Online</p>
-           </div>
+        {/* Quick Actions Matrix */}
+        <div className="flex items-center justify-center gap-6">
+           <Link to="/settings" className="flex items-center gap-2 px-6 py-2.5 bg-white/[0.02] border border-white/5 rounded-full text-[10px] font-black text-gray-600 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest">
+              <Settings size={14} /> Customize
+           </Link>
+           <button className="flex items-center gap-2 px-6 py-2.5 bg-white/[0.02] border border-white/5 rounded-full text-[10px] font-black text-gray-600 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest">
+              <UserPlus size={14} /> Discover
+           </button>
         </div>
 
       </div>
 
-      {/* Decorative Corner Text */}
-      <div className="absolute bottom-12 left-12">
-         <p className="text-[10px] font-black text-gray-800 uppercase tracking-[0.5em] rotate-180 [writing-mode:vertical-lr]">Sphere OS v3.1</p>
+      {/* Subtle Decals */}
+      <div className="absolute left-8 bottom-12">
+         <p className="text-[10px] font-black text-gray-900 uppercase tracking-[0.5em]">Sphere v3.1</p>
       </div>
-      <div className="absolute top-12 right-12">
-         <p className="text-[10px] font-black text-gray-800 uppercase tracking-[0.5em] [writing-mode:vertical-lr]">Protocol: Quantum-Safe</p>
+      <div className="absolute right-8 bottom-12">
+         <p className="text-[10px] font-black text-gray-900 uppercase tracking-[0.5em]">AES-256 Enabled</p>
       </div>
 
     </div>

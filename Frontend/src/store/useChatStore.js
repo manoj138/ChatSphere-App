@@ -116,6 +116,12 @@ export const useChatStore = create((set, get) => ({
         }
         // Refresh sidebar to show last message
         get().getUsers();
+        
+        // Play notification sound
+        if (!isMessageFromSelectedUser) {
+            const audio = new Audio("/notification.mp3");
+            audio.play().catch(e => console.log("Sound play failed"));
+        }
     });
 
     socket.on("newGroupMessage", (newMessage) => {
@@ -127,6 +133,12 @@ export const useChatStore = create((set, get) => ({
         }
         // Refresh sidebar for groups
         get().getGroups();
+
+        // Play notification sound
+        if (!isMessageForSelectedGroup) {
+            const audio = new Audio("/notification.mp3");
+            audio.play().catch(e => console.log("Sound play failed"));
+        }
     });
 
     socket.on("usertyping", ({ senderId, typing }) => {

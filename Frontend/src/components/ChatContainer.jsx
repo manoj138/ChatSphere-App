@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
-import { Loader2, CheckCheck, Users, MessageSquare, Zap, ShieldCheck } from "lucide-react";
+import { Loader2, CheckCheck, Users, MessageSquare, Zap, ShieldCheck, ArrowLeft } from "lucide-react";
 import MessageInput from "./MessageInput";
 
 const ChatContainer = () => {
@@ -70,8 +70,20 @@ const ChatContainer = () => {
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
 
       {/* Futuristic Header */}
-      <header className="px-8 py-5 border-b border-white/[0.03] flex items-center justify-between bg-black/40 backdrop-blur-2xl z-30">
-        <div className="flex items-center gap-4">
+      <header className="px-4 lg:px-8 py-5 border-b border-white/[0.03] flex items-center justify-between bg-black/40 backdrop-blur-2xl z-30">
+        <div className="flex items-center gap-3 lg:gap-4">
+           {/* Back Button for Mobile */}
+           <button 
+             onClick={() => {
+                const { setSelectedUser, setSelectedGroup } = useChatStore.getState();
+                setSelectedUser(null);
+                setSelectedGroup(null);
+             }}
+             className="lg:hidden p-2 text-gray-500 hover:text-white transition-colors"
+           >
+              <ArrowLeft size={20} />
+           </button>
+
            <div className="relative group">
               <div className="size-12 rounded-[1.2rem] overflow-hidden border-2 border-white/5 group-hover:border-white/10 transition-all shadow-2xl relative z-10">
                  {selectedUser ? (
