@@ -19,9 +19,9 @@ export const requestForToken = async () => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      // Register Service Worker manually to ensure it's loaded
       if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        // Use our new custom service worker name to avoid browser caching issues
+        const registration = await navigator.serviceWorker.register('/chatsphere-sw.js');
         
         const token = await getToken(messaging, {
           vapidKey: "BFIpk_Hzv5vt-ebJdle9rdx7DrALt3SXdEdWZpb-OLVal3PMelrXOFbqai7brGBuGBmxzwqH59TogBOJ8RPIZZw",
@@ -32,14 +32,12 @@ export const requestForToken = async () => {
           console.log("FCM Token Generated:", token);
           try {
             await axiosInstance.put("/auth/update-fcm-token", { token });
-            console.log("FCM Token synchronized with backend.");
+            console.log("FCM Token synchronized.");
           } catch (syncErr) {
             console.error("Token sync failed:", syncErr.message);
           }
         }
       }
-    } else {
-      console.warn("Notification permission not granted.");
     }
   } catch (error) {
     console.error("Error requesting FCM token:", error);

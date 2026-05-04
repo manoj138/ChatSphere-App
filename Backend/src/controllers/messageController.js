@@ -93,15 +93,18 @@ const sendMessage = async(req, res)=>{
             }
             
             // ALWAYS attempt to send notification if it's a private message, regardless of socket status
-            // This ensures notifications appear during testing and when the app is in the background
+            console.log(`Target ${receiverId} offline. Attempting push notification...`);
             User.findById(receiverId).then(receiver => {
                 if (receiver && receiver.fcmToken) {
+                    console.log(`Sending FCM notification to user: ${receiver.username}`);
                     sendNotification(
                         receiver.fcmToken, 
-                        `New Transmission from ${req.user.username}`, 
+                        `New Signal from ${req.user.username}`, 
                         text || "Shared an encrypted asset",
                         { senderId: senderId.toString() }
                     ).catch(err => console.error("Notification Error:", err.message));
+                } else {
+                    console.log(`Notification skipped: User ${receiverId} has no FCM token.`);
                 }
             }).catch(err => console.error("Receiver Fetch Error for Notify:", err.message));
         }

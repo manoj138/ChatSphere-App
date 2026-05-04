@@ -14,15 +14,27 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// We removed manual notification display here to let the browser 
-// handle the 'notification' payload automatically. 
-// This prevents double notifications.
-
+// THE FINAL FIX: We handle everything manually in the background.
+// Since we won't send the 'notification' object from the backend anymore, 
+// the browser will NOT show its own plain notification. 
+// ONLY THIS manual one will be shown.
 messaging.onBackgroundMessage((payload) => {
-  console.log("Background message received (handled by browser automatically):", payload);
+  console.log("Payload received in ChatSphere SW:", payload);
+  
+  const notificationTitle = payload.data?.title || "New Signal Received";
+  const notificationOptions = {
+    body: payload.data?.body || "Check your grid for updates.",
+    icon: "/favicon.png",
+    badge: "/favicon.png",
+    tag: "chatsphere-unique-msg",
+    renotify: true,
+    requireInteraction: true,
+    data: payload.data
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// Handle notification click to open the app
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
@@ -30,9 +42,7 @@ self.addEventListener('notificationclick', (event) => {
       if (clientList.length > 0) {
         let client = clientList[0];
         for (let i = 0; i < clientList.length; i++) {
-          if (clientList[i].focused) {
-            client = clientList[i];
-          }
+          if (clientList[i].focused) client = clientList[i];
         }
         return client.focus();
       }

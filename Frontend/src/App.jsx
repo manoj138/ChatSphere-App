@@ -4,7 +4,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useChatStore } from "./store/useChatStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { Loader } from "lucide-react";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
@@ -13,7 +13,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 
 function App() {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth, socket } = useAuthStore();
   const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
   const { themeColor, initTheme } = useThemeStore();
 
@@ -50,10 +50,10 @@ function App() {
           );
         }).catch(err => console.log('failed: ', err));
       });
-      subscribeToEvents();
+      if (socket) subscribeToEvents();
     }
     return () => unsubscribeFromEvents();
-  }, [authUser, subscribeToEvents, unsubscribeFromEvents]);
+  }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents]);
 
   if (isCheckingAuth && !authUser) return (
     <div className="flex items-center justify-center h-screen bg-[#050505]">
