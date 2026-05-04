@@ -20,8 +20,7 @@ export const requestForToken = async () => {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       const token = await getToken(messaging, {
-        // You still need to replace this VAPID KEY from Firebase Console
-        vapidKey: "BOM7_L4uY_U2h3f6E7v8w9x0y1z2a3b4c5d6e7f8g9h0i1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7z8" 
+        vapidKey: "BFIpk_Hzv5vt-ebJdle9rdx7DrALt3SXdEdWZpb-OLVal3PMelrXOFbqai7brGBuGBmxzwqH59TogBOJ8RPIZZw" 
       });
       if (token) {
         console.log("FCM Token Generated:", token);

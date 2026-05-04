@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChatSphere | Secure Transmission</title>
+    <script>
+      (function() {
+        const mode = localStorage.getItem("chat-sphere-mode") || "dark";
+        const color = localStorage.getItem("chat-sphere-theme") || "#bef264";
+        document.documentElement.setAttribute("data-theme", mode);
+        document.documentElement.style.setProperty("--accent-color", color);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

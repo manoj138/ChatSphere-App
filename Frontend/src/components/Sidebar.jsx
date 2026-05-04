@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import CreateGroupModal from "./CreateGroupModal";
+import ConfirmationModal from "./ConfirmationModal";
 
 const Sidebar = () => {
   const {
@@ -31,6 +32,7 @@ const Sidebar = () => {
   const [activeTab, setActiveTab] = useState("chats");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -136,7 +138,7 @@ const Sidebar = () => {
                 <Plus size={18} />
               </button>
             )}
-            <button onClick={logout} className="p-2.5 bg-surface border border-primary rounded-xl text-secondary hover:text-red-500 transition-all active:scale-90">
+            <button onClick={() => setShowLogoutConfirm(true)} className="p-2.5 bg-surface border border-primary rounded-xl text-secondary hover:text-red-500 transition-all active:scale-90">
               <LogOut size={18} />
             </button>
           </div>
@@ -218,6 +220,17 @@ const Sidebar = () => {
       {/* Create Group Modal */}
       {isCreateGroupOpen && (
         <CreateGroupModal onClose={() => setIsCreateGroupOpen(false)} />
+      )}
+
+      {/* Logout Confirmation */}
+      {showLogoutConfirm && (
+        <ConfirmationModal 
+          title="Disconnect Signal?"
+          description="You are about to terminate your active session on this node. Are you sure you want to log out?"
+          onConfirm={logout}
+          onCancel={() => setShowLogoutConfirm(false)}
+          type="danger"
+        />
       )}
 
     </aside>

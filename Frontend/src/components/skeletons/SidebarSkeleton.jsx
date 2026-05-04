@@ -5,37 +5,51 @@ const SidebarSkeleton = () => {
   const skeletonContacts = Array(8).fill(null);
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-white/5 flex flex-col transition-all duration-300 bg-[#0a0a0a]">
-      {/* Header Skeleton */}
-      <div className="p-5 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="size-8 bg-white/5 rounded-xl animate-pulse" />
-          <div className="h-5 w-24 bg-white/5 rounded-lg animate-pulse hidden lg:block" />
-        </div>
+    <aside className="h-full w-[420px] border-r border-primary flex transition-all duration-500 bg-secondary">
+      
+      {/* Navigation Strip Skeleton */}
+      <div className="w-[70px] border-r border-primary flex flex-col items-center py-6 gap-8">
+         <div className="size-10 bg-surface rounded-xl animate-pulse" />
+         <div className="size-10 bg-surface rounded-xl animate-pulse" />
+         <div className="size-10 bg-surface rounded-xl animate-pulse" />
+         <div className="mt-auto mb-4 size-10 bg-surface rounded-full animate-pulse" />
       </div>
 
-      {/* Tabs Skeleton */}
-      <div className="flex px-4 gap-2 my-4">
-        <div className="flex-1 h-10 bg-white/5 rounded-xl animate-pulse" />
-        <div className="flex-1 h-10 bg-white/5 rounded-xl animate-pulse" />
-      </div>
-
-      {/* Skeleton Contacts */}
-      <div className="flex-1 overflow-y-auto px-4 space-y-3">
-        {skeletonContacts.map((_, idx) => (
-          <div key={idx} className="w-full p-3 flex items-center gap-3">
-            {/* Avatar skeleton */}
-            <div className="relative mx-auto lg:mx-0">
-              <div className="size-12 bg-white/5 rounded-xl animate-pulse" />
+      <div className="flex-1 flex flex-col">
+        {/* Header Skeleton */}
+        <div className="p-6 border-b border-primary">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-6 w-24 bg-surface rounded-lg animate-pulse" />
+              <div className="h-2 w-32 bg-surface rounded-full animate-pulse opacity-40" />
             </div>
-
-            {/* User info skeleton - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0 flex-1">
-              <div className="h-4 w-32 bg-white/5 rounded-md animate-pulse mb-2" />
-              <div className="h-3 w-16 bg-white/5 rounded-md animate-pulse" />
-            </div>
+            <div className="size-10 bg-surface rounded-xl animate-pulse" />
           </div>
-        ))}
+        </div>
+
+        {/* Search Skeleton */}
+        <div className="px-6 py-4">
+           <div className="h-10 w-full bg-surface rounded-full animate-pulse" />
+        </div>
+
+        {/* Skeleton Contacts */}
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4">
+          {skeletonContacts.map((_, idx) => (
+            <div key={idx} className="w-full p-3 flex items-center gap-4">
+              {/* Avatar skeleton */}
+              <div className="size-14 bg-surface rounded-[1.2rem] animate-pulse flex-shrink-0" />
+
+              {/* User info skeleton */}
+              <div className="flex-1 text-left space-y-2">
+                <div className="flex justify-between items-center">
+                   <div className="h-4 w-32 bg-surface rounded-md animate-pulse" />
+                   <div className="h-2 w-8 bg-surface rounded-md animate-pulse opacity-30" />
+                </div>
+                <div className="h-3 w-48 bg-surface rounded-md animate-pulse opacity-40" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </aside>
   );

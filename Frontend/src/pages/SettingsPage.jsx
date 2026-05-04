@@ -5,8 +5,9 @@ import {
   ChevronRight, Camera, Info, LogOut, ArrowLeft, Sun, Moon, Monitor
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 const NEON_PRESETS = [
   { name: "LIME", color: "#bef264" },
@@ -20,6 +21,7 @@ const NEON_PRESETS = [
 const SettingsPage = () => {
   const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
   const { themeColor, setThemeColor, isLightMode, toggleThemeMode } = useThemeStore();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleImageUpload = async (e) => {
@@ -122,7 +124,7 @@ const SettingsPage = () => {
               </div>
 
               <button 
-                onClick={logout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-red-500 hover:text-white transition-all group"
               >
                  <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
@@ -202,6 +204,16 @@ const SettingsPage = () => {
 
         </div>
       </div>
+
+      {showLogoutConfirm && (
+        <ConfirmationModal 
+          title="Disconnect Node?"
+          description="You are about to terminate your active session. Are you sure you want to log out of the grid?"
+          onConfirm={logout}
+          onCancel={() => setShowLogoutConfirm(false)}
+          type="danger"
+        />
+      )}
     </div>
   );
 };

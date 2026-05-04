@@ -9,6 +9,7 @@ import {
 import MessageInput from "./MessageInput";
 import ForwardModal from "./ForwardModal";
 import ChatInfoModal from "./ChatInfoModal";
+import ConfirmationModal from "./ConfirmationModal";
 
 const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -27,6 +28,7 @@ const ChatContainer = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [forwardingMessage, setForwardingMessage] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState(null);
 
   const isTyping = selectedUser && typingStatus[selectedUser._id];
 
@@ -229,7 +231,7 @@ const ChatContainer = () => {
                       <div className="flex items-center gap-2 group relative">
                          {isMine && !message.isDeleted && (
                            <button 
-                             onClick={() => deleteMessage(message._id)}
+                             onClick={() => setMessageToDelete(message._id)}
                              className="opacity-0 group-hover:opacity-100 p-2 text-secondary hover:text-red-500 transition-all active:scale-90 order-last"
                            >
                              <Trash2 size={16} />
@@ -347,6 +349,19 @@ const ChatContainer = () => {
 
       {isInfoModalOpen && (
         <ChatInfoModal onClose={() => setIsInfoModalOpen(false)} />
+      )}
+
+      {messageToDelete && (
+        <ConfirmationModal 
+          title="Erase Transmission?"
+          description="This action will permanently delete this message from the grid. Are you sure you want to proceed?"
+          onConfirm={() => {
+            deleteMessage(messageToDelete);
+            setMessageToDelete(null);
+          }}
+          onCancel={() => setMessageToDelete(null)}
+          type="danger"
+        />
       )}
 
       <div className="absolute bottom-0 left-0 w-full p-4 lg:p-6 bg-gradient-to-t from-primary via-primary/95 to-transparent z-40">
