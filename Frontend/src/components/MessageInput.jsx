@@ -1,50 +1,31 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X, Smile, Paperclip, Sparkles } from "lucide-react";
+import { useThemeStore } from "../store/useThemeStore";
+import { Image, Send, X, Smile, Paperclip } from "lucide-react";
 import toast from "react-hot-toast";
-import { EMOJI_CATEGORIES, EMOJI_MAP } from "../lib/emojis";
+import { EMOJI_MAP, EMOJI_LIST } from "../lib/emojis";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("Smileys");
   const [suggestion, setSuggestion] = useState(null);
   
   const fileInputRef = useRef(null);
-  const emojiScrollRef = useRef(null);
-  const categoryRefs = useRef({});
-  
   const { sendMessage } = useChatStore();
-
-  // Emoji Auto-suggestion Logic
-  useEffect(() => {
-    const words = text.trim().split(/\s+/);
-    const lastWord = words[words.length - 1]?.toLowerCase();
-    
-    if (lastWord && EMOJI_MAP[lastWord]) {
-      setSuggestion({ word: lastWord, emoji: EMOJI_MAP[lastWord] });
-    } else {
-      setSuggestion(null);
-    }
-  }, [text]);
-
-  const applySuggestion = () => {
-    if (!suggestion) return;
-    const lastSpaceIndex = text.lastIndexOf(" ");
-    const prefix = lastSpaceIndex === -1 ? "" : text.substring(0, lastSpaceIndex + 1);
-    setText(prefix + suggestion.emoji + " ");
-    setSuggestion(null);
-  };
+  const { themeColor } = useThemeStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file || !file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
     }
+
     const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result);
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -54,102 +35,138 @@ const MessageInput = () => {
   };
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!text.trim() && !imagePreview) return;
+
     try {
-      await sendMessage({ text: text.trim(), image: imagePreview });
+      await sendMessage({
+        text: text.trim(),
+        image: imagePreview,
+      });
+
       setText("");
       setImagePreview(null);
+      setSuggestion(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      setShowEmojiPicker(false);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
   };
 
-  const addEmoji = (emoji) => setText(text + emoji);
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setText(val);
 
-  const scrollToCategory = (catName) => {
-    setActiveCategory(catName);
-    categoryRefs.current[catName]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const words = val.split(" ");
+    const lastWord = words[words.length - 1].toLowerCase();
+    
+    if (lastWord.length > 2 && EMOJI_MAP[lastWord]) {
+      setSuggestion({ word: lastWord, emoji: EMOJI_MAP[lastWord] });
+    } else {
+      setSuggestion(null);
+    }
+  };
+
+  const applySuggestion = () => {
+    if (!suggestion) return;
+    const words = text.split(" ");
+    words[words.length - 1] = suggestion.emoji;
+    setText(words.join(" ") + " ");
+    setSuggestion(null);
   };
 
   return (
-    <div className="p-4 w-full bg-[#0a0a0a]/80 backdrop-blur-xl border-t border-white/5 relative">
-      
-      {/* Auto-suggestion Tooltip */}
+    <div className="relative w-full max-w-4xl mx-auto">
+      {/* Suggestions Badge */}
       {suggestion && (
         <button 
           onClick={applySuggestion}
-          className="absolute -top-12 left-16 bg-[#bef264] text-black px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-[0_10px_20px_rgba(190,242,100,0.3)] animate-in slide-in-from-bottom-2 duration-200 group"
+          className="absolute -top-12 left-4 bg-[#1a1a1a] border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-3 animate-in slide-in-from-bottom-2 shadow-2xl group"
         >
-          <Sparkles size={14} className="animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-tighter">Tap to use {suggestion.emoji}</span>
+           <span className="text-xl">{suggestion.emoji}</span>
+           <div className="text-left">
+              <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">Press to insert</p>
+              <p className="text-[10px] font-bold text-white">Replace "{suggestion.word}"</p>
+           </div>
         </button>
       )}
 
-      {/* Emoji Picker Overlay */}
-      {showEmojiPicker && (
-        <div className="absolute bottom-24 left-4 w-80 bg-[#111111]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
-           <div className="flex bg-white/5 border-b border-white/5 overflow-x-auto no-scrollbar p-3 gap-2 sticky top-0 z-10">
-              {EMOJI_CATEGORIES.map(cat => (
-                <button 
-                  key={cat.name}
-                  onClick={() => scrollToCategory(cat.name)}
-                  className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex-shrink-0 ${
-                    activeCategory === cat.name ? "bg-[#bef264] text-black shadow-lg" : "text-gray-500 hover:text-white"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-           </div>
-           <div ref={emojiScrollRef} className="p-4 max-h-72 overflow-y-auto no-scrollbar bg-transparent flex flex-col gap-6">
-              {EMOJI_CATEGORIES.map((cat) => (
-                <div key={cat.name} ref={el => categoryRefs.current[cat.name] = el} className="space-y-3">
-                  <h4 className="text-[10px] text-gray-600 font-black uppercase tracking-widest px-1">{cat.name}</h4>
-                  <div className="grid grid-cols-6 gap-3">
-                    {cat.emojis.map((emoji, idx) => (
-                      <button key={idx} onClick={() => addEmoji(emoji)} className="text-2xl hover:scale-125 transition-all duration-200 p-1">{emoji}</button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-           </div>
-           <div className="px-4 py-3 bg-white/5 flex items-center justify-between border-t border-white/5">
-              <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em]">Select Emoji</span>
-              <button onClick={() => setShowEmojiPicker(false)} className="text-gray-500 hover:text-white p-1"><X size={14} /></button>
-           </div>
-        </div>
-      )}
-
-      {/* Image Preview */}
+      {/* Image Preview Overlay */}
       {imagePreview && (
-        <div className="mb-4 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2">
-          <div className="relative group">
-            <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-3xl border-2 border-[#bef264]/30 shadow-xl" />
-            <button onClick={removeImage} className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center border-2 border-[#0a0a0a] shadow-lg"><X size={14} /></button>
+        <div className="absolute -top-32 left-0 p-4 bg-[#0a0a0a] border border-white/10 rounded-[2rem] shadow-2xl flex items-center gap-4 animate-in zoom-in-95">
+          <div className="relative size-20 rounded-2xl overflow-hidden border border-white/10">
+            <img src={imagePreview} className="w-full h-full object-cover" alt="" />
+            <button onClick={removeImage} className="absolute top-1 right-1 bg-black/60 p-1 rounded-lg hover:bg-black transition-colors">
+              <X size={12} />
+            </button>
           </div>
-          <p className="text-[10px] text-[#bef264] font-black uppercase tracking-widest animate-pulse">Image Attached</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Image Ready</p>
         </div>
       )}
 
-      {/* Input Field */}
-      <form onSubmit={handleSendMessage} className="flex items-center gap-3">
-        <div className="flex-1 flex items-center gap-3 bg-[#111] border border-white/5 rounded-3xl px-5 py-2 focus-within:border-[#bef264]/30 transition-all shadow-2xl">
-          <button type="button" className={`transition-all ${showEmojiPicker ? "text-[#bef264]" : "text-gray-500 hover:text-[#bef264]"}`} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-            <Smile size={24} />
-          </button>
-          <input type="text" className="w-full bg-transparent border-none py-3 text-sm focus:outline-none text-white placeholder:text-gray-700 font-medium" placeholder="Write something..." value={text} onChange={(e) => setText(e.target.value)} />
-          <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
-          <button type="button" className={`transition-all ${imagePreview ? "text-[#bef264]" : "text-gray-500 hover:text-[#bef264]"}`} onClick={() => fileInputRef.current?.click()}>
-            <Paperclip size={22} />
-          </button>
-        </div>
-        <button type="submit" className={`size-14 rounded-3xl flex items-center justify-center transition-all shadow-2xl ${text.trim() || imagePreview ? "bg-[#bef264] text-black scale-100 shadow-[0_10px_20px_rgba(190,242,100,0.2)]" : "bg-white/5 text-gray-800 scale-90 cursor-not-allowed"}`} disabled={!text.trim() && !imagePreview}>
-          <Send size={24} className={text.trim() || imagePreview ? "translate-x-0.5 -translate-y-0.5" : ""} />
+      {/* Main Input Capsule */}
+      <form onSubmit={handleSendMessage} className="bg-[#111]/80 backdrop-blur-3xl border border-white/10 p-2 rounded-[2.5rem] flex items-center gap-2 shadow-2xl relative z-30">
+        
+        <button 
+          type="button"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          className="p-3.5 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
+        >
+          <Smile size={22} />
         </button>
+
+        <input
+          type="text"
+          className="flex-1 bg-transparent border-none outline-none py-3 px-2 text-sm font-medium placeholder:text-gray-600"
+          placeholder="Enter your message..."
+          value={text}
+          onChange={handleInputChange}
+          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+        />
+
+        <div className="flex items-center gap-1 pr-2">
+           <button 
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="p-3 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
+           >
+             <Paperclip size={20} />
+             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+           </button>
+
+           <button 
+            type="submit"
+            disabled={!text.trim() && !imagePreview}
+            className="size-12 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:grayscale shadow-lg active:scale-90"
+            style={{ backgroundColor: themeColor, color: "#000" }}
+           >
+             <Send size={20} fill="currentColor" />
+           </button>
+        </div>
       </form>
+
+      {/* Aesthetic Emoji Picker */}
+      {showEmojiPicker && (
+        <div className="absolute bottom-20 left-0 w-72 h-80 bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 z-40">
+           <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Pick Emotion</span>
+              <button onClick={() => setShowEmojiPicker(false)} className="p-1 hover:bg-white/10 rounded-lg"><X size={14} /></button>
+           </div>
+           <div className="p-4 grid grid-cols-5 gap-2 overflow-y-auto h-[calc(100%-60px)] custom-scrollbar">
+              {EMOJI_LIST.map((category) => (
+                category.emojis.map(emoji => (
+                  <button 
+                    key={emoji}
+                    onClick={() => { setText(prev => prev + emoji); setShowEmojiPicker(false); }}
+                    className="text-2xl p-2 hover:bg-white/5 rounded-xl transition-all hover:scale-125"
+                  >
+                    {emoji}
+                  </button>
+                ))
+              ))}
+           </div>
+        </div>
+      )}
     </div>
   );
 };
