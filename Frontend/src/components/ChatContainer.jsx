@@ -169,9 +169,10 @@ const ChatContainer = () => {
       </header>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-10 custom-scrollbar pb-36 relative z-10">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-10 custom-scrollbar pb-44 relative z-10">
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message, idx) => {
+// ... (rest of the mapping logic remains same)
             const senderId = typeof message.senderId === 'string' ? message.senderId : message.senderId?._id;
             const isMine = senderId === authUser?._id;
             const emojiCount = getEmojiCount(message.text);
@@ -180,7 +181,6 @@ const ChatContainer = () => {
             return (
               <div 
                 key={message._id} 
-                ref={scrollRef} 
                 className={`flex flex-col ${isMine ? "items-end" : "items-start"} group/msg relative`}
               >
                 {!isMine && selectedGroup && (
@@ -300,6 +300,8 @@ const ChatContainer = () => {
              <p className="text-sm font-black uppercase tracking-[1em]">Secure Zone Empty</p>
           </div>
         )}
+        {/* Bottom Scroll Anchor */}
+        <div ref={scrollRef} className="h-32 w-full" />
       </div>
 
       {/* Forward Modal Overlay */}
@@ -311,7 +313,7 @@ const ChatContainer = () => {
       )}
 
       {/* Input Console */}
-      <div className="absolute bottom-0 left-0 w-full p-4 lg:p-8 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent z-40">
+      <div className="absolute bottom-0 left-0 w-full p-4 lg:p-6 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent z-40">
         <div className="max-w-4xl mx-auto">
            <MessageInput />
         </div>
