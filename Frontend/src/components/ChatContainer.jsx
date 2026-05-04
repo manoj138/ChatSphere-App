@@ -41,6 +41,13 @@ const ChatContainer = () => {
     return 0;
   };
 
+  const getAvatarFallback = (name) => (
+    <div className="w-full h-full flex items-center justify-center text-white font-black text-lg uppercase italic shadow-inner" 
+         style={{ background: `linear-gradient(135deg, ${themeColor}44 0%, #111 100%)` }}>
+      {name?.charAt(0)}
+    </div>
+  );
+
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-[#080808]">
@@ -56,11 +63,12 @@ const ChatContainer = () => {
   return (
     <div className="flex-1 flex flex-col bg-[#080808] relative overflow-hidden h-full">
       
-      {/* Header */}
       <header className="p-4 border-b border-white/5 flex items-center gap-4 bg-[#0a0a0a]/80 backdrop-blur-xl z-20">
         <div className="size-11 rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0">
            {selectedUser ? (
-              <img src={selectedUser.profilePicture || "/avatar.png"} className="w-full h-full object-cover" alt="" />
+              selectedUser.profilePicture ? (
+                <img src={selectedUser.profilePicture} className="w-full h-full object-cover" alt="" />
+              ) : getAvatarFallback(selectedUser.username)
            ) : (
               <div className="w-full h-full bg-white/5 flex items-center justify-center text-gray-500">
                  <Users size={20} />
@@ -90,7 +98,6 @@ const ChatContainer = () => {
         </div>
       </header>
 
-      {/* Messages Feed */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar pb-32">
         {messages && messages.length > 0 ? (
           messages.map((message) => {
@@ -164,7 +171,6 @@ const ChatContainer = () => {
         )}
       </div>
 
-      {/* Floating Input */}
       <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-[#080808] via-[#080808]/90 to-transparent z-10">
         <MessageInput />
       </div>
