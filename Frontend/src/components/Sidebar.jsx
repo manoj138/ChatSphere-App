@@ -4,8 +4,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { useFriendStore } from "../store/useFriendStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import { Users, MessageSquare, Settings, LogOut, Plus, Users as GroupsIcon, Search, UserCircle, User, Sparkles, Bell, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Users, MessageSquare, Settings, LogOut, Plus, Users as GroupsIcon, Search, UserCircle, User, Sparkles, Bell, X, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Sidebar = () => {
@@ -22,6 +22,7 @@ const Sidebar = () => {
 
   const { authUser, logout, onlineUsers = [] } = useAuthStore();
   const { themeColor } = useThemeStore();
+  const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState("chats");
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,17 +45,9 @@ const Sidebar = () => {
   const getAvatarSrc = (item) => {
     const photo = activeTab === "groups" ? item.groupImage : item.profilePicture;
     if (photo) return photo;
-    
-    // Deterministic 3D Avatar Fallback
     if (activeTab === "groups") return "/favicon.svg"; 
-    
     const idNum = item._id ? item._id.charCodeAt(item._id.length - 1) : 0;
-    const isBoy = idNum % 2 === 0;
-    if (isBoy) {
-        return `/boy_${(idNum % 5) + 1}.png?v=3`;
-    } else {
-        return `/girl_${(idNum % 4) + 1}.png?v=3`;
-    }
+    return idNum % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3";
   };
 
   const filteredItems = (
@@ -70,31 +63,47 @@ const Sidebar = () => {
 
   return (
     <aside className="h-full flex flex-col bg-[#0a0a0a] border-r border-white/5 transition-all">
+      
+      {/* Interactive Top Header - Direct Profile Access */}
       <div className="p-6 pb-2">
         <div className="flex items-center justify-between mb-8">
-           <div className="flex items-center gap-3">
-              <div className="size-10 rounded-2xl flex items-center justify-center text-black shadow-lg" style={{ backgroundColor: themeColor }}>
-                 <MessageSquare size={20} fill="currentColor" />
+           <Link to="/profile" className="flex items-center gap-3 group transition-transform active:scale-95">
+              <div className="size-11 rounded-2xl overflow-hidden border-2 border-transparent group-hover:border-white/20 transition-all">
+                 <img 
+                  src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
+                  className="w-full h-full object-cover" 
+                 />
               </div>
-              <h1 className="text-lg font-black text-white uppercase tracking-tighter hidden lg:block">Sphere</h1>
+              <div className="hidden lg:block">
+                 <p className="text-[10px] font-black text-white uppercase tracking-tighter group-hover:text-gray-300">Identity Center</p>
+                 <div className="flex items-center gap-1.5">
+                    <div className="size-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{authUser?.username}</span>
+                 </div>
+              </div>
+           </Link>
+           <div className="flex items-center gap-2">
+             {friendRequests.length > 0 && (
+               <div className="relative cursor-pointer" onClick={() => setActiveTab("discover")}>
+                  <Bell size={18} className="text-gray-500 hover:text-white transition-colors" />
+                  <span className="absolute -top-1 -right-1 size-3.5 bg-red-500 text-[7px] font-black flex items-center justify-center rounded-full border-2 border-[#0a0a0a]">
+                     {friendRequests.length}
+                  </span>
+               </div>
+             )}
+             <Link to="/settings" className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-all text-gray-500 hover:text-white">
+                <Settings size={18} />
+             </Link>
            </div>
-           {friendRequests.length > 0 && (
-             <div className="relative cursor-pointer" onClick={() => setActiveTab("discover")}>
-                <Bell size={20} className="text-gray-500" />
-                <span className="absolute -top-1 -right-1 size-4 bg-red-500 text-[8px] font-black flex items-center justify-center rounded-full border-2 border-[#0a0a0a]">
-                   {friendRequests.length}
-                </span>
-             </div>
-           )}
         </div>
 
-        <div className="flex p-1 bg-white/[0.03] rounded-xl mb-4 border border-white/5 overflow-x-auto no-scrollbar">
+        <div className="flex p-1 bg-white/[0.03] rounded-xl mb-4 border border-white/5">
            {["chats", "groups", "discover"].map((tab) => (
              <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 min-w-[60px] py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 ${
-                activeTab === tab ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"
+                activeTab === tab ? "bg-white/10 text-white shadow-xl" : "text-gray-500 hover:text-gray-300"
               }`}
              >
                {tab === "chats" && <User size={12} />}
@@ -109,7 +118,7 @@ const Sidebar = () => {
            <Search size={12} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700" />
            <input 
             type="text"
-            placeholder={`Search ${activeTab}...`}
+            placeholder={`Search Sphere...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white/[0.01] border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-[10px] focus:outline-none focus:border-white/10 transition-all placeholder:text-gray-800 font-bold"
@@ -117,12 +126,13 @@ const Sidebar = () => {
         </div>
       </div>
 
+      {/* Contacts List */}
       <div className="flex-1 overflow-y-auto px-4 space-y-1 custom-scrollbar py-4">
         {activeTab === "discover" && friendRequests.length > 0 && (
            <div className="mb-6 space-y-2">
-              <p className="px-3 text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Authorization Requests</p>
+              <p className="px-3 text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Awaiting Signal</p>
               {friendRequests.map(req => (
-                <div key={req._id} className="p-3 bg-red-500/5 border border-red-500/10 rounded-2xl flex items-center justify-between gap-3">
+                <div key={req._id} className="p-3 bg-red-500/5 border border-red-500/10 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in zoom-in-95">
                    <div className="size-8 rounded-lg overflow-hidden border border-red-500/20">
                       <img 
                         src={req.sender?.profilePicture || (req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 2 === 0 ? `/boy_${(req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 4) + 1}.png?v=3`)} 
@@ -131,8 +141,8 @@ const Sidebar = () => {
                    </div>
                    <p className="flex-1 text-[10px] font-black text-white truncate uppercase">{req.sender?.username}</p>
                    <div className="flex gap-1">
-                      <button onClick={() => respondToRequest(req._id, "accepted")} className="p-1.5 bg-green-500 text-black rounded-lg hover:scale-110 transition-transform"><Plus size={10} strokeWidth={4} /></button>
-                      <button onClick={() => respondToRequest(req._id, "rejected")} className="p-1.5 bg-white/10 text-white rounded-lg hover:scale-110 transition-transform"><Plus className="rotate-45" size={10} strokeWidth={4} /></button>
+                      <button onClick={() => respondToRequest(req._id, "accepted")} className="p-1.5 bg-green-500 text-black rounded-lg hover:scale-110"><Plus size={10} strokeWidth={4} /></button>
+                      <button onClick={() => respondToRequest(req._id, "rejected")} className="p-1.5 bg-white/10 text-white rounded-lg hover:scale-110"><X size={10} strokeWidth={4} /></button>
                    </div>
                 </div>
               ))}
@@ -154,7 +164,10 @@ const Sidebar = () => {
                  
                  <div className="relative flex-shrink-0">
                    <div className={`size-11 rounded-xl overflow-hidden border transition-all ${isSelected ? "border-white/20 shadow-2xl" : "border-white/5"}`}>
-                      <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
+                      <img 
+                        src={activeTab === "groups" ? (item.groupImage || "/favicon.svg") : (item.profilePicture || (item?._id?.charCodeAt(item?._id.length-1) % 2 === 0 ? `/boy_${(item?._id?.charCodeAt(item?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(item?._id?.charCodeAt(item?._id.length-1) % 4) + 1}.png?v=3`))} 
+                        className="w-full h-full object-cover" 
+                      />
                    </div>
                    {online && <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full" />}
                  </div>
@@ -182,56 +195,19 @@ const Sidebar = () => {
         )}
       </div>
 
-      <div className="p-4 mt-auto border-t border-white/5 bg-black/40 backdrop-blur-md">
-         <div className="grid grid-cols-3 gap-2 mb-4">
-            <Link to="/profile" className="flex flex-col items-center justify-center p-2 bg-white/[0.02] rounded-xl border border-white/5 hover:bg-white/10 transition-all group">
-               <UserCircle size={16} className="text-gray-600 group-hover:text-white" />
-               <span className="text-[7px] font-black uppercase tracking-widest mt-1 text-gray-700">Profile</span>
-            </Link>
-            <Link to="/settings" className="flex flex-col items-center justify-center p-2 bg-white/[0.02] rounded-xl border border-white/5 hover:bg-white/10 transition-all group">
-               <Settings size={16} className="text-gray-600 group-hover:text-white" />
-               <span className="text-[7px] font-black uppercase tracking-widest mt-1 text-gray-700">Config</span>
-            </Link>
-            <button onClick={logout} className="flex flex-col items-center justify-center p-2 bg-red-500/[0.02] rounded-xl border border-red-500/10 hover:bg-red-500/10 transition-all group">
-               <LogOut size={16} className="text-red-900 group-hover:text-red-500" />
-               <span className="text-[7px] font-black uppercase tracking-widest mt-1 text-red-900">Exit</span>
+      {/* Compact Status Footer */}
+      <div className="p-6 mt-auto border-t border-white/5 bg-black/40 backdrop-blur-md">
+         <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+               <ShieldCheck size={14} style={{ color: themeColor }} />
+               <span className="text-[8px] font-black uppercase tracking-widest text-gray-600">Secure Node</span>
+            </div>
+            <button onClick={logout} className="text-[8px] font-black uppercase tracking-widest text-red-900 hover:text-red-500 transition-colors">
+               Disconnect
             </button>
-         </div>
-
-         <div className="flex items-center gap-3 p-2.5 bg-white/5 rounded-xl border border-white/5">
-            <div className="size-9 rounded-lg overflow-hidden border border-white/10 bg-white/5">
-               <img 
-                src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
-                className="w-full h-full object-cover" 
-               />
-            </div>
-            <div className="hidden lg:block flex-1 min-w-0">
-               <p className="text-[10px] font-black text-white truncate uppercase">{authUser?.username}</p>
-               <div className="flex items-center gap-1.5 mt-0.5">
-                  <div className={`size-1.5 rounded-full ${onlineUsers.includes(authUser?._id) ? "bg-green-500 animate-pulse" : "bg-gray-700"}`} />
-                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-gray-600">Active Node</span>
-               </div>
-            </div>
          </div>
       </div>
 
-      {showCreateGroup && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-           <div className="bg-[#0f0f0f] w-full max-w-sm rounded-[2.5rem] border border-white/10 p-8 space-y-6">
-              <div className="flex items-center justify-between">
-                 <h3 className="font-black uppercase tracking-tighter text-xl">New Community</h3>
-                 <button onClick={() => setShowCreateGroup(false)} className="p-2 hover:bg-white/5 rounded-xl"><X size={18} /></button>
-              </div>
-              <input 
-                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none" 
-                placeholder="Name your sphere..." 
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-              />
-              <button onClick={handleCreateGroup} className="w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg" style={{ backgroundColor: themeColor, color: "#000" }}>Establish Sphere</button>
-           </div>
-        </div>
-      )}
     </aside>
   );
 };
