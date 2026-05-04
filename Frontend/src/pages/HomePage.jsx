@@ -9,13 +9,11 @@ const HomePage = () => {
   return (
     <div className="h-full bg-[#050505] flex overflow-hidden">
       
-      {/* Sidebar Area */}
-      <div className="w-20 lg:w-80 h-full flex-shrink-0">
-         <Sidebar />
-      </div>
+      {/* Sidebar - Controlled by its own internal width */}
+      <Sidebar />
 
-      {/* Main Chat Interface */}
-      <main className="flex-1 h-full bg-[#080808] relative">
+      {/* Main Content Area */}
+      <main className="flex-1 h-full bg-[#080808] relative overflow-hidden">
         {!selectedUser && !selectedGroup ? (
           <NoChatSelected />
         ) : (
