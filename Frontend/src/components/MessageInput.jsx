@@ -141,7 +141,7 @@ const MessageInput = () => {
            <div className="flex-1 relative">
               <input
                 type="text"
-                className="w-full bg-transparent border-none text-white text-sm font-bold placeholder:text-gray-800 placeholder:uppercase placeholder:tracking-[0.2em] focus:outline-none py-3 px-2"
+                className="w-full bg-transparent border-none text-white text-base font-medium placeholder:text-gray-500 placeholder:uppercase placeholder:tracking-[0.2em] focus:outline-none py-3 px-2"
                 placeholder="Transmit Signal..."
                 value={text}
                 onChange={handleTyping}

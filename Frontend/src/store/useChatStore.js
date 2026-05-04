@@ -85,7 +85,16 @@ export const useChatStore = create((set, get) => ({
         : messageData;
 
       const res = await axiosInstance.post(endpoint, payload);
-      set({ messages: [...messages, res.data.data] });
+      const newMessage = res.data.data;
+      set({ messages: [...messages, newMessage] });
+      
+      // Play SEND tone immediately after state update
+      const sendAudio = new Audio("/send-tone.mp3");
+      sendAudio.volume = 0.5;
+      sendAudio.play().catch(e => console.log("Send sound blocked by browser:", e));
+
+      get().getUsers(); 
+      if (selectedGroup) get().getGroups();
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending message");
     }
@@ -117,10 +126,10 @@ export const useChatStore = create((set, get) => ({
         // Refresh sidebar to show last message
         get().getUsers();
         
-        // Play notification sound
+        // Play RECEIVE notification sound
         if (!isMessageFromSelectedUser) {
-            const audio = new Audio("/notification.mp3");
-            audio.play().catch(e => console.log("Sound play failed"));
+            const audio = new Audio("/recieve-tone.mp3");
+            audio.play().catch(e => console.log("Receive sound failed"));
         }
     });
 
@@ -134,10 +143,10 @@ export const useChatStore = create((set, get) => ({
         // Refresh sidebar for groups
         get().getGroups();
 
-        // Play notification sound
+        // Play RECEIVE notification sound
         if (!isMessageForSelectedGroup) {
-            const audio = new Audio("/notification.mp3");
-            audio.play().catch(e => console.log("Sound play failed"));
+            const audio = new Audio("/recieve-tone.mp3");
+            audio.play().catch(e => console.log("Receive sound failed"));
         }
     });
 
