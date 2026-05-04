@@ -20,7 +20,7 @@ const ChatContainer = () => {
   } = useChatStore();
   
   const { authUser } = useAuthStore();
-  const { themeColor } = useThemeStore();
+  const { themeColor, isLightMode } = useThemeStore();
   const scrollRef = useRef(null);
   const [activeMessageMenu, setActiveMessageMenu] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -77,12 +77,12 @@ const ChatContainer = () => {
 
   if (isMessagesLoading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#050505]">
+      <div className="flex-1 flex flex-col items-center justify-center bg-primary">
         <div className="relative">
            <div className="size-16 rounded-full border-t-2 border-r-2 animate-spin" style={{ borderColor: themeColor }} />
-           <MessageSquare className="absolute inset-0 m-auto text-white/20" size={24} />
+           <MessageSquare className="absolute inset-0 m-auto text-primary opacity-20" size={24} />
         </div>
-        <p className="mt-6 text-[10px] text-gray-700 font-black uppercase tracking-[0.5em] animate-pulse">Establishing Signal...</p>
+        <p className="mt-6 text-[10px] text-secondary font-black uppercase tracking-[0.5em] animate-pulse">Establishing Signal...</p>
       </div>
     );
   }
@@ -91,14 +91,14 @@ const ChatContainer = () => {
   if (!activeChat) return null;
 
   return (
-    <div className="flex-1 flex flex-col bg-[#050505] relative overflow-hidden h-full font-sans">
+    <div className="flex-1 flex flex-col bg-primary relative overflow-hidden h-full font-sans transition-colors duration-500">
       
       {/* Background Ambience */}
       <div className="absolute top-1/4 -right-24 size-64 blur-[120px] opacity-10 pointer-events-none" style={{ backgroundColor: themeColor }} />
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
+      <div className={`absolute inset-0 opacity-[0.02] pointer-events-none ${isLightMode ? "bg-black" : "bg-white"}`} style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }} />
 
       {/* Header */}
-      <header className="px-4 lg:px-8 py-5 border-b border-white/[0.03] flex items-center justify-between bg-black/40 backdrop-blur-2xl z-30 transition-all duration-500">
+      <header className="px-4 lg:px-8 py-5 border-b border-primary flex items-center justify-between bg-secondary/40 backdrop-blur-2xl z-30 transition-all duration-500">
         {!isSearching ? (
            <div className="flex items-center gap-3 lg:gap-4 animate-in slide-in-from-left-4 duration-300">
               <button 
@@ -107,18 +107,17 @@ const ChatContainer = () => {
                    setSelectedUser(null);
                    setSelectedGroup(null);
                 }}
-                className="lg:hidden p-2 text-gray-500 hover:text-white transition-colors"
+                className="lg:hidden p-2 text-secondary hover:text-primary transition-colors"
               >
                  <ArrowLeft size={20} />
               </button>
 
-              {/* Clickable Header for Info */}
               <div 
                 className="flex items-center gap-3 lg:gap-4 cursor-pointer group"
                 onClick={() => setIsInfoModalOpen(true)}
               >
                  <div className="relative">
-                    <div className="size-12 rounded-[1.2rem] overflow-hidden border-2 border-white/5 group-hover:border-white/20 transition-all shadow-2xl relative z-10">
+                    <div className="size-12 rounded-[1.2rem] overflow-hidden border-2 border-primary group-hover:border-accent/40 transition-all shadow-2xl relative z-10">
                        {selectedUser ? (
                           <img src={getAvatarSrc(selectedUser)} className="w-full h-full object-cover" alt="" />
                        ) : (
@@ -129,7 +128,7 @@ const ChatContainer = () => {
                  </div>
                  
                  <div className="min-w-0">
-                    <h3 className="text-base font-black text-white truncate uppercase tracking-tight leading-none mb-1.5 group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-base font-black text-primary truncate uppercase tracking-tight leading-none mb-1.5 group-hover:text-accent transition-colors">
                        {selectedUser ? selectedUser.username : selectedGroup.name}
                     </h3>
                     <div className="flex items-center gap-2">
@@ -149,8 +148,8 @@ const ChatContainer = () => {
                           </div>
                        ) : (
                           <div className="flex items-center gap-1.5">
-                             <ShieldCheck size={10} className="text-gray-700" />
-                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-700">Secure Protocol</span>
+                             <ShieldCheck size={10} className="text-secondary opacity-40" />
+                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-secondary opacity-40">Secure Protocol</span>
                        </div>
                        )}
                     </div>
@@ -159,32 +158,32 @@ const ChatContainer = () => {
            </div>
         ) : (
            <div className="flex-1 flex items-center gap-4 animate-in slide-in-from-right-4 duration-300">
-              <button onClick={() => { setIsSearching(false); setSearchQuery(""); }} className="p-2 text-gray-500 hover:text-white transition-all">
+              <button onClick={() => { setIsSearching(false); setSearchQuery(""); }} className="p-2 text-secondary hover:text-primary transition-all">
                  <ArrowLeft size={20} />
               </button>
               <div className="flex-1 relative">
-                 <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
+                 <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary opacity-30" />
                  <input 
                     type="text"
                     autoFocus
                     placeholder="Search in transmission history..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none placeholder:text-gray-700 uppercase font-black tracking-widest"
+                    className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-xs text-primary focus:outline-none placeholder:text-secondary opacity-40 uppercase font-black tracking-widest"
                  />
               </div>
            </div>
         )}
 
-        <div className="flex items-center gap-4 text-gray-600 ml-4">
+        <div className="flex items-center gap-4 text-secondary ml-4">
            {!isSearching && (
-             <button onClick={() => setIsSearching(true)} className="p-2.5 bg-white/[0.02] border border-white/5 rounded-xl hover:text-white transition-all">
+             <button onClick={() => setIsSearching(true)} className="p-2.5 bg-surface border border-primary rounded-xl hover:text-primary transition-all">
                 <Search size={18} />
              </button>
            )}
            <button 
              onClick={() => setIsInfoModalOpen(true)}
-             className="p-2.5 bg-white/[0.02] border border-white/5 rounded-xl hover:text-white transition-all"
+             className="p-2.5 bg-surface border border-primary rounded-xl hover:text-primary transition-all"
            >
               <Info size={18} />
            </button>
@@ -210,16 +209,14 @@ const ChatContainer = () => {
                 
                 <div className={`flex items-end gap-3 max-w-[85%] lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                    
-                   {/* Avatar in Groups */}
                    {!isMine && (selectedGroup || message.groupId) && (
-                      <div className="size-9 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 mb-6 shadow-xl relative z-10">
+                      <div className="size-9 rounded-xl overflow-hidden border border-primary flex-shrink-0 mb-6 shadow-xl relative z-10">
                          <img src={getAvatarSrc(message.senderId)} className="w-full h-full object-cover" alt="Avatar" />
                       </div>
                    )}
 
                    <div className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}>
                       
-                      {/* Sender Name with Color */}
                       {!isMine && (selectedGroup || message.groupId) && (
                          <span 
                            className="text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1"
@@ -233,14 +230,14 @@ const ChatContainer = () => {
                          {isMine && !message.isDeleted && (
                            <button 
                              onClick={() => deleteMessage(message._id)}
-                             className="opacity-0 group-hover:opacity-100 p-2 text-gray-700 hover:text-red-500 transition-all active:scale-90 order-last"
+                             className="opacity-0 group-hover:opacity-100 p-2 text-secondary hover:text-red-500 transition-all active:scale-90 order-last"
                            >
                              <Trash2 size={16} />
                            </button>
                          )}
 
                          {!isMine && !message.isDeleted && (
-                            <button onClick={() => setForwardingMessage(message)} className="opacity-0 group-hover:opacity-100 p-2 text-gray-700 hover:text-white transition-all order-first">
+                            <button onClick={() => setForwardingMessage(message)} className="opacity-0 group-hover:opacity-100 p-2 text-secondary hover:text-primary transition-all order-first">
                                <Forward size={16} />
                             </button>
                          )}
@@ -251,15 +248,14 @@ const ChatContainer = () => {
                              ? "bg-transparent" 
                              : `px-6 py-4 rounded-[2rem] shadow-2xl ${
                                  isMine 
-                                 ? "bg-white/[0.05] text-white border border-white/10 rounded-tr-none" 
-                                 : "bg-[#111] border border-white/5 text-gray-200 rounded-tl-none"
+                                 ? "bg-surface text-primary border border-primary rounded-tr-none" 
+                                 : "bg-secondary/40 border border-primary text-primary rounded-tl-none"
                                } ${message.isDeleted ? "opacity-40 italic" : ""}`
                            }`}
                          >
-                            {/* Reactions Overlay */}
                             <div className={`absolute -bottom-3 ${isMine ? "right-4" : "left-4"} flex items-center gap-1 z-20`}>
                                {message.reactions?.map((reaction, rIdx) => (
-                                  <div key={rIdx} className="bg-black/80 border border-white/10 px-1.5 py-0.5 rounded-full text-[12px] shadow-lg animate-in zoom-in">
+                                  <div key={rIdx} className="bg-secondary/80 border border-primary px-1.5 py-0.5 rounded-full text-[12px] shadow-lg animate-in zoom-in">
                                      {reaction.emoji}
                                   </div>
                                ))}
@@ -268,14 +264,14 @@ const ChatContainer = () => {
                             {!message.isDeleted && (
                                <button 
                                  onClick={() => setActiveMessageMenu(activeMessageMenu === message._id ? null : message._id)}
-                                 className={`absolute -top-3 ${isMine ? "-left-3" : "-right-3"} size-8 bg-black border border-white/10 rounded-full flex items-center justify-center text-gray-600 opacity-0 group-hover:opacity-100 transition-all hover:text-yellow-500 z-30`}
+                                 className={`absolute -top-3 ${isMine ? "-left-3" : "-right-3"} size-8 bg-primary border border-primary rounded-full flex items-center justify-center text-secondary opacity-0 group-hover:opacity-100 transition-all hover:text-accent z-30`}
                                >
                                  <SmilePlus size={16} />
                                </button>
                             )}
 
                             {activeMessageMenu === message._id && (
-                              <div className={`absolute bottom-full mb-3 ${isMine ? "right-0" : "left-0"} bg-black/95 border border-white/10 p-1.5 rounded-full flex items-center gap-0.5 shadow-[0_0_50px_rgba(0,0,0,1)] z-[100] animate-in slide-in-from-bottom-2 duration-300`}>
+                              <div className={`absolute bottom-full mb-3 ${isMine ? "right-0" : "left-0"} bg-primary/95 border border-primary p-1.5 rounded-full flex items-center gap-0.5 shadow-2xl z-[100] animate-in slide-in-from-bottom-2 duration-300`}>
                                  {QUICK_REACTIONS.map(emoji => (
                                    <button 
                                      key={emoji}
@@ -283,7 +279,7 @@ const ChatContainer = () => {
                                        reactToMessage(message._id, emoji);
                                        setActiveMessageMenu(null);
                                      }}
-                                     className="size-9 hover:bg-white/10 rounded-full flex items-center justify-center text-xl transition-all active:scale-150 hover:scale-110"
+                                     className="size-9 hover:bg-surface rounded-full flex items-center justify-center text-xl transition-all active:scale-150 hover:scale-110"
                                    >
                                      {emoji}
                                    </button>
@@ -308,7 +304,7 @@ const ChatContainer = () => {
                             )}
 
                             {message.image && (
-                              <div className="mt-3 rounded-2xl overflow-hidden border border-white/10 shadow-inner relative group/img">
+                              <div className="mt-3 rounded-2xl overflow-hidden border border-primary shadow-inner relative group/img">
                                  <img src={message.image} className="max-w-full h-auto object-cover transition-transform duration-700 group-hover/img:scale-110" alt="" />
                                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity" />
                               </div>
@@ -317,12 +313,12 @@ const ChatContainer = () => {
                       </div>
                       
                       <div className={`flex items-center gap-3 mt-2.5 px-3 ${isMine ? "justify-end" : "justify-start"}`}>
-                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-800">
+                         <span className="text-[9px] font-black uppercase tracking-widest text-secondary opacity-40">
                             {message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "NOW"}
                          </span>
                          {isMine && !selectedGroup && !message.isDeleted && (
                            <div className="flex items-center gap-1">
-                              <CheckCheck size={14} className={message.isSeen ? "text-blue-500" : "text-gray-800"} strokeWidth={3} />
+                              <CheckCheck size={14} className={message.isSeen ? "text-blue-500" : "text-secondary opacity-30"} strokeWidth={3} />
                            </div>
                          )}
                       </div>
@@ -333,17 +329,15 @@ const ChatContainer = () => {
           })
         ) : (
           <div className="h-full flex flex-col items-center justify-center space-y-6 opacity-5 select-none">
-             <div className="p-10 border-2 border-dashed border-white/20 rounded-[3rem]">
-                <MessageSquare size={80} />
+             <div className="p-10 border-2 border-dashed border-primary rounded-[3rem]">
+                <MessageSquare size={80} className="text-primary" />
              </div>
-             <p className="text-sm font-black uppercase tracking-[1em]">Secure Zone Empty</p>
+             <p className="text-sm font-black uppercase tracking-[1em] text-primary">Secure Zone Empty</p>
           </div>
         )}
-        {/* Bottom Scroll Anchor */}
         <div ref={scrollRef} className="h-32 w-full" />
       </div>
 
-      {/* Overlays */}
       {forwardingMessage && (
         <ForwardModal 
           message={forwardingMessage} 
@@ -355,8 +349,7 @@ const ChatContainer = () => {
         <ChatInfoModal onClose={() => setIsInfoModalOpen(false)} />
       )}
 
-      {/* Input Console */}
-      <div className="absolute bottom-0 left-0 w-full p-4 lg:p-6 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent z-40">
+      <div className="absolute bottom-0 left-0 w-full p-4 lg:p-6 bg-gradient-to-t from-primary via-primary/95 to-transparent z-40">
         <div className="max-w-4xl mx-auto">
            <MessageInput />
         </div>

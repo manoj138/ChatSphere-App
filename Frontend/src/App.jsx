@@ -15,12 +15,19 @@ import SettingsPage from "./pages/SettingsPage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
-  const { themeColor } = useThemeStore();
+  const { themeColor, initTheme } = useThemeStore();
+
+  useEffect(() => {
+    initTheme();
+  }, [initTheme]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent-color', themeColor);
+  }, [themeColor]);
+
+  useEffect(() => {
     checkAuth();
-  }, [checkAuth, themeColor]);
+  }, [checkAuth]);
 
   useEffect(() => {
     if (authUser) {

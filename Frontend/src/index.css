@@ -2,40 +2,42 @@
 
 :root {
   --accent-color: #bef264;
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-surface: rgba(255, 255, 255, 0.02);
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --border-primary: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.05);
 }
 
-/* Custom Utilities */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-surface: rgba(0, 0, 0, 0.02);
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-primary: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.05);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Custom Utilities mapping to variables */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-surface { background-color: var(--bg-surface); }
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.border-primary { border-color: var(--border-primary); }
+
 .bg-accent { background-color: var(--accent-color); }
 .text-accent { color: var(--accent-color); }
 .border-accent { border-color: var(--accent-color); }
-.shadow-accent { shadow-color: var(--accent-color); }
-
-.thin-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.thin-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.thin-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-.thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
-  opacity: 0.2;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -46,11 +48,20 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--scrollbar-thumb);
   border-radius: 20px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
   opacity: 0.1;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
