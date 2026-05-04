@@ -6,65 +6,45 @@ import { useAuthStore } from "./useAuthStore";
 export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
-  searchResults: [],
-  pendingRequests: [],
+  groups: [],
   selectedUser: null,
+  selectedGroup: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  isSearching: false,
+  isGroupsLoading: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const res = await axiosInstance.get("/messages/users-sidebar");
+      const res = await axiosInstance.get("/messages/users");
       set({ users: res.data.data });
     } catch (error) {
-      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.message || "Error fetching users");
     } finally {
       set({ isUsersLoading: false });
     }
   },
 
-  searchUsers: async (query) => {
-    if (query === undefined) return; 
-    set({ isSearching: true });
+  getGroups: async () => {
+    set({ isGroupsLoading: true });
     try {
-      const res = await axiosInstance.get(`/messages/search/user?search=${query}`);
-      set({ searchResults: res.data.data });
+      const res = await axiosInstance.get("/groups/my-groups");
+      set({ groups: res.data.data });
     } catch (error) {
-      console.log("Error searching users");
+      toast.error(error.response?.data?.message || "Error fetching groups");
     } finally {
-      set({ isSearching: false });
+      set({ isGroupsLoading: false });
     }
   },
 
-  sendFriendRequest: async (receiverId) => {
+  createGroup: async (groupData) => {
     try {
-      await axiosInstance.post("/friends/send", { receiverId });
-      toast.success("Friend request sent!");
+      const res = await axiosInstance.post("/groups/create", groupData);
+      set({ groups: [...get().groups, res.data.data] });
+      toast.success("Group created successfully");
+      return res.data.data;
     } catch (error) {
-      toast.error(error.response?.data?.errors || "Request already sent");
-    }
-  },
-
-  getPendingRequests: async () => {
-    try {
-      const res = await axiosInstance.get("/friends/pending");
-      set({ pendingRequests: res.data.data });
-    } catch (error) {
-      console.log("Error fetching requests");
-    }
-  },
-
-  respondToRequest: async (requestId, status) => {
-    try {
-      await axiosInstance.post("/friends/respond", { requestId, status });
-      toast.success(`Request ${status} successfully`);
-      get().getPendingRequests();
-      get().getUsers(); 
-    } catch (error) {
-      toast.error("Error responding to request");
+      toast.error(error.response?.data?.message || "Error creating group");
     }
   },
 
@@ -74,21 +54,39 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data.data });
     } catch (error) {
-      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.message || "Error fetching messages");
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
+
+  getGroupMessages: async (groupId) => {
+    set({ isMessagesLoading: true });
+    try {
+      const res = await axiosInstance.get(`/messages/group/${groupId}`);
+      set({ messages: res.data.data });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error fetching group messages");
     } finally {
       set({ isMessagesLoading: false });
     }
   },
 
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get();
+    const { selectedUser, selectedGroup, messages } = get();
     try {
-      const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
+      const endpoint = selectedGroup 
+        ? `/messages/send/${selectedGroup._id}?groupId=true` 
+        : `/messages/send/${selectedUser._id}`;
+      
+      const payload = selectedGroup 
+        ? { ...messageData, groupId: selectedGroup._id }
+        : messageData;
+
+      const res = await axiosInstance.post(endpoint, payload);
       set({ messages: [...messages, res.data.data] });
     } catch (error) {
-      const errorMessage = error.response?.data?.errors?.server || error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.message || "Error sending message");
     }
   },
 
@@ -96,21 +94,28 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
-    socket.on("newFriendRequest", (newRequest) => {
-      set({ pendingRequests: [newRequest, ...get().pendingRequests] });
-      toast("New Friend Request!", { icon: '👋' });
-    });
-
-    socket.on("friendRequestAccepted", () => {
-      get().getUsers(); // Refresh sidebar to show new friend
-      toast.success("Friend request accepted!");
-    });
-
     socket.on("newMessage", (newMessage) => {
+      const isChattingWithSender = get().selectedUser?._id === newMessage.senderId;
+      if (isChattingWithSender) {
+        set({ messages: [...get().messages, newMessage] });
+      }
+    });
+
+    socket.on("newGroupMessage", (newMessage) => {
+      const isChattingInGroup = get().selectedGroup?._id === newMessage.groupId;
+      if (isChattingInGroup) {
+        set({ messages: [...get().messages, newMessage] });
+      }
+    });
+
+    socket.on("messagesSeen", ({ senderId, recipientId }) => {
         const { selectedUser, messages } = get();
-        // Only update if the message is from the currently selected user
-        if (selectedUser && newMessage.senderId === selectedUser._id) {
-          set({ messages: [...messages, newMessage] });
+        if (selectedUser?._id === senderId) {
+            set({
+                messages: messages.map(m => 
+                    m.senderId !== selectedUser._id ? { ...m, isSeen: true } : m
+                )
+            });
         }
     });
   },
@@ -118,9 +123,9 @@ export const useChatStore = create((set, get) => ({
   unsubscribeFromEvents: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
-    socket.off("newFriendRequest");
-    socket.off("friendRequestAccepted");
     socket.off("newMessage");
+    socket.off("newGroupMessage");
+    socket.off("messagesSeen");
   },
 
   markMessagesAsSeen: async (userId) => {
@@ -131,5 +136,12 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
+  setSelectedUser: (selectedUser) => set({ selectedUser, selectedGroup: null }),
+  setSelectedGroup: (selectedGroup) => {
+      set({ selectedGroup, selectedUser: null });
+      if (selectedGroup) {
+          const socket = useAuthStore.getState().socket;
+          if (socket) socket.emit("joinGroup", selectedGroup._id);
+      }
+  },
 }));

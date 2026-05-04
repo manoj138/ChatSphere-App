@@ -33,7 +33,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Account created successfully. Please login.");
             navigate("/login");
         } catch (error) {
-            toast.error(error.response.data.message || "An error occurred");
+            toast.error(error.response?.data?.message || "Server connection failed. Please check if backend is running.");
         } finally {
             set({ isSigningUp: false });
         }
@@ -47,7 +47,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Logged in successfully");
             get().connectSocket();
         } catch (error) {
-            toast.error(error.response.data.message || "An error occurred");
+            toast.error(error.response?.data?.message || "Server connection failed. Please check if backend is running.");
         } finally {
             set({ isLoggingIn: false });
         }
@@ -76,7 +76,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Profile updated successfully");
         } catch (error) {
             console.log("Error in updateProfile:", error);
-            toast.error(error.response.data.message || "An error occurred");
+            toast.error(error.response?.data?.message || "Server connection failed");
         } finally {
             set({ isUpdatingProfile: false });
         }
