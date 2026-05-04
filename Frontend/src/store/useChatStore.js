@@ -73,12 +73,15 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  sendMessage: async (messageData) => {
+  sendMessage: async (messageData, targetId = null) => {
     const { selectedUser, selectedGroup, messages } = get();
     try {
-      const endpoint = selectedGroup 
+      const finalTargetId = targetId || (selectedGroup ? selectedGroup._id : selectedUser?._id);
+      if(!finalTargetId) return;
+
+      const endpoint = (selectedGroup && !targetId)
         ? `/messages/send/${selectedGroup._id}` 
-        : `/messages/send/${selectedUser._id}`;
+        : `/messages/send/${finalTargetId}`;
       
       const payload = selectedGroup 
         ? { ...messageData, groupId: selectedGroup._id }
@@ -109,6 +112,33 @@ export const useChatStore = create((set, get) => ({
         socket.emit("typing", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id, typing: true });
     } else {
         socket.emit("stopTyping", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id });
+    }
+  },
+
+  deleteMessage: async (messageId) => {
+    try {
+      await axiosInstance.delete(`/messages/delete/${messageId}`);
+      set((state) => ({
+        messages: state.messages.map((m) =>
+          m._id === messageId ? { ...m, isDeleted: true, text: "This message was deleted", image: null } : m
+        ),
+      }));
+      toast.success("Message deleted");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error deleting message");
+    }
+  },
+
+  reactToMessage: async (messageId, emoji) => {
+    try {
+      const res = await axiosInstance.put(`/messages/react/${messageId}`, { emoji });
+      set((state) => ({
+        messages: state.messages.map((m) =>
+          m._id === messageId ? { ...m, reactions: res.data.data.reactions } : m
+        ),
+      }));
+    } catch (error) {
+      console.log("Error reacting to message");
     }
   },
 
@@ -150,6 +180,22 @@ export const useChatStore = create((set, get) => ({
         }
     });
 
+    socket.on("messageDeleted", ({ messageId }) => {
+        set((state) => ({
+            messages: state.messages.map((m) =>
+                m._id === messageId ? { ...m, isDeleted: true, text: "This message was deleted", image: null } : m
+            ),
+        }));
+    });
+
+    socket.on("messageReaction", ({ messageId, reactions }) => {
+        set((state) => ({
+            messages: state.messages.map((m) =>
+                m._id === messageId ? { ...m, reactions } : m
+            ),
+        }));
+    });
+
     socket.on("usertyping", ({ senderId, typing }) => {
         set((state) => ({
             typingStatus: { ...state.typingStatus, [senderId]: typing }
@@ -177,6 +223,8 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
     socket.off("newMessage");
     socket.off("newGroupMessage");
+    socket.off("messageDeleted");
+    socket.off("messageReaction");
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
@@ -197,5 +245,31 @@ export const useChatStore = create((set, get) => ({
           const socket = useAuthStore.getState().socket;
           if (socket) socket.emit("joinGroup", selectedGroup._id);
       }
+  },
+
+  updateGroup: async (groupId, groupData) => {
+    try {
+      const res = await axiosInstance.put(`/groups/update/${groupId}`, groupData);
+      set((state) => ({
+        groups: state.groups.map((g) => (g._id === groupId ? { ...g, ...res.data.data } : g)),
+        selectedGroup: state.selectedGroup?._id === groupId ? { ...state.selectedGroup, ...res.data.data } : state.selectedGroup,
+      }));
+      toast.success("Group settings updated");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error updating group");
+    }
+  },
+
+  deleteGroup: async (groupId) => {
+    try {
+      await axiosInstance.delete(`/groups/delete/${groupId}`);
+      set((state) => ({
+        groups: state.groups.filter((g) => g._id !== groupId),
+        selectedGroup: state.selectedGroup?._id === groupId ? null : state.selectedGroup,
+      }));
+      toast.success("Group terminated");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error deleting group");
+    }
   },
 }));

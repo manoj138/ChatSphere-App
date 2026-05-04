@@ -29,7 +29,17 @@ const messageSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Group",
         default:null
-    }
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    reactions: [
+        {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            emoji: { type: String }
+        }
+    ]
 }, {timestamps:true})
 
 const Message = mongoose.model("Message", messageSchema);

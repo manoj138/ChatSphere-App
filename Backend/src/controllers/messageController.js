@@ -125,20 +125,65 @@ const deleteMessage = async(req, res)=>{
         if(message.senderId.toString() !== userId.toString()){
             return handle401(res, "You are not authorized to delete this message");
         }
-        if(message.image){
-            const publicId = message.image.split("/").pop().split(".")[0];
-            await cloudinary.uploader.destroy(publicId);
-        }
-        await Message.findByIdAndDelete(messageId);
 
-        const receiverSocketId = getReceiverSocketId(message.receiverId);
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("deleteMessage", messageId);
+        // Soft delete: keep the record but mark as deleted
+        message.isDeleted = true;
+        message.text = "This message was deleted";
+        if(message.image) message.image = null;
+        await message.save();
+
+        // Notify other user(s) via socket
+        if(message.groupId){
+            io.to(message.groupId.toString()).emit("messageDeleted", { messageId, groupId: message.groupId });
+        } else {
+            const receiverSocketId = getReceiverSocketId(message.receiverId);
+            if(receiverSocketId){
+                io.to(receiverSocketId).emit("messageDeleted", { messageId, senderId: message.senderId });
+            }
         }
 
-        return handle200(res, null, "Message deleted successfully")
+        return handle200(res, message, "Message deleted successfully")
     }catch(error){
         console.log("Error in deleteMessage: ", error);
+        handle500(res, error);
+    }
+}
+
+const reactToMessage = async(req, res)=>{
+    try {
+        const {id:messageId} = req.params;
+        const {emoji} = req.body;
+        const userId = req.user._id;
+
+        const message = await Message.findById(messageId);
+        if(!message) return handle404(res, "Message not found");
+
+        const existingReactionIndex = message.reactions.findIndex(r => r.userId.toString() === userId.toString());
+
+        if(existingReactionIndex > -1){
+            if(message.reactions[existingReactionIndex].emoji === emoji){
+                message.reactions.splice(existingReactionIndex, 1);
+            } else {
+                message.reactions[existingReactionIndex].emoji = emoji;
+            }
+        } else {
+            message.reactions.push({ userId, emoji });
+        }
+
+        await message.save();
+
+        const updateData = { messageId, reactions: message.reactions };
+        if(message.groupId){
+            io.to(message.groupId.toString()).emit("messageReaction", updateData);
+        } else {
+            const receiverId = message.senderId.toString() === userId.toString() ? message.receiverId : message.senderId;
+            const receiverSocketId = getReceiverSocketId(receiverId);
+            if(receiverSocketId) io.to(receiverSocketId).emit("messageReaction", updateData);
+        }
+
+        return handle200(res, message, "Reaction updated");
+    } catch (error) {
+        console.log("Error in reactToMessage: ", error);
         handle500(res, error);
     }
 }

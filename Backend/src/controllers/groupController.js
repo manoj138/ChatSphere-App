@@ -68,4 +68,55 @@ const getMyGroups = async(req, res)=>{
     }
 }
 
-module.exports = { createGroup, getMyGroups };
+const updateGroup = async (req, res) => {
+    try {
+        const { id: groupId } = req.params;
+        const { name, groupImage } = req.body;
+        const userId = req.user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+
+        if (group.admin.toString() !== userId.toString()) {
+            return res.status(401).json({ message: "Only admin can update group settings" });
+        }
+
+        if (name) group.name = name;
+        if (groupImage) {
+            const uploadResponse = await cloudinary.uploader.upload(groupImage, {
+                folder: "chatsphere_groups"
+            });
+            group.groupImage = uploadResponse.secure_url;
+        }
+
+        await group.save();
+        return handle200(res, group, "Group updated successfully");
+    } catch (error) {
+        console.log("Error in updateGroup: ", error);
+        handle500(res, error);
+    }
+}
+
+const deleteGroup = async (req, res) => {
+    try {
+        const { id: groupId } = req.params;
+        const userId = req.user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+
+        if (group.admin.toString() !== userId.toString()) {
+            return res.status(401).json({ message: "Only admin can delete group" });
+        }
+
+        await Group.findByIdAndDelete(groupId);
+        await Message.deleteMany({ groupId });
+
+        return handle200(res, null, "Group deleted successfully");
+    } catch (error) {
+        console.log("Error in deleteGroup: ", error);
+        handle500(res, error);
+    }
+}
+
+module.exports = { createGroup, getMyGroups, updateGroup, deleteGroup };
