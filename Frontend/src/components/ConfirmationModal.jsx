@@ -1,10 +1,10 @@
-import { X, AlertTriangle, LogOut, Trash2 } from "lucide-react";
-import { useThemeStore } from "../store/useThemeStore";
 import { useEffect } from "react";
+import { LogOut, Trash2 } from "lucide-react";
+
+import { useThemeStore } from "../store/useThemeStore";
 
 const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "danger" }) => {
   const { themeColor } = useThemeStore();
-  
   const isLogout = title.toLowerCase().includes("logout") || title.toLowerCase().includes("disconnect");
 
   useEffect(() => {
@@ -18,39 +18,40 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
 
   return (
     <div
-      className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-[500] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in duration-300"
       onClick={(event) => {
         if (event.target === event.currentTarget) onCancel();
       }}
     >
-      <div className="w-full max-w-sm bg-secondary border border-primary rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden relative">
-        
-        {/* Glow Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 blur-[80px] opacity-10" style={{ backgroundColor: type === "danger" ? "#ef4444" : themeColor }} />
+      <div className="app-panel relative w-full max-w-sm overflow-hidden rounded-[2rem]">
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 h-28 w-32 -translate-x-1/2 opacity-10 blur-[80px]"
+          style={{ backgroundColor: type === "danger" ? "#ef4444" : themeColor }}
+        />
 
-        <div className="p-8 flex flex-col items-center text-center">
-           <div className={`size-16 rounded-full flex items-center justify-center mb-6 ${type === "danger" ? "bg-red-500/10 text-red-500" : "bg-accent/10 text-accent"}`}>
-              {isLogout ? <LogOut size={30} /> : <Trash2 size={30} />}
-           </div>
+        <div className="relative p-6 text-center sm:p-8">
+          <div className={`mx-auto mb-5 flex size-14 items-center justify-center rounded-full ${type === "danger" ? "bg-red-500/10 text-red-400" : "text-black"}`} style={type !== "danger" ? { backgroundColor: themeColor } : {}}>
+            {isLogout ? <LogOut size={24} /> : <Trash2 size={24} />}
+          </div>
 
-           <h3 className="text-xl font-black text-primary uppercase tracking-tighter mb-2">{title}</h3>
-           <p className="text-sm text-secondary mb-8 leading-relaxed opacity-60">{description}</p>
+          <h3 className="text-xl font-black tracking-tight text-white">{title}</h3>
+          <p className="mt-3 text-sm leading-6 text-gray-400">{description}</p>
 
-           <div className="flex flex-col w-full gap-3">
-              <button 
-                onClick={onConfirm} 
-                className={`w-full py-4 rounded-2xl text-white font-black uppercase tracking-widest transition-all active:scale-95 ${type === "danger" ? "bg-red-600 hover:bg-red-500" : "bg-accent text-black hover:brightness-110"}`}
-                style={type !== "danger" ? { backgroundColor: themeColor } : {}}
-              >
-                 Confirm Action
-              </button>
-              <button 
-                onClick={onCancel} 
-                className="w-full py-4 bg-surface border border-primary rounded-2xl text-secondary font-black uppercase tracking-widest hover:text-primary transition-all active:scale-95"
-              >
-                 Abort Protocol
-              </button>
-           </div>
+          <div className="mt-6 grid gap-3">
+            <button
+              onClick={onConfirm}
+              className={`w-full rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition active:scale-[0.99] ${type === "danger" ? "bg-red-600 text-white hover:bg-red-500" : "text-black hover:brightness-110"}`}
+              style={type !== "danger" ? { backgroundColor: themeColor } : {}}
+            >
+              Confirm
+            </button>
+            <button
+              onClick={onCancel}
+              className="w-full rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/[0.05]"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>

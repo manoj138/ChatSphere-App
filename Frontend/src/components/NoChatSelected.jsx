@@ -8,16 +8,16 @@ const NoChatSelected = () => {
   const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 bg-primary relative overflow-hidden font-sans transition-colors duration-500">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-[#080808] p-4 font-sans transition-colors duration-500 sm:p-8">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] blur-[150px] opacity-[0.1] pointer-events-none rounded-full" style={{ backgroundColor: themeColor }} />
       <div className={`absolute inset-0 opacity-[0.02] pointer-events-none ${isLightMode ? "bg-black" : "bg-white"}`} style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/black-linen.png')" }} />
 
-      <div className="max-w-2xl w-full space-y-6 sm:space-y-10 relative z-10">
+      <div className="relative z-10 w-full max-w-3xl space-y-6 sm:space-y-10">
         
         {/* Compact Profile Identity */}
-        <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-700">
+        <div className="animate-in fade-in zoom-in flex flex-col items-center gap-4 duration-700">
            <div className="relative group">
               <div className="size-20 rounded-[1.5rem] overflow-hidden border-2 border-primary group-hover:border-accent/40 transition-all p-0.5 shadow-2xl">
                  <img 
@@ -30,38 +30,39 @@ const NoChatSelected = () => {
               </div>
            </div>
            <div className="text-center">
-              <h3 className="text-lg font-black text-primary tracking-tight">Welcome, @{authUser?.username}</h3>
-              <p className="text-xs font-medium text-secondary opacity-60">You are signed in and ready to chat.</p>
+              <span className="app-chip mb-4" style={{ color: themeColor }}>Workspace ready</span>
+              <h3 className="text-3xl font-black tracking-tight text-white">Welcome, @{authUser?.username}</h3>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-400">Pick a conversation, discover new people, or tune your account before you jump back into chat.</p>
            </div>
         </div>
 
         {/* Action Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-bottom-8 duration-700 delay-200">
+        <div className="animate-in slide-in-from-bottom-8 grid grid-cols-1 gap-4 duration-700 delay-200 md:grid-cols-2">
            
-           <div className="p-6 bg-surface border border-primary rounded-[2.5rem] flex flex-col gap-4 group hover:bg-surface/50 transition-all">
-              <div className="size-10 rounded-xl bg-surface border border-primary flex items-center justify-center text-primary group-hover:text-accent transition-colors">
+           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-white/5 bg-white/[0.03] p-6 transition-all hover:bg-white/[0.05]">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03] text-white transition-colors group-hover:text-accent">
                  <MessageSquarePlus size={20} />
               </div>
               <div>
-                 <h4 className="text-sm font-black text-primary mb-1">Start a conversation</h4>
-                 <p className="text-xs text-secondary font-medium leading-relaxed opacity-80">Select a friend from the sidebar to open your chat and continue where you left off.</p>
+                 <h4 className="mb-1 text-sm font-black text-white">Start a conversation</h4>
+                 <p className="text-xs font-medium leading-relaxed text-gray-400">Select a friend from the sidebar to open your chat and continue where you left off.</p>
               </div>
            </div>
 
-           <div className="p-6 bg-surface border border-primary rounded-[2.5rem] flex flex-col gap-4 group hover:bg-surface/50 transition-all">
-              <div className="size-10 rounded-xl bg-surface border border-primary flex items-center justify-center text-primary group-hover:text-accent transition-colors">
+           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-white/5 bg-white/[0.03] p-6 transition-all hover:bg-white/[0.05]">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03] text-white transition-colors group-hover:text-accent">
                  <UserPlus size={20} />
               </div>
               <div>
-                 <h4 className="text-sm font-black text-primary mb-1">Discover people</h4>
-                 <p className="text-xs text-secondary font-medium leading-relaxed opacity-80">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
+                 <h4 className="mb-1 text-sm font-black text-white">Discover people</h4>
+                 <p className="text-xs font-medium leading-relaxed text-gray-400">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
               </div>
            </div>
 
         </div>
 
         {/* Global Stats Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 py-4 border-y border-primary/40 animate-in fade-in duration-1000 delay-500">
+        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-[2rem] border border-white/5 bg-white/[0.03] px-6 py-5 duration-1000 delay-500 sm:flex-row sm:gap-8">
            <div className="flex items-center gap-2">
               <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
               <span className="text-[11px] font-semibold text-secondary opacity-80">{onlineUsers.length} people online</span>
@@ -77,10 +78,10 @@ const NoChatSelected = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center animate-in fade-in duration-1000 delay-700">
+           <div className="text-center animate-in fade-in duration-1000 delay-700">
            <p className="text-sm font-semibold text-gray-500 mb-4">Choose a chat from the sidebar, or update your account first.</p>
            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/profile" className="px-5 py-3 rounded-2xl bg-surface border border-primary text-sm font-semibold text-primary hover:border-accent transition-all">
+              <Link to="/profile" className="rounded-2xl border border-white/5 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-white/[0.05]">
                 Open Profile
               </Link>
               <Link to="/settings" className="px-5 py-3 rounded-2xl text-sm font-semibold text-black hover:brightness-110 transition-all" style={{ backgroundColor: themeColor }}>

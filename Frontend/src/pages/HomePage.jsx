@@ -7,7 +7,7 @@ const HomePage = () => {
   const { selectedUser, selectedGroup } = useChatStore();
 
   return (
-    <div className="h-full bg-[#050505] flex overflow-hidden">
+    <div className="app-shell flex h-screen overflow-hidden">
       
       {/* Sidebar - Hidden on mobile when a chat is selected */}
       <div className={`${selectedUser || selectedGroup ? "hidden lg:flex" : "flex w-full lg:w-auto"} h-full min-w-0`}>
@@ -15,7 +15,7 @@ const HomePage = () => {
       </div>
 
       {/* Main Content Area - Full width on mobile when selected, hidden when not */}
-      <main className={`${!selectedUser && !selectedGroup ? "hidden lg:flex" : "flex"} flex-1 h-full bg-[#080808] relative overflow-hidden min-w-0`}>
+      <main className={`${!selectedUser && !selectedGroup ? "hidden lg:flex" : "flex"} relative min-w-0 flex-1 h-full overflow-hidden bg-[#080808]`}>
         {!selectedUser && !selectedGroup ? (
           <NoChatSelected />
         ) : (

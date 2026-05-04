@@ -80,11 +80,11 @@ const MessageInput = () => {
       {/* Image Preview Floating Card */}
       {imagePreview && (
         <div className="absolute bottom-full left-0 mb-4 animate-in zoom-in-95 duration-300">
-          <div className="relative group p-1 bg-secondary border border-primary rounded-[1.5rem] shadow-2xl transition-colors duration-500">
+          <div className="app-modal relative group rounded-[1.25rem] p-1">
             <img
               src={imagePreview}
               alt="Preview"
-              className="size-24 object-cover rounded-[1.2rem] border border-primary opacity-90"
+              className="size-24 rounded-[1rem] border border-white/10 object-cover opacity-90"
             />
             <button
               onClick={removeImage}
@@ -119,13 +119,13 @@ const MessageInput = () => {
         {/* Glow Effect */}
         <div className="absolute -inset-1 rounded-full blur-md opacity-10 group-focus-within:opacity-30 transition-opacity" style={{ backgroundColor: themeColor }} />
 
-        <div className="relative flex items-center gap-2 bg-secondary/95 backdrop-blur-2xl border border-primary p-1.5 rounded-full shadow-2xl overflow-hidden transition-all duration-500">
+        <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-white/5 bg-[#0a0a0a]/95 p-1.5 shadow-2xl backdrop-blur-2xl transition-all duration-500">
            
            {/* Utility Buttons Area */}
-           <div className="flex items-center gap-0.5 ml-1">
+           <div className="ml-1 flex items-center gap-0.5">
               <button
                 type="button"
-                className={`p-2.5 rounded-full transition-all ${imagePreview ? "text-green-500 bg-green-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
+                className={`rounded-full p-2.5 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-gray-500 hover:bg-white/[0.05] hover:text-white"}`}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSending || isProcessingImage}
               >
@@ -133,7 +133,7 @@ const MessageInput = () => {
               </button>
               <button
                 type="button"
-                className={`p-2.5 rounded-full transition-all ${showEmojiPicker ? "text-yellow-500 bg-yellow-500/10" : "text-secondary opacity-40 hover:text-primary hover:bg-surface"}`}
+                className={`rounded-full p-2.5 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-gray-500 hover:bg-white/[0.05] hover:text-white"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 disabled={isSending || isProcessingImage}
               >
@@ -150,10 +150,10 @@ const MessageInput = () => {
            />
 
            {/* Command Input Area */}
-           <div className="flex-1 relative">
+           <div className="relative flex-1">
               <input
                 type="text"
-                className="w-full bg-transparent border-none text-primary text-[14px] font-medium placeholder:text-secondary placeholder:opacity-50 focus:outline-none py-2 px-1"
+                className="w-full bg-transparent border-none px-1 py-2 text-[14px] font-medium text-primary placeholder:text-gray-500 focus:outline-none"
                 placeholder="Type a message..."
                 value={text}
                 onChange={handleTyping}
@@ -165,7 +165,7 @@ const MessageInput = () => {
            <button
              type="submit"
              disabled={isSending || isProcessingImage || (!text.trim() && !imagePreview)}
-             className="size-10 rounded-full transition-all shadow-xl flex items-center justify-center group/btn disabled:opacity-20 disabled:grayscale mr-1 flex-shrink-0"
+             className="mr-1 flex size-10 flex-shrink-0 items-center justify-center rounded-full shadow-xl transition-all group/btn disabled:grayscale disabled:opacity-20"
              style={{ backgroundColor: themeColor }}
            >
               <Send size={16} className="text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" strokeWidth={3} />

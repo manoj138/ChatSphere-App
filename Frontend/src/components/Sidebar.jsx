@@ -19,8 +19,7 @@ const Sidebar = () => {
   } = useChatStore();
 
   const {
-    getAllUsers, allUsers = [], getFriendRequests, friendRequests = [],
-    sendFriendRequest, respondToRequest
+    getAllUsers, allUsers = [], getFriendRequests
   } = useFriendStore();
 
   const { authUser, logout, onlineUsers = [] } = useAuthStore();
@@ -69,37 +68,38 @@ const Sidebar = () => {
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full flex bg-secondary border-r border-primary transition-all w-full lg:w-[420px] overflow-hidden select-none font-sans relative duration-500">
+    <aside className="relative flex h-screen w-full overflow-hidden border-r border-white/5 bg-[#0a0a0a] font-sans transition-all duration-500 select-none lg:h-full lg:w-[420px]">
 
-      {/* 1. Vertical Navigation Strip */}
-      <div className="w-[62px] sm:w-[70px] bg-secondary flex flex-col items-center py-4 sm:py-6 gap-5 sm:gap-8 border-r border-primary relative z-20">
+      {/* Desktop Navigation Strip */}
+      <div className="relative z-20 hidden h-full w-[74px] flex-col items-center gap-8 border-r border-white/5 bg-[#0a0a0a] py-6 lg:flex">
+        <div className="absolute inset-x-3 top-3 h-24 rounded-[1.5rem] opacity-20 blur-2xl" style={{ backgroundColor: themeColor }} />
         <div className="flex flex-col items-center gap-5 sm:gap-8 flex-1 w-full">
           <button
             onClick={() => setActiveTab("chats")}
-            className={`p-3 rounded-xl transition-all ${activeTab === "chats" ? "bg-surface text-primary shadow-[0_0_20px_rgba(255,255,255,0.05)]" : "text-secondary hover:text-primary"}`}
+            className={`rounded-2xl p-3 transition-all ${activeTab === "chats" ? "border border-white/5 bg-white/[0.05] text-white" : "text-gray-500 hover:bg-white/[0.03] hover:text-white"}`}
           >
             <MessageSquare size={22} fill={activeTab === "chats" ? "currentColor" : "none"} />
           </button>
           <button 
             onClick={() => setActiveTab("groups")} 
-            className={`p-3 rounded-xl transition-all ${activeTab === "groups" ? "bg-surface text-primary shadow-[0_0_20px_rgba(255,255,255,0.05)]" : "text-secondary hover:text-primary"}`}
+            className={`rounded-2xl p-3 transition-all ${activeTab === "groups" ? "border border-white/5 bg-white/[0.05] text-white" : "text-gray-500 hover:bg-white/[0.03] hover:text-white"}`}
           >
             <Users size={22} fill={activeTab === "groups" ? "currentColor" : "none"} />
           </button>
           <button 
             onClick={() => setActiveTab("discover")} 
-            className={`p-3 rounded-xl transition-all ${activeTab === "discover" ? "bg-surface text-primary shadow-[0_0_20px_rgba(255,255,255,0.05)]" : "text-secondary hover:text-primary"}`}
+            className={`rounded-2xl p-3 transition-all ${activeTab === "discover" ? "border border-white/5 bg-white/[0.05] text-white" : "text-gray-500 hover:bg-white/[0.03] hover:text-white"}`}
           >
             <UserPlus size={22} />
           </button>
         </div>
 
         <div className="flex flex-col items-center gap-5 sm:gap-8 w-full">
-          <Link to="/settings" className="text-secondary hover:text-primary transition-all">
+          <Link to="/settings" className="text-gray-500 transition-all hover:text-white">
             <Settings size={22} />
           </Link>
           <Link to="/profile" className="mb-2">
-            <div className="size-10 rounded-full overflow-hidden border border-primary shadow-lg group">
+            <div className="group size-10 overflow-hidden rounded-full border border-white/10 shadow-lg">
               <img
                 src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length - 1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 4) + 1}.png?v=3`)}
                 className="w-full h-full object-cover transition-transform group-hover:scale-110"
@@ -110,48 +110,98 @@ const Sidebar = () => {
       </div>
 
       {/* 2. Content Area */}
-      <div className="flex-1 flex flex-col bg-secondary">
+      <div className="flex flex-1 flex-col bg-[#0a0a0a]">
+        <div className="sticky top-0 z-20 border-b border-white/5 bg-[#0a0a0a]/95 px-4 pb-3 pt-4 backdrop-blur-xl lg:hidden">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              <h1 className="text-lg font-black tracking-tight text-white">
+                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
+              </h1>
+              <p className="text-xs text-gray-500">Browse chats, groups, and people.</p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Link to="/profile" className="size-10 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+                <img
+                  src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length - 1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 4) + 1}.png?v=3`)}
+                  className="w-full h-full object-cover"
+                />
+              </Link>
+              <Link to="/settings" className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 text-gray-400 transition-all hover:bg-white/[0.05] hover:text-white">
+                <Settings size={18} />
+              </Link>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 text-gray-400 transition-all active:scale-90 hover:text-red-400"
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={() => setActiveTab("chats")}
+              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "chats" ? "border border-white/5 bg-white/[0.05] text-white" : "border border-transparent text-gray-500 hover:bg-white/[0.03]"}`}
+            >
+              Chats
+            </button>
+            <button
+              onClick={() => setActiveTab("groups")}
+              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "groups" ? "border border-white/5 bg-white/[0.05] text-white" : "border border-transparent text-gray-500 hover:bg-white/[0.03]"}`}
+            >
+              Groups
+            </button>
+            <button
+              onClick={() => setActiveTab("discover")}
+              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "discover" ? "border border-white/5 bg-white/[0.05] text-white" : "border border-transparent text-gray-500 hover:bg-white/[0.03]"}`}
+            >
+              Discover
+            </button>
+          </div>
+        </div>
 
         {/* Minimalist Header */}
-        <div className="p-4 sm:p-6 pb-2 flex items-center justify-between gap-3">
+        <div className="sticky top-0 z-20 hidden items-center justify-between gap-3 bg-[#0a0a0a]/95 p-4 pb-2 backdrop-blur-xl sm:p-6 lg:flex">
           <div>
-            <h1 className="text-lg sm:text-xl font-black text-primary tracking-tight">
-              {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
-            </h1>
-            <p className="text-xs text-secondary mt-1 opacity-70">Browse chats, groups, and people.</p>
+              <span className="app-chip mb-3" style={{ color: themeColor }}>Chat navigation</span>
+              <h1 className="text-lg font-black tracking-tight text-white sm:text-xl">
+                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
+              </h1>
+            <p className="mt-1 text-xs text-gray-500">Browse chats, groups, and people.</p>
           </div>
           
           <div className="flex items-center gap-2">
             {activeTab === "groups" && (
               <button 
                 onClick={() => setIsCreateGroupOpen(true)}
-                className="p-2.5 bg-surface border border-primary rounded-xl text-secondary hover:text-primary transition-all active:scale-90"
+                className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 text-gray-400 transition-all active:scale-90 hover:bg-white/[0.05] hover:text-white"
               >
                 <Plus size={18} />
               </button>
             )}
-            <button onClick={() => setShowLogoutConfirm(true)} className="p-2.5 bg-surface border border-primary rounded-xl text-secondary hover:text-red-500 transition-all active:scale-90">
+            <button onClick={() => setShowLogoutConfirm(true)} className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 text-gray-400 transition-all active:scale-90 hover:text-red-400">
               <LogOut size={18} />
             </button>
           </div>
         </div>
 
         {/* Search Pill */}
-        <div className="px-4 sm:px-6 py-3 sm:py-4">
+        <div className="sticky top-[76px] z-20 bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur-xl sm:px-6 sm:py-4 lg:top-[88px]">
           <div className="relative group">
-            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary opacity-40" />
+            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-surface border border-primary rounded-full py-2.5 pl-10 pr-4 text-sm text-primary focus:outline-none placeholder:text-secondary"
+              className="app-input w-full rounded-2xl py-3 pl-10 pr-4 text-sm"
             />
           </div>
         </div>
 
         {/* List Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-10">
+        <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-6 lg:pb-10">
           {filteredItems.length > 0 ? (
             filteredItems.map((item) => {
               const isSelected = activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id;
@@ -162,14 +212,14 @@ const Sidebar = () => {
                 <button
                   key={item._id}
                   onClick={() => activeTab === "discover" ? null : (activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item))}
-                  className={`w-full px-4 sm:px-6 py-4 flex items-center gap-3 sm:gap-4 transition-all relative ${isSelected ? "bg-surface" : "hover:bg-surface/50"}`}
+                  className={`relative flex w-full items-center gap-3 px-4 py-4 transition-all sm:gap-4 sm:px-6 ${isSelected ? "bg-white/[0.05]" : "hover:bg-white/[0.03]"}`}
                 >
                   <div className="relative flex-shrink-0">
-                    <div className="size-12 sm:size-14 rounded-[1.2rem] overflow-hidden border border-primary shadow-xl transition-transform group-hover:scale-105">
+                    <div className="size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-xl transition-transform group-hover:scale-105 sm:size-14">
                       <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
                     </div>
                     {online && (
-                      <div className="absolute -bottom-0.5 -right-0.5 size-4 bg-secondary rounded-full p-0.5 transition-colors">
+                      <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-[#0a0a0a] p-0.5 transition-colors">
                         <div className="size-full bg-green-500 rounded-full shadow-[0_0_100px_rgba(34,197,94,1)] animate-pulse" />
                       </div>
                     )}
@@ -177,19 +227,19 @@ const Sidebar = () => {
 
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex items-center justify-between mb-0.5">
-                      <h3 className="text-sm font-black text-primary tracking-tight truncate">
+                      <h3 className="truncate text-sm font-black tracking-tight text-white">
                         {activeTab === "groups" ? item.name : item.username}
                       </h3>
-                      <span className="text-[10px] text-secondary font-semibold ml-2 opacity-60">
+                      <span className="ml-2 text-[10px] font-semibold text-gray-500">
                         {formatTime(lastMsg?.createdAt) || "NEW"}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       {activeTab === "chats" && lastMsg && (
-                        <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-secondary opacity-30"} strokeWidth={3} />
+                        <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
                       )}
-                      <p className="text-xs sm:text-[13px] truncate text-secondary font-medium opacity-80">
+                      <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
                         {lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"}
                       </p>
                     </div>

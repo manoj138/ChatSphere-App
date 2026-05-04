@@ -27,6 +27,10 @@ body {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+#root {
+  min-height: 100vh;
+}
+
 /* Custom Utilities mapping to variables */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }
@@ -38,6 +42,106 @@ body {
 .bg-accent { background-color: var(--accent-color); }
 .text-accent { color: var(--accent-color); }
 .border-accent { border-color: var(--accent-color); }
+
+.app-shell {
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--accent-color) 12%, transparent) 0%, transparent 35%),
+    var(--bg-primary);
+}
+
+.app-panel {
+  background-color: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+}
+
+.app-hero-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    color-mix(in srgb, var(--bg-secondary) 95%, transparent);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+}
+
+.app-soft-panel {
+  background-color: color-mix(in srgb, var(--bg-surface) 100%, transparent);
+  border: 1px solid var(--border-primary);
+}
+
+.app-modal {
+  background-color: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+}
+
+.app-input {
+  background-color: color-mix(in srgb, var(--bg-surface) 100%, transparent);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.app-input::placeholder {
+  color: color-mix(in srgb, var(--text-secondary) 86%, transparent);
+}
+
+.app-input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--border-primary));
+}
+
+.app-muted {
+  color: color-mix(in srgb, var(--text-secondary) 94%, transparent);
+}
+
+.app-hairline {
+  border-color: color-mix(in srgb, var(--border-primary) 100%, transparent);
+}
+
+.app-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-primary);
+  background-color: color-mix(in srgb, var(--bg-surface) 130%, transparent);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.app-button {
+  border-radius: 1rem;
+  padding: 0.8rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.app-button:active {
+  transform: scale(0.99);
+}
+
+.app-button-secondary {
+  background-color: color-mix(in srgb, var(--bg-surface) 100%, transparent);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.app-button-secondary:hover {
+  background-color: color-mix(in srgb, var(--bg-surface) 140%, transparent);
+}
+
+.app-button-danger {
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: rgb(248, 113, 113);
+}
+
+.app-button-danger:hover {
+  background-color: rgba(239, 68, 68, 0.14);
+}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

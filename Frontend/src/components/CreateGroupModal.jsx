@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { useChatStore } from "../store/useChatStore";
-import { useFriendStore } from "../store/useFriendStore";
-import { useThemeStore } from "../store/useThemeStore";
-import { X, Search, Users, Image as ImageIcon, Plus } from "lucide-react";
+import { X, Search, Image as ImageIcon, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+
+import { useChatStore } from "../store/useChatStore";
+import { useThemeStore } from "../store/useThemeStore";
 import { optimizeImageFile } from "../lib/image";
 
 const CreateGroupModal = ({ onClose }) => {
   const { createGroup } = useChatStore();
-  const { users = [] } = useChatStore(); // Friends are in 'users'
-  const { themeColor, isLightMode } = useThemeStore();
+  const { users = [] } = useChatStore();
+  const { themeColor } = useThemeStore();
 
   const [name, setName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
@@ -25,7 +25,7 @@ const CreateGroupModal = ({ onClose }) => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
-  const filteredFriends = users.filter(u => 
+  const filteredFriends = users.filter((u) =>
     u.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -43,7 +43,7 @@ const CreateGroupModal = ({ onClose }) => {
 
   const toggleMember = (userId) => {
     if (selectedMembers.includes(userId)) {
-      setSelectedMembers(selectedMembers.filter(id => id !== userId));
+      setSelectedMembers(selectedMembers.filter((id) => id !== userId));
     } else {
       setSelectedMembers([...selectedMembers, userId]);
     }
@@ -58,7 +58,7 @@ const CreateGroupModal = ({ onClose }) => {
       await createGroup({
         name: name.trim(),
         members: selectedMembers,
-        groupImage
+        groupImage,
       });
       onClose();
     } catch (error) {
@@ -68,98 +68,107 @@ const CreateGroupModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-[250] flex items-end justify-center bg-black/80 p-0 backdrop-blur-md sm:items-center sm:p-4 animate-in fade-in duration-300"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md bg-secondary border border-primary rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.4)] overflow-hidden transition-colors duration-500">
-        
-        <div className="p-8 border-b border-primary flex items-center justify-between">
-           <div>
-              <h2 className="text-2xl font-black text-primary uppercase tracking-tighter">Form New Cell</h2>
-              <p className="text-[9px] font-black text-secondary uppercase tracking-[0.4em] mt-1 opacity-60">Establishing group connection</p>
-           </div>
-           <button onClick={onClose} className="p-2 text-secondary hover:text-primary transition-colors">
-              <X size={24} />
-           </button>
+      <div className="app-panel flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2rem] sm:max-w-md sm:rounded-[2rem]">
+        <div className="flex items-start justify-between gap-4 border-b border-white/5 p-5 sm:p-6">
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-white">Create group</h2>
+            <p className="mt-1 text-sm text-gray-400">Add a name, image and members for the new group.</p>
+          </div>
+          <button onClick={onClose} className="rounded-xl p-2 text-gray-500 transition hover:bg-white/[0.05] hover:text-white">
+            <X size={20} />
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
-           
-           {/* Group Identity Area */}
-           <div className="flex items-center gap-6">
-              <div className="relative group cursor-pointer" onClick={() => document.getElementById('group-img-upload').click()}>
-                 <div className="size-20 rounded-[1.5rem] bg-surface border-2 border-dashed border-primary flex items-center justify-center overflow-hidden transition-all group-hover:border-accent/40">
-                    {groupImage ? (
-                       <img src={groupImage} className="w-full h-full object-cover" />
-                    ) : (
-                       <ImageIcon size={24} className="text-secondary opacity-40 group-hover:opacity-100" />
-                    )}
-                 </div>
-                 <div className="absolute -bottom-2 -right-2 p-1.5 rounded-xl bg-accent text-black shadow-xl opacity-0 group-hover:opacity-100 transition-all">
-                    <Plus size={12} strokeWidth={4} />
-                 </div>
-                 <input id="group-img-upload" type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+        <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto custom-scrollbar p-5 sm:p-6">
+          <div className="flex items-start gap-4">
+            <label
+              htmlFor="group-img-upload"
+              className="group relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.03]"
+            >
+              {groupImage ? (
+                <img src={groupImage} className="size-full object-cover" />
+              ) : (
+                <ImageIcon size={22} className="text-gray-500 transition group-hover:text-white" />
+              )}
+              <div
+                className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-xl text-black shadow-lg"
+                style={{ backgroundColor: themeColor }}
+              >
+                <Plus size={12} strokeWidth={3} />
               </div>
-              <div className="flex-1">
-                 <label className="text-xs font-semibold text-secondary mb-2 block opacity-80">Group name</label>
-                 <input 
-                    type="text"
-                    placeholder="ENTER CELL NAME..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-transparent border-b border-primary py-2 text-lg font-black text-primary focus:outline-none focus:border-accent placeholder:text-secondary opacity-70 uppercase"
-                 />
-              </div>
-           </div>
+              <input id="group-img-upload" type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+            </label>
 
-           {/* Member Selection Area */}
-           <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                 <label className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-40">Select Agents</label>
-                 <span className="text-[9px] font-black uppercase text-secondary tracking-widest opacity-30">{selectedMembers.length} Selected</span>
-              </div>
-              
-              <div className="relative">
-                 <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary opacity-40" />
-                 <input 
-                   type="text"
-                   placeholder="SCAN FOR AGENTS..."
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   className="w-full bg-surface border border-primary rounded-full py-3 pl-10 pr-4 text-sm text-primary focus:outline-none placeholder:text-secondary opacity-80"
-                 />
-              </div>
+            <div className="flex-1">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+                Group name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter group name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="app-input w-full rounded-2xl px-4 py-3.5 text-sm"
+              />
+            </div>
+          </div>
 
-              <div className="max-h-[200px] overflow-y-auto custom-scrollbar space-y-1 pr-2">
-                 {filteredFriends.map(user => (
-                    <div 
-                      key={user._id}
-                      onClick={() => toggleMember(user._id)}
-                      className={`flex items-center gap-4 p-3 rounded-2xl cursor-pointer transition-all ${selectedMembers.includes(user._id) ? "bg-surface border border-primary" : "hover:bg-surface/50 border border-transparent"}`}
-                    >
-                       <div className="size-10 rounded-xl overflow-hidden border border-primary">
-                          <img src={user.profilePicture || (user._id.charCodeAt(user._id.length-1) % 2 === 0 ? `/boy_${(user._id.charCodeAt(user._id.length-1) % 5) + 1}.png` : `/girl_${(user._id.charCodeAt(user._id.length-1) % 4) + 1}.png`)} className="w-full h-full object-cover" />
-                       </div>
-                       <h4 className="flex-1 text-[12px] font-black text-primary uppercase tracking-tight">{user.username}</h4>
-                       <div className={`size-5 rounded-md border flex items-center justify-center transition-all ${selectedMembers.includes(user._id) ? "bg-accent border-accent" : "border-primary"}`}>
-                          {selectedMembers.includes(user._id) && <Plus size={12} strokeWidth={4} className="text-black rotate-45" />}
-                       </div>
-                    </div>
-                 ))}
-              </div>
-           </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Members</label>
+              <span className="text-xs font-medium text-gray-500">{selectedMembers.length} selected</span>
+            </div>
 
-           <button 
-             type="submit"
-             className="w-full py-4 rounded-full font-black uppercase tracking-[0.2em] text-sm text-black shadow-2xl transition-all active:scale-95 hover:brightness-110"
-             style={{ backgroundColor: themeColor }}
-           >
-              Establish Signal
-           </button>
+            <div className="relative">
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search people..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="app-input w-full rounded-2xl py-3 pl-10 pr-4 text-sm"
+              />
+            </div>
+
+            <div className="max-h-[32vh] space-y-2 overflow-y-auto custom-scrollbar pr-1">
+              {filteredFriends.map((user) => (
+                <button
+                  key={user._id}
+                  type="button"
+                  onClick={() => toggleMember(user._id)}
+                  className={`flex w-full items-center gap-4 rounded-2xl border p-3 text-left transition-all ${selectedMembers.includes(user._id) ? "border-white/10 bg-white/[0.05]" : "border-transparent bg-white/[0.02] hover:bg-white/[0.04]"}`}
+                >
+                  <div className="size-10 overflow-hidden rounded-xl border border-white/10">
+                    <img
+                      src={user.profilePicture || (user._id.charCodeAt(user._id.length - 1) % 2 === 0 ? `/boy_${(user._id.charCodeAt(user._id.length - 1) % 5) + 1}.png` : `/girl_${(user._id.charCodeAt(user._id.length - 1) % 4) + 1}.png`)}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                  <h4 className="flex-1 text-sm font-semibold text-white">{user.username}</h4>
+                  <div
+                    className={`flex size-5 items-center justify-center rounded-md border transition-all ${selectedMembers.includes(user._id) ? "text-black" : "border-white/10"}`}
+                    style={selectedMembers.includes(user._id) ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
+                  >
+                    {selectedMembers.includes(user._id) && <Plus size={12} strokeWidth={4} className="rotate-45" />}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full rounded-2xl px-4 py-3.5 text-sm font-black uppercase tracking-[0.16em] text-black transition hover:brightness-110 active:scale-[0.99]"
+            style={{ backgroundColor: themeColor }}
+          >
+            Create group
+          </button>
         </form>
-
       </div>
     </div>
   );

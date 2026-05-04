@@ -1,14 +1,24 @@
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
-import { 
-  User, Shield, Zap, Palette, 
-  Camera, LogOut, ArrowLeft, Sun, Moon
-} from "lucide-react";
-import toast from "react-hot-toast";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import {
+  ArrowLeft,
+  Bell,
+  Camera,
+  Check,
+  LogOut,
+  Moon,
+  Palette,
+  Shield,
+  Sun,
+  Volume2,
+  Zap,
+} from "lucide-react";
+
 import ConfirmationModal from "../components/ConfirmationModal";
 import { optimizeImageFile } from "../lib/image";
+import { useAuthStore } from "../store/useAuthStore";
+import { useThemeStore } from "../store/useThemeStore";
 
 const NEON_PRESETS = [
   { name: "LIME", color: "#bef264" },
@@ -16,14 +26,20 @@ const NEON_PRESETS = [
   { name: "PINK", color: "#ff4dff" },
   { name: "GOLD", color: "#ffcc00" },
   { name: "RUBY", color: "#ff4d4d" },
-  { name: "NOVA", color: "#bf40bf" }
+  { name: "NOVA", color: "#bf40bf" },
 ];
+
+const cardClass =
+  "rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] shadow-2xl";
 
 const SettingsPage = () => {
   const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
   const { themeColor, setThemeColor, isLightMode, toggleThemeMode } = useThemeStore();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const fileInputRef = useRef(null);
+
+  const notificationSupported = typeof window !== "undefined" && "Notification" in window;
+  const notificationPermission = notificationSupported ? Notification.permission : "unsupported";
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -38,237 +54,292 @@ const SettingsPage = () => {
     }
   };
 
+  const handleNotificationTest = () => {
+    if (!notificationSupported) {
+      toast.error("This browser does not support notifications");
+      return;
+    }
+
+    if (Notification.permission === "granted") {
+      new Notification("ChatSphere test notification", {
+        body: "Notifications are working correctly on this device.",
+        icon: "/favicon.svg",
+      });
+      toast.success("Notification sent");
+      return;
+    }
+
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        toast.success("Permission granted. Try the test again.");
+      } else {
+        toast.error("Notification permission denied.");
+      }
+    });
+  };
+
+  const handleSoundTest = () => {
+    const audio = new Audio("/recieve-tone.mp3");
+    audio
+      .play()
+      .then(() => toast.success("Sound played successfully"))
+      .catch(() => toast.error("Browser blocked audio. Click again."));
+  };
+
   return (
-    <div className="min-h-screen bg-primary overflow-y-auto custom-scrollbar pt-16 sm:pt-24 pb-20 px-4 transition-colors duration-500">
-      <div className="max-w-3xl mx-auto space-y-8">
-        
-        {/* Navigation & Header */}
-        <div className="flex flex-col items-center text-center space-y-6 mb-12">
-           <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-2 gap-4">
-              <Link 
-                to="/" 
-                className="flex items-center gap-2 text-secondary hover:text-primary transition-all group"
+    <div className="min-h-screen bg-[#050505] text-white overflow-y-auto custom-scrollbar px-4 pb-20 pt-16 transition-colors duration-500 sm:px-6 sm:pt-24">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <section className={`${cardClass} relative overflow-hidden p-6 sm:p-8`}>
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-15 blur-3xl"
+            style={{ background: `linear-gradient(90deg, transparent 0%, ${themeColor} 50%, transparent 100%)` }}
+          />
+
+          <div className="relative flex flex-col gap-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <Link
+                to="/"
+                className="app-button app-button-secondary inline-flex items-center gap-3 self-start text-gray-400 hover:text-white"
               >
-                 <div className="size-10 rounded-xl bg-surface flex items-center justify-center group-hover:bg-white/10">
-                    <ArrowLeft size={18} />
-                 </div>
-                 <span className="text-xs font-semibold">Back</span>
+                <ArrowLeft size={18} />
+                Back to chat
               </Link>
 
-              {/* Theme Mode Toggle */}
-              <button 
+              <button
                 onClick={toggleThemeMode}
-                className="flex items-center gap-3 px-4 py-2 bg-surface border border-primary rounded-2xl hover:border-accent transition-all group"
+                className="app-button app-button-secondary inline-flex items-center gap-3 self-start"
               >
-                 {isLightMode ? (
-                   <>
-                     <Moon size={18} className="text-accent" />
-                     <span className="text-xs font-semibold text-primary">Dark mode</span>
-                   </>
-                 ) : (
-                   <>
-                     <Sun size={18} className="text-accent" />
-                     <span className="text-xs font-semibold text-primary">Light mode</span>
-                   </>
-                 )}
+                {isLightMode ? <Moon size={18} className="text-accent" /> : <Sun size={18} className="text-accent" />}
+                {isLightMode ? "Switch to dark mode" : "Switch to light mode"}
               </button>
-           </div>
+            </div>
 
-           <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-tight">Settings</h1>
-              <p className="text-secondary text-sm font-medium">Manage your profile, appearance, and notifications.</p>
-           </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
-           
-           {/* Profile Section */}
-           <div className="space-y-6 animate-in slide-in-from-left-8 duration-500">
-              <div className="p-8 bg-surface border border-primary rounded-[3rem] relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <User size={120} strokeWidth={1} className="text-primary" />
-                 </div>
-                 
-                 <div className="relative flex flex-col items-center text-center space-y-6">
-                    <div className="relative group/avatar">
-                       <div className="size-32 rounded-[2.5rem] overflow-hidden border-4 border-primary shadow-2xl relative z-10">
-                          <img 
-                            src={authUser.profilePicture || "/boy_1.png"} 
-                            className={`w-full h-full object-cover transition-all duration-700 ${isUpdatingProfile ? "blur-sm opacity-50" : "group-hover/avatar:scale-110"}`} 
-                            alt="" 
-                          />
-                       </div>
-                       <button 
-                         onClick={() => fileInputRef.current?.click()}
-                         disabled={isUpdatingProfile}
-                         className="absolute bottom-1 right-1 p-3 bg-primary text-secondary border border-primary rounded-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 disabled:opacity-50"
-                       >
-                          <Camera size={18} />
-                       </button>
-                       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-                    </div>
-
-                    <div className="space-y-1">
-                       <h2 className="text-xl font-black text-primary uppercase tracking-tight">{authUser.username}</h2>
-                       <p className="text-[10px] font-black text-secondary uppercase tracking-widest">{authUser.email}</p>
-                    </div>
-
-                    <div className="w-full h-[1px] bg-primary opacity-20" />
-                    
-                    <div className="w-full text-left space-y-4">
-                       <div>
-                          <p className="text-xs font-semibold text-secondary mb-1.5 text-center">Bio</p>
-                          <p className="text-sm font-bold text-secondary text-center leading-relaxed italic">
-                             "{authUser.bio || "No bio established."}"
-                          </p>
-                       </div>
-                    </div>
-                 </div>
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl space-y-3">
+                <span className="inline-flex rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em]" style={{ borderColor: `${themeColor}33`, color: themeColor, backgroundColor: `${themeColor}12` }}>
+                  Personalize workspace
+                </span>
+                <div>
+                  <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">Settings</h1>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-gray-400 sm:text-base">
+                    Cleaner controls for your profile, theme, and device checks in one place.
+                  </p>
+                </div>
               </div>
 
-              <button 
-                onClick={() => setShowLogoutConfirm(true)}
-                className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-red-500 hover:text-white transition-all group"
-              >
-                 <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
-                 Log out
-              </button>
-           </div>
+              <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Theme</p>
+                  <p className="mt-2 text-sm font-semibold text-white">{isLightMode ? "Light mode" : "Dark mode"}</p>
+                </div>
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Accent</p>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="size-4 rounded-full" style={{ backgroundColor: themeColor }} />
+                    <p className="text-sm font-semibold text-white">{themeColor.toUpperCase()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-           {/* Appearance Section */}
-           <div className="space-y-6 animate-in slide-in-from-right-8 duration-500">
-              
-              <div className="p-8 bg-surface border border-primary rounded-[3rem] space-y-8">
-                 <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-surface flex items-center justify-center">
-                       <Palette size={20} style={{ color: themeColor }} />
-                    </div>
-                    <div>
-                       <h3 className="text-sm font-black text-primary">Accent color</h3>
-                       <p className="text-xs font-medium text-secondary">Choose the main highlight color for the app.</p>
-                    </div>
-                 </div>
-
-                 <div className="grid grid-cols-3 gap-3">
-                    {NEON_PRESETS.map((preset) => (
-                       <button
-                         key={preset.name}
-                         onClick={() => setThemeColor(preset.color)}
-                         className={`relative group h-16 rounded-2xl border transition-all overflow-hidden flex items-center justify-center ${
-                           themeColor === preset.color ? "border-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]" : "border-primary hover:border-accent/40"
-                         }`}
-                       >
-                          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity" style={{ backgroundColor: preset.color }} />
-                          <div className="size-4 rounded-full shadow-lg relative z-10" style={{ backgroundColor: preset.color }} />
-                          {themeColor === preset.color && (
-                             <div className="absolute bottom-1 text-[8px] font-black uppercase tracking-widest text-primary animate-in slide-in-from-bottom-1">
-                                Active
-                             </div>
-                          )}
-                       </button>
-                    ))}
-                 </div>
-
-                 <div className="pt-4 flex items-center justify-between p-4 bg-primary opacity-40 border border-primary rounded-2xl">
-                    <span className="text-xs font-semibold text-secondary">Custom color</span>
-                    <input 
-                      type="color" 
-                      value={themeColor} 
-                      onChange={(e) => setThemeColor(e.target.value)}
-                      className="size-10 bg-transparent border-none cursor-pointer" 
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_1.2fr]">
+          <div className="space-y-6">
+            <section className={`${cardClass} p-6 sm:p-8`}>
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                <div className="relative mx-auto sm:mx-0">
+                  <div className="size-32 overflow-hidden rounded-[2rem] border-4 shadow-2xl" style={{ borderColor: themeColor }}>
+                    <img
+                      src={authUser.profilePicture || "/boy_1.png"}
+                      className={`h-full w-full object-cover transition duration-500 ${isUpdatingProfile ? "scale-95 opacity-60" : ""}`}
+                      alt={authUser.username}
                     />
-                 </div>
+                  </div>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUpdatingProfile}
+                    className="absolute -bottom-2 -right-2 inline-flex items-center gap-2 rounded-2xl border border-white/5 bg-[#0a0a0a] px-3 py-2 text-xs font-bold text-white transition hover:scale-105 disabled:opacity-50"
+                  >
+                    <Camera size={14} />
+                    {isUpdatingProfile ? "Updating" : "Change"}
+                  </button>
+                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                </div>
+
+                <div className="flex-1 space-y-3 text-center sm:text-left">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-500">Profile</p>
+                    <h2 className="mt-2 text-2xl font-black text-white">{authUser.username}</h2>
+                    <p className="mt-1 break-all text-sm text-gray-500">{authUser.email}</p>
+                  </div>
+                  <p className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm leading-6 text-gray-300">
+                    {authUser.bio || "No bio added yet. Add one from your profile to make your account feel complete."}
+                  </p>
+                </div>
               </div>
 
-              <div className="p-8 bg-surface border border-primary rounded-[3rem] space-y-6">
-                 <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-surface flex items-center justify-center">
-                       <Zap size={20} className="text-yellow-500" />
-                    </div>
-                    <div>
-                       <h3 className="text-sm font-black text-primary">Quick checks</h3>
-                       <p className="text-xs font-medium text-secondary">Test notifications and audio on this device.</p>
-                    </div>
-                 </div>
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Account status</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                    <Check size={16} className="text-green-500" />
+                    Active session
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Security</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                    <Shield size={16} className="text-accent" />
+                    Protected
+                  </div>
+                </div>
+              </div>
+            </section>
 
-                 <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 bg-surface border border-primary rounded-2xl">
-                       <span className="text-xs font-bold text-secondary">Security</span>
-                       <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Active</span>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-surface border border-primary rounded-2xl">
-                       <span className="text-xs font-bold text-secondary">Version</span>
-                       <span className="text-[10px] font-black text-secondary uppercase tracking-widest opacity-40">v1.2.0-Alpha</span>
-                    </div>
-                    <button 
-                      onClick={() => {
-                        if (!("Notification" in window)) {
-                          toast.error("This browser does not support notifications");
-                        } else if (Notification.permission === "granted") {
-                          new Notification("📡 CHATSPHERE SIGNAL TEST", {
-                            body: "If you see this, notifications are working correctly.",
-                            icon: "/favicon.svg"
-                          });
-                          toast.success("Test signal dispatched!");
-                        } else {
-                          Notification.requestPermission().then(permission => {
-                            if (permission === "granted") {
-                              toast.success("Permission granted! Try testing again.");
-                            } else {
-                              toast.error("Notification permission denied.");
-                            }
-                          });
-                        }
-                      }}
-                      className="w-full flex items-center justify-between p-4 bg-accent/5 border border-accent/20 rounded-2xl hover:bg-accent/10 transition-all group"
-                    >
-                       <span className="text-xs font-bold text-accent">Test notification</span>
-                       <Shield size={14} className="text-accent group-hover:scale-110 transition-transform" />
-                    </button>
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="app-button app-button-danger flex w-full items-center justify-center gap-3 rounded-[1.75rem] px-5 py-4 font-black uppercase tracking-[0.25em]"
+            >
+              <LogOut size={18} />
+              Log out
+            </button>
+          </div>
 
-                    {/* Notification Diagnostics */}
-                    <div className="p-4 bg-surface/50 border border-primary/20 rounded-2xl space-y-2">
-                       <h4 className="text-[10px] font-black text-secondary uppercase tracking-tighter opacity-50 mb-2">Notification status</h4>
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-secondary/70">Browser Permission:</span>
-                          <span className={`text-[10px] font-bold ${Notification.permission === 'granted' ? 'text-green-500' : 'text-orange-500'}`}>
-                             {Notification.permission.toUpperCase()}
-                          </span>
-                       </div>
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-secondary/70">Push service:</span>
-                          <span className="text-[10px] font-bold text-accent">ACTIVE</span>
-                       </div>
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-secondary/70">Audio:</span>
-                          <span className="text-[10px] font-bold text-accent">READY</span>
-                       </div>
-                    </div>
-
-                    <button 
-                      onClick={() => {
-                        const audio = new Audio("/recieve-tone.mp3");
-                        audio.play()
-                          .then(() => toast.success("Audio transmission successful!"))
-                          .catch(() => toast.error("Audio blocked by browser. Click again!"));
-                      }}
-                      className="w-full flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl hover:bg-primary/10 transition-all group"
-                    >
-                       <span className="text-xs font-bold text-primary">Test sound</span>
-                       <div className="size-6 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Shield size={12} className="text-primary" />
-                       </div>
-                    </button>
-                 </div>
+          <div className="space-y-6">
+            <section className={`${cardClass} p-6 sm:p-8`}>
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.03]">
+                  <Palette size={20} style={{ color: themeColor }} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white">Appearance</h3>
+                  <p className="mt-1 text-sm leading-6 text-gray-400">
+                    Pick an accent color and keep the rest of the app aligned with your style.
+                  </p>
+                </div>
               </div>
 
-           </div>
+              <div className="mt-6 rounded-[1.75rem] border border-white/5 bg-white/[0.03] p-5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Live preview</p>
+                <div className="mt-4 flex items-center justify-between rounded-[1.5rem] border border-white/5 bg-black/30 p-4">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Message highlight</p>
+                    <p className="mt-1 text-xs text-gray-500">Buttons, badges and links use this color.</p>
+                  </div>
+                  <div
+                    className="flex h-11 min-w-[96px] items-center justify-center rounded-2xl px-4 text-xs font-black uppercase tracking-[0.2em] text-black"
+                    style={{ backgroundColor: themeColor }}
+                  >
+                    Preview
+                  </div>
+                </div>
+              </div>
 
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {NEON_PRESETS.map((preset) => {
+                  const isActive = themeColor === preset.color;
+
+                  return (
+                    <button
+                      key={preset.name}
+                      onClick={() => setThemeColor(preset.color)}
+                      className={`rounded-[1.5rem] border p-4 text-left transition ${
+                        isActive ? "bg-white/[0.05]" : "bg-white/[0.03] hover:bg-white/[0.05]"
+                      }`}
+                      style={{ borderColor: isActive ? themeColor : "rgba(255,255,255,0.05)" }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="size-5 rounded-full shadow-lg" style={{ backgroundColor: preset.color }} />
+                        {isActive && <Check size={16} className="text-accent" />}
+                      </div>
+                      <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-white">{preset.name}</p>
+                      <p className="mt-1 text-[11px] text-gray-500">{preset.color}</p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 flex items-center justify-between rounded-[1.75rem] border border-white/5 bg-white/[0.03] px-4 py-4">
+                <div>
+                  <p className="text-sm font-semibold text-white">Custom color</p>
+                  <p className="mt-1 text-xs text-gray-500">Use any color beyond the presets.</p>
+                </div>
+                <input
+                  type="color"
+                  value={themeColor}
+                  onChange={(e) => setThemeColor(e.target.value)}
+                  className="h-11 w-14 cursor-pointer rounded-xl border border-white/5 bg-transparent p-1"
+                />
+              </div>
+            </section>
+
+            <section className={`${cardClass} p-6 sm:p-8`}>
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.03]">
+                  <Zap size={20} className="text-yellow-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white">Device checks</h3>
+                  <p className="mt-1 text-sm leading-6 text-gray-400">
+                    Verify browser notifications and audio without leaving the page.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <span className="text-sm font-semibold text-white">Notification permission</span>
+                  <span
+                    className={`text-xs font-black uppercase tracking-[0.2em] ${
+                      notificationPermission === "granted"
+                        ? "text-green-500"
+                        : notificationPermission === "unsupported"
+                          ? "text-red-400"
+                          : "text-orange-400"
+                    }`}
+                  >
+                    {notificationPermission}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <span className="text-sm font-semibold text-white">Audio playback</span>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">Ready</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  onClick={handleNotificationTest}
+                  className="flex items-center justify-between rounded-[1.5rem] border p-4 text-left transition hover:scale-[1.01]"
+                  style={{ borderColor: `${themeColor}33`, backgroundColor: `${themeColor}12` }}
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-accent">Test notification</p>
+                    <p className="mt-1 text-xs text-gray-400">Send a local browser alert.</p>
+                  </div>
+                  <Bell size={18} className="text-accent" />
+                </button>
+
+                <button
+                  onClick={handleSoundTest}
+                  className="flex items-center justify-between rounded-[1.5rem] border border-white/5 bg-white/[0.03] p-4 text-left transition hover:bg-white/[0.05]"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-white">Test sound</p>
+                    <p className="mt-1 text-xs text-gray-400">Play the incoming tone once.</p>
+                  </div>
+                  <Volume2 size={18} className="text-white" />
+                </button>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
 
       {showLogoutConfirm && (
-        <ConfirmationModal 
+        <ConfirmationModal
           title="Log out?"
           description="You are about to end your current session. Do you want to continue?"
           onConfirm={logout}
