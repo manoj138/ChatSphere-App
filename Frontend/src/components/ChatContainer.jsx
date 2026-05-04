@@ -44,7 +44,12 @@ const ChatContainer = () => {
   const getAvatarSrc = (user) => {
     if (user.profilePicture) return user.profilePicture;
     const idNum = user._id ? user._id.charCodeAt(user._id.length - 1) : 0;
-    return idNum % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3";
+    const isBoy = idNum % 2 === 0;
+    if (isBoy) {
+        return `/boy_${(idNum % 5) + 1}.png?v=3`;
+    } else {
+        return `/girl_${(idNum % 4) + 1}.png?v=3`;
+    }
   };
 
   if (isMessagesLoading) {

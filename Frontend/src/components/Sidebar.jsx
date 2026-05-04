@@ -49,7 +49,12 @@ const Sidebar = () => {
     if (activeTab === "groups") return "/favicon.svg"; 
     
     const idNum = item._id ? item._id.charCodeAt(item._id.length - 1) : 0;
-    return idNum % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3";
+    const isBoy = idNum % 2 === 0;
+    if (isBoy) {
+        return `/boy_${(idNum % 5) + 1}.png?v=3`;
+    } else {
+        return `/girl_${(idNum % 4) + 1}.png?v=3`;
+    }
   };
 
   const filteredItems = (
@@ -119,7 +124,10 @@ const Sidebar = () => {
               {friendRequests.map(req => (
                 <div key={req._id} className="p-3 bg-red-500/5 border border-red-500/10 rounded-2xl flex items-center justify-between gap-3">
                    <div className="size-8 rounded-lg overflow-hidden border border-red-500/20">
-                      <img src={req.sender?.profilePicture || (req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3")} className="w-full h-full object-cover" />
+                      <img 
+                        src={req.sender?.profilePicture || (req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 2 === 0 ? `/boy_${(req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(req.sender?._id?.charCodeAt(req.sender?._id.length-1) % 4) + 1}.png?v=3`)} 
+                        className="w-full h-full object-cover" 
+                      />
                    </div>
                    <p className="flex-1 text-[10px] font-black text-white truncate uppercase">{req.sender?.username}</p>
                    <div className="flex gap-1">
@@ -192,7 +200,10 @@ const Sidebar = () => {
 
          <div className="flex items-center gap-3 p-2.5 bg-white/5 rounded-xl border border-white/5">
             <div className="size-9 rounded-lg overflow-hidden border border-white/10 bg-white/5">
-               <img src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? "/avatar_boy.png?v=3" : "/avatar_girl.png?v=3")} className="w-full h-full object-cover" />
+               <img 
+                src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
+                className="w-full h-full object-cover" 
+               />
             </div>
             <div className="hidden lg:block flex-1 min-w-0">
                <p className="text-[10px] font-black text-white truncate uppercase">{authUser?.username}</p>
