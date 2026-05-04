@@ -8,7 +8,8 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000"],  // forontend url will add here after deployment
+        origin: ["http://localhost:5173"], // Updated to match your frontend port
+        credentials: true
     },
 });
 
@@ -22,32 +23,32 @@ const getReceiverSocketId = (userId) => {    // get receiver socket id
 io.on("connection", (socket) => {
     console.log("A user connected", socket.id);
 
-    const userId = socket.handshake.auth.userId; // user id is coming from frontend
-    if (userId) {
-        userSocketMap[userId] = socket.id; // store user id and socket id in userSocketMap
+    // Support both handshake.auth and handshake.query for flexibility
+    const userId = socket.handshake.auth.userId || socket.handshake.query.userId;
+    
+    if (userId && userId !== "undefined") {
+        userSocketMap[userId] = socket.id;
+        console.log(`User mapped: ${userId} -> ${socket.id}`);
     }
 
-    io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     socket.on("typing", (data) => {
-
-        const receiverSocketId = getReceiverSocketId(data.receiverId); // get receiver socket id
-
+        const receiverSocketId = getReceiverSocketId(data.receiverId);
         if (receiverSocketId) {
             socket.to(receiverSocketId).emit("usertyping", {
                 senderId: data.senderId,
                 typing: data.typing
-            }); // emit typing to receiver
+            });
         }
     })
-
 
     socket.on("stopTyping",(data)=>{
         const receiverSocketId = getReceiverSocketId(data.receiverId);
         if(receiverSocketId){
             socket.to(receiverSocketId).emit("userStopTyping",{
                 senderId: data.senderId
-            }) // emit stop typing to receiver
+            })
         }
     });
 
@@ -64,11 +65,11 @@ io.on("connection", (socket) => {
     socket.on("disconnect", async() => {
         console.log("A user disconnected", socket.id);
 
-        if(userId){
+        if(userId && userId !== "undefined"){
             await User.findByIdAndUpdate(userId, {lastSeen: Date.now()});
             delete userSocketMap[userId];
         }
-        io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit online users to all connected clients
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
 });
 

@@ -81,34 +81,36 @@ const updateProfile = async (req, res) => {
         const updateData = {};
         
         if (profilePicture) {
-            console.log("Attempting to upload to Cloudinary...");
-            const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
-                folder: "chatsphere_profiles"
-            });
-            console.log("Cloudinary Upload Success:", uploadResponse.secure_url);
-            updateData.profilePicture = uploadResponse.secure_url;
+            console.log("Attempting Cloudinary upload...");
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
+                    folder: "chatsphere_profiles",
+                    resource_type: "auto"
+                });
+                updateData.profilePicture = uploadResponse.secure_url;
+            } catch (cloudErr) {
+                console.error("Cloudinary Detailed Error:", cloudErr);
+                return res.status(403).json({ 
+                    success: false, 
+                    message: "Cloudinary Authorization Failed (403). Please check your API credentials.",
+                    error: cloudErr.message 
+                });
+            }
         }
 
         if (bio !== undefined) updateData.bio = bio;
         if (username) updateData.username = username;
 
-        console.log("Updating User in DB with:", updateData);
-        
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             { $set: updateData },
             { new: true }
         ).select("-password");
 
-        if (!updatedUser) {
-            return handle422(res, "User not found");
-        }
-
-        console.log("User updated successfully in DB");
         handle200(res, updatedUser, "Profile updated successfully");
     } catch (error) {
-        console.error("Error in updateProfile controller:", error);
-        res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+        console.error("General Error in updateProfile:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
