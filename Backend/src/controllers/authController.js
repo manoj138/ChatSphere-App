@@ -81,20 +81,24 @@ const updateProfile = async (req, res) => {
         const updateData = {};
         
         if (profilePicture) {
-            console.log("Attempting Cloudinary upload...");
-            try {
-                const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
-                    folder: "chatsphere_profiles",
-                    resource_type: "auto"
-                });
-                updateData.profilePicture = uploadResponse.secure_url;
-            } catch (cloudErr) {
-                console.error("Cloudinary Detailed Error:", cloudErr);
-                return res.status(403).json({ 
-                    success: false, 
-                    message: "Cloudinary Authorization Failed (403). Please check your API credentials.",
-                    error: cloudErr.message 
-                });
+            if (profilePicture.startsWith("data:image")) {
+                console.log("Attempting Cloudinary upload...");
+                try {
+                    const uploadResponse = await cloudinary.uploader.upload(profilePicture, {
+                        folder: "chatsphere_profiles",
+                        resource_type: "auto"
+                    });
+                    updateData.profilePicture = uploadResponse.secure_url;
+                } catch (cloudErr) {
+                    console.error("Cloudinary Detailed Error:", cloudErr);
+                    return res.status(403).json({ 
+                        success: false, 
+                        message: "Cloudinary Authorization Failed (403). Please check your API credentials.",
+                        error: cloudErr.message 
+                    });
+                }
+            } else {
+                updateData.profilePicture = profilePicture; // Set the direct path for 3D avatars
             }
         }
 
