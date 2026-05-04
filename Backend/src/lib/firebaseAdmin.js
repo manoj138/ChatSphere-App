@@ -5,20 +5,31 @@ const path = require("path");
 let isFirebaseInitialized = false;
 
 try {
-  const serviceAccountPath = path.join(__dirname, "../config/serviceAccountKey.json");
-  
-  if (fs.existsSync(serviceAccountPath)) {
-    const serviceAccount = require(serviceAccountPath);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-    isFirebaseInitialized = true;
-    console.log("Firebase Admin initialized successfully.");
+  if (admin.apps.length === 0) {
+    const serviceAccountPath = path.join(__dirname, "../config/serviceAccountKey.json");
+    
+    if (fs.existsSync(serviceAccountPath)) {
+      const serviceAccount = require(serviceAccountPath);
+      
+      // CRITICAL FIX: Replace literal \n characters with actual newlines in the private key
+      if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      }
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      isFirebaseInitialized = true;
+      console.log("Firebase Admin initialized successfully.");
+    } else {
+      console.warn("Firebase serviceAccountKey.json not found.");
+    }
   } else {
-    console.warn("Firebase serviceAccountKey.json not found. Notifications will be disabled.");
+    isFirebaseInitialized = true;
   }
 } catch (error) {
   console.error("Firebase initialization failed:", error.message);
+  isFirebaseInitialized = false;
 }
 
 const sendNotification = async (token, title, body, data = {}) => {
@@ -26,15 +37,29 @@ const sendNotification = async (token, title, body, data = {}) => {
 
   const message = {
     notification: { title, body },
-    data,
-    token: token
+    data: {
+      ...data,
+      click_action: "FLUTTER_NOTIFICATION_CLICK" // Common standard, helps some browsers
+    },
+    token: token,
+    webpush: {
+      headers: {
+        Urgency: "high"
+      },
+      notification: {
+        title,
+        body,
+        icon: "/favicon.svg",
+        click_action: "/"
+      }
+    }
   };
 
   try {
     const response = await admin.messaging().send(message);
     console.log("Successfully sent notification:", response);
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("Error sending notification:", error.message);
   }
 };
 

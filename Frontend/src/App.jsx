@@ -31,8 +31,24 @@ function App() {
 
   useEffect(() => {
     if (authUser) {
-      import("./lib/firebase").then(({ requestForToken }) => {
+      import("./lib/firebase").then(({ requestForToken, onMessageListener }) => {
         requestForToken();
+        onMessageListener().then((payload) => {
+          console.log("Foreground message received:", payload);
+          toast(
+            (t) => (
+              <div className="flex flex-col gap-1">
+                <span className="font-black text-[10px] uppercase tracking-widest text-accent">
+                  {payload.notification.title}
+                </span>
+                <span className="text-[11px] opacity-70">
+                  {payload.notification.body}
+                </span>
+              </div>
+            ),
+            { icon: "📡" }
+          );
+        }).catch(err => console.log('failed: ', err));
       });
       subscribeToEvents();
     }

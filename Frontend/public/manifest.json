@@ -1,0 +1,17 @@
+{
+  "name": "ChatSphere",
+  "short_name": "ChatSphere",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#bef264",
+  "description": "Secure Luxury Cyberpunk Chat Interface",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/svg+xml"
+    }
+  ],
+  "gcm_sender_id": "1032275232530"
+}

@@ -14,27 +14,27 @@ export const useChatStore = create((set, get) => ({
   isGroupsLoading: false,
   typingStatus: {}, // { userId: boolean }
 
-  getUsers: async () => {
-    set({ isUsersLoading: true });
+  getUsers: async (silent = false) => {
+    if (!silent) set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/messages/users-sidebar");
       set({ users: res.data.data });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error fetching users");
+      if (!silent) toast.error(error.response?.data?.message || "Error fetching users");
     } finally {
-      set({ isUsersLoading: false });
+      if (!silent) set({ isUsersLoading: false });
     }
   },
 
-  getGroups: async () => {
-    set({ isGroupsLoading: true });
+  getGroups: async (silent = false) => {
+    if (!silent) set({ isGroupsLoading: true });
     try {
       const res = await axiosInstance.get("/groups/my-groups");
       set({ groups: res.data.data });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error fetching groups");
+      if (!silent) toast.error(error.response?.data?.message || "Error fetching groups");
     } finally {
-      set({ isGroupsLoading: false });
+      if (!silent) set({ isGroupsLoading: false });
     }
   },
 
@@ -91,20 +91,20 @@ export const useChatStore = create((set, get) => ({
       const newMessage = res.data.data;
       set({ messages: [...messages, newMessage] });
       
-      // Play SEND tone immediately after state update
       const sendAudio = new Audio("/send-tone.mp3");
       sendAudio.volume = 0.5;
-      sendAudio.play().catch(e => console.log("Send sound blocked by browser:", e));
+      sendAudio.play().catch(e => console.log("Send sound blocked:", e));
 
-      get().getUsers(); 
-      if (selectedGroup) get().getGroups();
+      // Silent refresh to update last message in sidebar without skeleton flicker
+      get().getUsers(true); 
+      if (selectedGroup) get().getGroups(true);
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending message");
     }
   },
 
   sendTypingStatus: (isTyping) => {
-    const { selectedUser, selectedGroup } = get();
+    const { selectedUser } = get();
     const socket = useAuthStore.getState().socket;
     if (!socket || !selectedUser) return;
 
@@ -153,10 +153,9 @@ export const useChatStore = create((set, get) => ({
                 messages: [...get().messages, newMessage],
             });
         }
-        // Refresh sidebar to show last message
-        get().getUsers();
+        // Silent refresh on receiving message
+        get().getUsers(true);
         
-        // Play RECEIVE notification sound
         if (!isMessageFromSelectedUser) {
             const audio = new Audio("/recieve-tone.mp3");
             audio.play().catch(e => console.log("Receive sound failed"));
@@ -170,10 +169,8 @@ export const useChatStore = create((set, get) => ({
                 messages: [...get().messages, newMessage],
             });
         }
-        // Refresh sidebar for groups
-        get().getGroups();
+        get().getGroups(true);
 
-        // Play RECEIVE notification sound if not my message
         const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
         if (!isMyMessage) {
             const audio = new Audio("/recieve-tone.mp3");

@@ -14,16 +14,38 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+// Handle background messages
 messaging.onBackgroundMessage((payload) => {
   console.log("Received background message: ", payload);
-  const notificationTitle = payload.notification.title;
+  
+  const notificationTitle = payload.notification?.title || payload.data?.title || "New Signal Received";
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.notification?.body || payload.data?.body || "Decryption complete. Check your grid.",
     icon: "/favicon.svg",
     badge: "/favicon.svg",
     tag: "chatsphere-msg",
-    renotify: true
+    renotify: true,
+    data: payload.data
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle notification click to open the app
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      if (clientList.length > 0) {
+        let client = clientList[0];
+        for (let i = 0; i < clientList.length; i++) {
+          if (clientList[i].focused) {
+            client = clientList[i];
+          }
+        }
+        return client.focus();
+      }
+      return clients.openWindow('/');
+    })
+  );
 });

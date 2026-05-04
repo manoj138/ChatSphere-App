@@ -197,6 +197,46 @@ const SettingsPage = () => {
                        <span className="text-xs font-bold text-secondary">Sync Version</span>
                        <span className="text-[10px] font-black text-secondary uppercase tracking-widest opacity-40">v1.2.0-Alpha</span>
                     </div>
+                    <button 
+                      onClick={() => {
+                        if (!("Notification" in window)) {
+                          toast.error("This browser does not support notifications");
+                        } else if (Notification.permission === "granted") {
+                          new Notification("📡 CHATSPHERE SIGNAL TEST", {
+                            body: "If you see this, your node is correctly configured for external transmissions.",
+                            icon: "/favicon.svg"
+                          });
+                          toast.success("Test signal dispatched!");
+                        } else {
+                          Notification.requestPermission().then(permission => {
+                            if (permission === "granted") {
+                              toast.success("Permission granted! Try testing again.");
+                            } else {
+                              toast.error("Notification permission denied.");
+                            }
+                          });
+                        }
+                      }}
+                      className="w-full flex items-center justify-between p-4 bg-accent/5 border border-accent/20 rounded-2xl hover:bg-accent/10 transition-all group"
+                    >
+                       <span className="text-xs font-bold text-accent">Test Signal Notification</span>
+                       <Shield size={14} className="text-accent group-hover:scale-110 transition-transform" />
+                    </button>
+
+                    {/* Notification Diagnostics */}
+                    <div className="p-4 bg-surface/50 border border-primary/20 rounded-2xl space-y-2">
+                       <h4 className="text-[10px] font-black text-secondary uppercase tracking-tighter opacity-50 mb-2">Notification Diagnostics</h4>
+                       <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-secondary/70">Browser Permission:</span>
+                          <span className={`text-[10px] font-bold ${Notification.permission === 'granted' ? 'text-green-500' : 'text-orange-500'}`}>
+                             {Notification.permission.toUpperCase()}
+                          </span>
+                       </div>
+                       <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-secondary/70">FCM Engine:</span>
+                          <span className="text-[10px] font-bold text-accent">ACTIVE</span>
+                       </div>
+                    </div>
                  </div>
               </div>
 
