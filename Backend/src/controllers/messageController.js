@@ -99,7 +99,8 @@ const sendMessage = async(req, res)=>{
         await newMessage.save();
 
         if(groupId){ 
-            io.to(groupId).emit("newGroupMessage", newMessage)
+            const populatedMessage = await Message.findById(newMessage._id).populate("senderId", "username profilePicture");
+            io.to(groupId).emit("newGroupMessage", populatedMessage)
         } else {
             if(receiverSocketId){
                 io.to(receiverSocketId).emit("newMessage", newMessage);

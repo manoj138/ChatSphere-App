@@ -173,8 +173,9 @@ export const useChatStore = create((set, get) => ({
         // Refresh sidebar for groups
         get().getGroups();
 
-        // Play RECEIVE notification sound
-        if (!isMessageForSelectedGroup) {
+        // Play RECEIVE notification sound if not my message
+        const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
+        if (!isMyMessage) {
             const audio = new Audio("/recieve-tone.mp3");
             audio.play().catch(e => console.log("Receive sound failed"));
         }
