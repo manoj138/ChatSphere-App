@@ -9,6 +9,7 @@
   --text-secondary: #94a3b8;
   --border-primary: rgba(255, 255, 255, 0.05);
   --scrollbar-thumb: rgba(255, 255, 255, 0.05);
+  --shadow-primary: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="light"] {
@@ -19,6 +20,7 @@
   --text-secondary: #64748b;
   --border-primary: rgba(0, 0, 0, 0.05);
   --scrollbar-thumb: rgba(0, 0, 0, 0.05);
+  --shadow-primary: 0 24px 60px rgba(0, 0, 0, 0.08);
 }
 
 body {
@@ -52,7 +54,7 @@ body {
 .app-panel {
   background-color: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
   border: 1px solid var(--border-primary);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  box-shadow: var(--shadow-primary);
 }
 
 .app-hero-panel {
@@ -60,7 +62,7 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
     color-mix(in srgb, var(--bg-secondary) 95%, transparent);
   border: 1px solid var(--border-primary);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+  box-shadow: var(--shadow-primary);
 }
 
 .app-soft-panel {
@@ -71,7 +73,7 @@ body {
 .app-modal {
   background-color: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   border: 1px solid var(--border-primary);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+  box-shadow: var(--shadow-primary);
 }
 
 .app-input {

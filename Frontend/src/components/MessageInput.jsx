@@ -119,13 +119,13 @@ const MessageInput = () => {
         {/* Glow Effect */}
         <div className="absolute -inset-1 rounded-full blur-md opacity-10 group-focus-within:opacity-30 transition-opacity" style={{ backgroundColor: themeColor }} />
 
-        <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-white/5 bg-[#0a0a0a]/95 p-1.5 shadow-2xl backdrop-blur-2xl transition-all duration-500">
+        <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl backdrop-blur-2xl transition-all duration-500">
            
            {/* Utility Buttons Area */}
            <div className="ml-1 flex items-center gap-0.5">
               <button
                 type="button"
-                className={`rounded-full p-2.5 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-gray-500 hover:bg-white/[0.05] hover:text-white"}`}
+                className={`rounded-full p-2.5 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSending || isProcessingImage}
               >
@@ -133,7 +133,7 @@ const MessageInput = () => {
               </button>
               <button
                 type="button"
-                className={`rounded-full p-2.5 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-gray-500 hover:bg-white/[0.05] hover:text-white"}`}
+                className={`rounded-full p-2.5 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 disabled={isSending || isProcessingImage}
               >

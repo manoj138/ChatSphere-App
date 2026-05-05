@@ -8,7 +8,7 @@ const NoChatSelected = () => {
   const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-[#080808] p-4 font-sans transition-colors duration-500 sm:p-8">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-primary p-4 font-sans transition-colors duration-500 sm:p-8">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] blur-[150px] opacity-[0.1] pointer-events-none rounded-full" style={{ backgroundColor: themeColor }} />
@@ -30,39 +30,39 @@ const NoChatSelected = () => {
               </div>
            </div>
            <div className="text-center">
-              <span className="app-chip mb-4" style={{ color: themeColor }}>Workspace ready</span>
-              <h3 className="text-3xl font-black tracking-tight text-white">Welcome, @{authUser?.username}</h3>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-400">Pick a conversation, discover new people, or tune your account before you jump back into chat.</p>
+               <span className="app-chip mb-4" style={{ color: themeColor }}>Workspace ready</span>
+               <h3 className="text-3xl font-black tracking-tight text-primary">Welcome, @{authUser?.username}</h3>
+               <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-secondary">Pick a conversation, discover new people, or tune your account before you jump back into chat.</p>
            </div>
         </div>
 
         {/* Action Grid */}
         <div className="animate-in slide-in-from-bottom-8 grid grid-cols-1 gap-4 duration-700 delay-200 md:grid-cols-2">
            
-           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-white/5 bg-white/[0.03] p-6 transition-all hover:bg-white/[0.05]">
-              <div className="flex size-10 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03] text-white transition-colors group-hover:text-accent">
+           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-primary bg-surface p-6 transition-all hover:bg-secondary/40">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-primary bg-secondary text-primary transition-colors group-hover:text-accent">
                  <MessageSquarePlus size={20} />
               </div>
               <div>
-                 <h4 className="mb-1 text-sm font-black text-white">Start a conversation</h4>
-                 <p className="text-xs font-medium leading-relaxed text-gray-400">Select a friend from the sidebar to open your chat and continue where you left off.</p>
+                 <h4 className="mb-1 text-sm font-black text-primary">Start a conversation</h4>
+                 <p className="text-xs font-medium leading-relaxed text-secondary">Select a friend from the sidebar to open your chat and continue where you left off.</p>
               </div>
            </div>
 
-           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-white/5 bg-white/[0.03] p-6 transition-all hover:bg-white/[0.05]">
-              <div className="flex size-10 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03] text-white transition-colors group-hover:text-accent">
+           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-primary bg-surface p-6 transition-all hover:bg-secondary/40">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-primary bg-secondary text-primary transition-colors group-hover:text-accent">
                  <UserPlus size={20} />
               </div>
               <div>
-                 <h4 className="mb-1 text-sm font-black text-white">Discover people</h4>
-                 <p className="text-xs font-medium leading-relaxed text-gray-400">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
+                 <h4 className="mb-1 text-sm font-black text-primary">Discover people</h4>
+                 <p className="text-xs font-medium leading-relaxed text-secondary">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
               </div>
            </div>
 
         </div>
 
         {/* Global Stats Bar */}
-        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-[2rem] border border-white/5 bg-white/[0.03] px-6 py-5 duration-1000 delay-500 sm:flex-row sm:gap-8">
+        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-[2rem] border border-primary bg-surface px-6 py-5 duration-1000 delay-500 sm:flex-row sm:gap-8">
            <div className="flex items-center gap-2">
               <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
               <span className="text-[11px] font-semibold text-secondary opacity-80">{onlineUsers.length} people online</span>
@@ -79,9 +79,9 @@ const NoChatSelected = () => {
 
         {/* Bottom CTA */}
            <div className="text-center animate-in fade-in duration-1000 delay-700">
-           <p className="text-sm font-semibold text-gray-500 mb-4">Choose a chat from the sidebar, or update your account first.</p>
+           <p className="text-sm font-semibold text-secondary mb-4">Choose a chat from the sidebar, or update your account first.</p>
            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/profile" className="rounded-2xl border border-white/5 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-white/[0.05]">
+              <Link to="/profile" className="rounded-2xl border border-primary bg-surface px-5 py-3 text-sm font-semibold text-primary transition-all hover:bg-secondary/40">
                 Open Profile
               </Link>
               <Link to="/settings" className="px-5 py-3 rounded-2xl text-sm font-semibold text-black hover:brightness-110 transition-all" style={{ backgroundColor: themeColor }}>

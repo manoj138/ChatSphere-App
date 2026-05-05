@@ -68,18 +68,18 @@ const CreateGroupModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[250] flex items-end justify-center bg-black/80 p-0 backdrop-blur-md sm:items-center sm:p-4 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[250] flex items-end justify-center bg-black/40 p-0 backdrop-blur-md sm:items-center sm:p-4 animate-in fade-in duration-300"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
       <div className="app-panel flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2rem] sm:max-w-md sm:rounded-[2rem]">
-        <div className="flex items-start justify-between gap-4 border-b border-white/5 p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4 border-b border-primary p-5 sm:p-6">
           <div>
-            <h2 className="text-xl font-black tracking-tight text-white">Create group</h2>
-            <p className="mt-1 text-sm text-gray-400">Add a name, image and members for the new group.</p>
+            <h2 className="text-xl font-black tracking-tight text-primary">Create group</h2>
+            <p className="mt-1 text-sm text-secondary">Add a name, image and members for the new group.</p>
           </div>
-          <button onClick={onClose} className="rounded-xl p-2 text-gray-500 transition hover:bg-white/[0.05] hover:text-white">
+          <button onClick={onClose} className="rounded-xl p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary">
             <X size={20} />
           </button>
         </div>
@@ -88,12 +88,12 @@ const CreateGroupModal = ({ onClose }) => {
           <div className="flex items-start gap-4">
             <label
               htmlFor="group-img-upload"
-              className="group relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.03]"
+              className="group relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.5rem] border border-dashed border-primary bg-surface"
             >
               {groupImage ? (
                 <img src={groupImage} className="size-full object-cover" />
               ) : (
-                <ImageIcon size={22} className="text-gray-500 transition group-hover:text-white" />
+                <ImageIcon size={22} className="text-secondary transition group-hover:text-primary" />
               )}
               <div
                 className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-xl text-black shadow-lg"

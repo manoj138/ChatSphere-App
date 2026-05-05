@@ -18,7 +18,7 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
 
   return (
     <div
-      className="fixed inset-0 z-[500] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-[500] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md animate-in fade-in duration-300"
       onClick={(event) => {
         if (event.target === event.currentTarget) onCancel();
       }}
@@ -34,8 +34,8 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
             {isLogout ? <LogOut size={24} /> : <Trash2 size={24} />}
           </div>
 
-          <h3 className="text-xl font-black tracking-tight text-white">{title}</h3>
-          <p className="mt-3 text-sm leading-6 text-gray-400">{description}</p>
+          <h3 className="text-xl font-black tracking-tight text-primary">{title}</h3>
+          <p className="mt-3 text-sm leading-6 text-secondary">{description}</p>
 
           <div className="mt-6 grid gap-3">
             <button
@@ -47,7 +47,7 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
             </button>
             <button
               onClick={onCancel}
-              className="w-full rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/[0.05]"
+              className="w-full rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
             >
               Cancel
             </button>

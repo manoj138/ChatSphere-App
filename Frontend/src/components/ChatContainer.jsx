@@ -94,10 +94,10 @@ const ChatContainer = () => {
 
   if (isMessagesLoading) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-[#080808]">
+      <div className="flex flex-1 flex-col items-center justify-center bg-primary">
         <div className="relative">
           <div className="size-16 animate-spin rounded-full border-r-2 border-t-2" style={{ borderColor: themeColor }} />
-          <MessageSquare className="absolute inset-0 m-auto text-white/20" size={24} />
+          <MessageSquare className="absolute inset-0 m-auto opacity-20" size={24} />
         </div>
         <p className="mt-6 animate-pulse text-sm font-semibold text-gray-400">Loading messages...</p>
       </div>
@@ -108,14 +108,14 @@ const ChatContainer = () => {
   if (!activeChat) return null;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#080808] font-sans transition-colors duration-500">
+    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-primary font-sans transition-colors duration-500">
       <div className="pointer-events-none absolute -right-24 top-1/4 size-64 opacity-10 blur-[120px]" style={{ backgroundColor: themeColor }} />
       <div
         className={`pointer-events-none absolute inset-0 opacity-[0.02] ${isLightMode ? "bg-black" : "bg-white"}`}
         style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }}
       />
 
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/5 bg-[#0a0a0a]/80 px-3 py-4 backdrop-blur-2xl sm:px-4 sm:py-5 lg:px-8">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-primary bg-secondary/80 px-3 py-4 backdrop-blur-2xl sm:px-4 sm:py-5 lg:px-8">
         {!isSearching ? (
           <div className="animate-in slide-in-from-left-4 flex items-center gap-3 duration-300 lg:gap-4">
             <button
@@ -142,7 +142,7 @@ const ChatContainer = () => {
               </div>
 
               <div className="min-w-0">
-                <h3 className="mb-1.5 truncate text-sm font-black leading-none tracking-tight text-white transition-colors group-hover:text-accent sm:text-base">
+                <h3 className="mb-1.5 truncate text-sm font-black leading-none tracking-tight text-primary transition-colors group-hover:text-accent sm:text-base">
                   {selectedUser ? selectedUser.username : selectedGroup.name}
                 </h3>
                 <div className="flex items-center gap-2">
@@ -255,14 +255,14 @@ const ChatContainer = () => {
                             ? "bg-transparent"
                             : `rounded-[1.5rem] border px-4 py-3 shadow-2xl sm:rounded-[2rem] sm:px-6 sm:py-4 ${
                                 isMine
-                                  ? "rounded-tr-none border-white/5 bg-white/[0.06] text-white"
-                                  : "rounded-tl-none border-white/5 bg-[#0a0a0a] text-white"
+                                  ? "rounded-tr-none border-primary bg-accent/10 text-primary"
+                                  : "rounded-tl-none border-primary bg-secondary text-primary"
                               } ${message.isDeleted ? "opacity-40 italic" : ""}`
                         }`}
                       >
                         <div className={`absolute -bottom-3 z-20 flex items-center gap-1 ${isMine ? "right-4" : "left-4"}`}>
                           {message.reactions?.map((reaction, rIdx) => (
-                            <div key={rIdx} className="rounded-full border border-white/5 bg-[#0a0a0a] px-1.5 py-0.5 text-[12px] shadow-lg animate-in zoom-in">
+                            <div key={rIdx} className="rounded-full border border-primary bg-secondary px-1.5 py-0.5 text-[12px] shadow-lg animate-in zoom-in">
                               {reaction.emoji}
                             </div>
                           ))}
@@ -271,14 +271,14 @@ const ChatContainer = () => {
                         {!message.isDeleted && (
                           <button
                             onClick={() => setActiveMessageMenu(activeMessageMenu === message._id ? null : message._id)}
-                            className={`absolute -top-3 z-30 flex size-8 items-center justify-center rounded-full border border-white/5 bg-[#080808] text-gray-400 opacity-0 transition-all group-hover:opacity-100 hover:text-accent ${isMine ? "-left-3" : "-right-3"}`}
+                            className={`absolute -top-3 z-30 flex size-8 items-center justify-center rounded-full border border-primary bg-primary text-secondary opacity-0 transition-all group-hover:opacity-100 hover:text-accent ${isMine ? "-left-3" : "-right-3"}`}
                           >
                             <SmilePlus size={16} />
                           </button>
                         )}
 
                         {activeMessageMenu === message._id && (
-                          <div className={`absolute bottom-full z-[100] mb-3 flex items-center gap-0.5 rounded-full border border-white/5 bg-[#080808]/95 p-1.5 shadow-2xl animate-in slide-in-from-bottom-2 duration-300 ${isMine ? "right-0" : "left-0"}`}>
+                          <div className={`absolute bottom-full z-[100] mb-3 flex items-center gap-0.5 rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl animate-in slide-in-from-bottom-2 duration-300 ${isMine ? "right-0" : "left-0"}`}>
                             {QUICK_REACTIONS.map((emoji) => (
                               <button
                                 key={emoji}
@@ -344,10 +344,10 @@ const ChatContainer = () => {
           })
         ) : (
           <div className="flex h-full select-none flex-col items-center justify-center space-y-6 px-4 text-center opacity-30">
-            <div className="rounded-[3rem] border-2 border-dashed border-white/10 p-10">
-              <MessageSquare size={80} className="text-white" />
+            <div className="rounded-[3rem] border-2 border-dashed border-primary p-10">
+              <MessageSquare size={80} className="text-primary" />
             </div>
-            <p className="text-sm font-semibold text-white">No messages yet.</p>
+            <p className="text-sm font-semibold text-primary">No messages yet.</p>
           </div>
         )}
         <div ref={scrollRef} className="h-32 w-full" />
@@ -369,7 +369,7 @@ const ChatContainer = () => {
         />
       )}
 
-      <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-white/5 bg-gradient-to-t from-[#080808] via-[#080808]/95 to-[#080808] p-3 sm:p-4 lg:p-6">
+      <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-primary bg-gradient-to-t from-primary via-primary/95 to-primary p-3 sm:p-4 lg:p-6">
         <div className="mx-auto max-w-4xl">
           <MessageInput />
         </div>

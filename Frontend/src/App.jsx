@@ -61,7 +61,7 @@ function App() {
 
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+      <div className="flex min-h-screen items-center justify-center bg-primary">
         <div className="relative">
           <Loader className="size-12 animate-spin" style={{ color: themeColor }} />
           <div className="absolute inset-0 opacity-20 blur-3xl" style={{ backgroundColor: themeColor }} />
@@ -71,7 +71,7 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#050505] font-sans text-white selection:bg-[#bef264] selection:text-black ${isHomeRoute ? "overflow-hidden" : "overflow-y-auto"}`}>
+    <div className={`min-h-screen bg-primary font-sans text-primary selection:bg-accent selection:text-black ${isHomeRoute ? "overflow-hidden" : "overflow-y-auto"}`}>
       <main className={isHomeRoute ? "h-screen" : "min-h-screen"}>
         <Routes>
           <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
@@ -86,16 +86,16 @@ function App() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: "#111",
-            color: "#fff",
-            border: "1px solid rgba(255,255,255,0.05)",
+            background: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            border: "1px solid var(--border-primary)",
             borderRadius: "1.2rem",
             padding: "1rem",
             fontSize: "11px",
             fontWeight: "900",
             textTransform: "uppercase",
             letterSpacing: "0.15em",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
           },
         }}
       />

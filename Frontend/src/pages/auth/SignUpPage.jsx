@@ -37,7 +37,7 @@ const SignUpPage = () => {
     <div className="app-shell min-h-screen text-primary selection:bg-accent selection:text-black">
       <button
         onClick={() => navigate("/")}
-        className="fixed left-4 top-5 z-20 inline-flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2 text-sm font-semibold text-gray-400 transition hover:bg-white/[0.05] hover:text-white sm:left-6 sm:top-8"
+        className="fixed left-4 top-5 z-20 inline-flex items-center gap-2 rounded-xl border border-primary bg-surface px-3 py-2 text-sm font-semibold text-secondary transition hover:bg-secondary/10 hover:text-primary sm:left-6 sm:top-8"
       >
         <ArrowLeft size={16} />
         Back
@@ -52,15 +52,15 @@ const SignUpPage = () => {
                 Build your profile
               </div>
               <div>
-                <h2 className="text-5xl font-black leading-tight tracking-tight text-white">Join the conversation.</h2>
-                <p className="mt-4 max-w-lg text-sm leading-6 text-gray-400">
+                <h2 className="text-5xl font-black leading-tight tracking-tight text-primary">Join the conversation.</h2>
+                <p className="mt-4 max-w-lg text-sm leading-6 text-secondary">
                   Start with a polished account setup and move into the same visual system used across the app.
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">Identity</p>
-                  <p className="mt-2 text-sm font-semibold text-white">Custom profile</p>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-secondary">Identity</p>
+                  <p className="mt-2 text-sm font-semibold text-primary">Custom profile</p>
                 </div>
                 <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">Groups</p>
@@ -87,8 +87,8 @@ const SignUpPage = () => {
                     <MessageSquare className="h-5 w-5 text-black" fill="currentColor" />
                   </div>
                   <div>
-                    <p className="text-lg font-black tracking-tight text-white">ChatSphere</p>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">Create your space</p>
+                    <p className="text-lg font-black tracking-tight text-primary">ChatSphere</p>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-secondary">Create your space</p>
                   </div>
                 </div>
 
@@ -96,8 +96,8 @@ const SignUpPage = () => {
                   <span className="app-chip" style={{ color: themeColor }}>
                     Create your space
                   </span>
-                  <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">Create account</h1>
-                  <p className="mt-3 max-w-md text-sm leading-6 text-gray-400">
+                  <h1 className="text-4xl font-black tracking-tight text-primary sm:text-5xl">Create account</h1>
+                  <p className="mt-3 max-w-md text-sm leading-6 text-secondary">
                     Set up your profile once and keep the same clean UI rhythm across the rest of the app.
                   </p>
                 </div>
@@ -106,7 +106,7 @@ const SignUpPage = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-4">
                   <label className="block">
-                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Username</span>
+                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">Username</span>
                     <input
                       type="text"
                       className="app-input w-full rounded-2xl px-4 py-3.5 text-sm"
@@ -139,7 +139,7 @@ const SignUpPage = () => {
                       />
                       <button
                         type="button"
-                        className="text-gray-500 transition hover:text-white"
+                        className="text-secondary transition hover:text-primary"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -158,9 +158,9 @@ const SignUpPage = () => {
                 </button>
               </form>
 
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-secondary">
                 Already have an account?{" "}
-                <Link to="/login" className="font-bold text-white transition hover:text-accent">
+                <Link to="/login" className="font-bold text-primary transition hover:text-accent">
                   Sign in
                 </Link>
               </p>

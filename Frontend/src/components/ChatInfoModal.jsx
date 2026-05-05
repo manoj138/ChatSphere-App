@@ -105,19 +105,19 @@ const ChatInfoModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[300] flex items-end justify-center bg-black/80 p-0 backdrop-blur-xl sm:items-center sm:p-4 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[300] flex items-end justify-center bg-black/40 p-0 backdrop-blur-xl sm:items-center sm:p-4 animate-in fade-in duration-300"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
       <div className="app-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2rem] sm:max-w-md sm:rounded-[2rem]">
         {showDeleteConfirm && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]/95 p-8 text-center backdrop-blur-md animate-in zoom-in duration-300">
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-secondary/95 p-8 text-center backdrop-blur-md animate-in zoom-in duration-300">
             <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-red-500/10 text-red-400">
               <AlertTriangle size={28} />
             </div>
-            <h3 className="text-xl font-black tracking-tight text-white">Delete group?</h3>
-            <p className="mt-3 text-sm leading-6 text-gray-400">
+            <h3 className="text-xl font-black tracking-tight text-primary">Delete group?</h3>
+            <p className="mt-3 text-sm leading-6 text-secondary">
               This will permanently remove the group and its messages. This action cannot be undone.
             </p>
             <div className="mt-6 grid w-full gap-3">
@@ -129,7 +129,7 @@ const ChatInfoModal = ({ onClose }) => {
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="w-full rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/[0.05]"
+                className="w-full rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
               >
                 Cancel
               </button>
@@ -137,10 +137,10 @@ const ChatInfoModal = ({ onClose }) => {
           </div>
         )}
 
-        <div className="relative border-b border-white/5 bg-white/[0.02] px-5 pb-6 pt-5 sm:px-6">
+        <div className="relative border-b border-primary bg-surface px-5 pb-6 pt-5 sm:px-6">
           <button
             onClick={onClose}
-            className="absolute right-5 top-5 rounded-xl border border-white/5 bg-white/[0.03] p-2 text-gray-500 transition hover:bg-white/[0.05] hover:text-white"
+            className="absolute right-5 top-5 rounded-xl border border-primary bg-surface p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary"
           >
             <X size={18} />
           </button>
@@ -196,11 +196,11 @@ const ChatInfoModal = ({ onClose }) => {
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-3">
-                  <h2 className="break-words text-2xl font-black tracking-tight text-white">
+                  <h2 className="break-words text-2xl font-black tracking-tight text-primary">
                     {isGroup ? info.name : info.username}
                   </h2>
                   {isAdmin && (
-                    <button onClick={() => setIsEditing(true)} className="rounded-xl p-2 text-gray-500 transition hover:bg-white/[0.05] hover:text-white">
+                    <button onClick={() => setIsEditing(true)} className="rounded-xl p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary">
                       <Edit2 size={14} />
                     </button>
                   )}
@@ -239,7 +239,7 @@ const ChatInfoModal = ({ onClose }) => {
                   const isMemberAdmin = member._id === (info.admin?._id || info.admin);
 
                   return (
-                    <div key={member._id} className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3">
+                    <div key={member._id} className="flex items-center gap-3 rounded-2xl border border-primary bg-surface p-3">
                       <div className="relative size-10 overflow-hidden rounded-xl border border-white/10">
                         <img
                           src={member.profilePicture || (member._id.charCodeAt(member._id.length - 1) % 2 === 0 ? "/boy_1.png" : "/girl_1.png")}
@@ -251,7 +251,7 @@ const ChatInfoModal = ({ onClose }) => {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-white">@{member.username}</p>
+                        <p className="truncate text-sm font-semibold text-primary">@{member.username}</p>
                         {isMemberAdmin && (
                           <div className="mt-1 inline-flex items-center gap-1 text-[11px] text-yellow-400">
                             <ShieldCheck size={10} />
@@ -285,23 +285,23 @@ const ChatInfoModal = ({ onClose }) => {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-white/[0.04] text-gray-300">
+              <div className="flex items-center gap-4 rounded-2xl border border-primary bg-surface p-4">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-secondary">
                   <Mail size={18} />
                 </div>
                 <div className="min-w-0 flex-1 text-left">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Email</p>
-                  <p className="mt-1 truncate text-sm font-semibold text-white">{info.email}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">Email</p>
+                  <p className="mt-1 truncate text-sm font-semibold text-primary">{info.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-gray-300">
+              <div className="flex items-start gap-4 rounded-2xl border border-primary bg-surface p-4">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-secondary">
                   <Info size={18} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Bio</p>
-                  <p className="mt-1 text-sm leading-6 text-gray-300">{info.bio || "No bio added yet."}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">Bio</p>
+                  <p className="mt-1 text-sm leading-6 text-secondary">{info.bio || "No bio added yet."}</p>
                 </div>
               </div>
             </div>

@@ -64,14 +64,14 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="app-shell min-h-screen overflow-y-auto custom-scrollbar px-4 pb-20 pt-6 text-white sm:px-6 sm:pt-10">
+    <div className="app-shell min-h-screen overflow-y-auto custom-scrollbar px-4 pb-20 pt-6 text-primary sm:px-6 sm:pt-10">
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="app-hero-panel relative flex items-center justify-between gap-3 overflow-hidden rounded-[2rem] p-4 sm:rounded-[2.5rem] sm:p-6">
           <div className="absolute right-0 top-0 h-28 w-40 opacity-15 blur-3xl" style={{ backgroundColor: themeColor }} />
           <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <Link
               to="/"
-              className="rounded-2xl border border-white/5 bg-white/[0.03] p-3 text-gray-400 transition-all hover:bg-white/[0.05] hover:text-white sm:p-4"
+              className="rounded-2xl border border-primary bg-surface p-3 text-secondary transition-all hover:bg-secondary/10 hover:text-primary sm:p-4"
             >
               <ArrowLeft size={20} />
             </Link>
@@ -103,7 +103,7 @@ const ProfilePage = () => {
 
           <div className="relative z-10 grid gap-8 lg:grid-cols-[280px_1fr] lg:gap-10">
             <div className="space-y-6">
-              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5">
+              <div className="rounded-[2rem] border border-primary bg-surface p-5">
                 <div className="relative mx-auto w-fit">
                   <div
                     className={`size-32 overflow-hidden rounded-[2rem] border-4 shadow-2xl transition-all duration-500 sm:size-40 ${
@@ -134,23 +134,23 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="mt-5 text-center">
-                  <h2 className="break-words text-2xl font-black tracking-tight sm:text-3xl">{authUser?.username}</h2>
-                  <p className="mt-2 break-all text-sm text-gray-500">{authUser?.email}</p>
+                  <h2 className="break-words text-2xl font-black tracking-tight sm:text-3xl text-primary">{authUser?.username}</h2>
+                  <p className="mt-2 break-all text-sm text-secondary">{authUser?.email}</p>
                 </div>
               </div>
 
               <div className="grid gap-3">
-                <div className="flex items-center gap-4 rounded-[1.5rem] border border-white/5 bg-white/[0.03] p-4">
-                  <div className="rounded-xl bg-white/[0.04] p-3">
-                    <Shield size={18} className="text-gray-400" />
+                <div className="flex items-center gap-4 rounded-[1.5rem] border border-primary bg-surface p-4">
+                  <div className="rounded-xl bg-primary/5 p-3">
+                    <Shield size={18} className="text-secondary" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Plan</p>
-                    <p className="mt-1 text-sm font-semibold text-white">Standard account</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">Plan</p>
+                    <p className="mt-1 text-sm font-semibold text-primary">Standard account</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 rounded-[1.5rem] border border-white/5 bg-white/[0.03] p-4">
+                <div className="flex items-center gap-4 rounded-[1.5rem] border border-primary bg-surface p-4">
                   <div className="rounded-xl bg-white/[0.04] p-3">
                     <Star size={18} style={{ color: themeColor }} />
                   </div>
@@ -166,13 +166,13 @@ const ProfilePage = () => {
 
             <div className="space-y-6">
               {showAvatarGallery && (
-                <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-4 border-b border-white/5 pb-4">
+                <div className="rounded-[2rem] border border-primary bg-surface p-5 sm:p-6">
+                  <div className="flex items-start justify-between gap-4 border-b border-primary pb-4">
                     <div>
-                      <h4 className="text-sm font-black tracking-tight text-white">Avatar gallery</h4>
-                      <p className="mt-1 text-xs text-gray-500">Pick a cleaner default avatar for your profile.</p>
+                      <h4 className="text-sm font-black tracking-tight text-primary">Avatar gallery</h4>
+                      <p className="mt-1 text-xs text-secondary">Pick a cleaner default avatar for your profile.</p>
                     </div>
-                    <button onClick={() => setShowAvatarGallery(false)} className="rounded-xl p-2 text-gray-500 transition hover:bg-white/[0.05] hover:text-white">
+                    <button onClick={() => setShowAvatarGallery(false)} className="rounded-xl p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary">
                       <X size={16} />
                     </button>
                   </div>
@@ -219,16 +219,16 @@ const ProfilePage = () => {
                 </div>
               )}
 
-              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 sm:p-6">
+              <div className="rounded-[2rem] border border-primary bg-surface p-5 sm:p-6">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">About</p>
-                    <h3 className="mt-1 text-lg font-black tracking-tight text-white">Bio</h3>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">About</p>
+                    <h3 className="mt-1 text-lg font-black tracking-tight text-primary">Bio</h3>
                   </div>
                   {!isEditingBio && (
                     <button
                       onClick={() => setIsEditingBio(true)}
-                      className="rounded-xl border border-white/5 bg-white/[0.03] p-3 text-gray-400 transition-all hover:bg-white/[0.05]"
+                      className="rounded-xl border border-primary bg-surface p-3 text-secondary transition-all hover:bg-secondary/10"
                     >
                       <Edit3 size={16} style={{ color: themeColor }} />
                     </button>
@@ -246,7 +246,7 @@ const ProfilePage = () => {
                     <div className="flex gap-3">
                       <button
                         onClick={() => setIsEditingBio(false)}
-                        className="flex-1 rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/[0.05]"
+                        className="flex-1 rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
                       >
                         Cancel
                       </button>
@@ -260,7 +260,7 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm leading-7 text-gray-300">
+                  <p className="text-sm leading-7 text-secondary">
                     {authUser?.bio || bio}
                   </p>
                 )}

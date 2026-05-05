@@ -30,7 +30,7 @@ const NEON_PRESETS = [
 ];
 
 const cardClass =
-  "rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] shadow-2xl";
+  "rounded-[2rem] sm:rounded-[2.5rem] border border-primary bg-secondary shadow-2xl";
 
 const SettingsPage = () => {
   const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
@@ -87,7 +87,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-y-auto custom-scrollbar px-4 pb-20 pt-16 transition-colors duration-500 sm:px-6 sm:pt-24">
+    <div className="min-h-screen bg-primary text-primary overflow-y-auto custom-scrollbar px-4 pb-20 pt-16 transition-colors duration-500 sm:px-6 sm:pt-24">
       <div className="mx-auto max-w-6xl space-y-8">
         <section className={`${cardClass} relative overflow-hidden p-6 sm:p-8`}>
           <div
@@ -99,7 +99,7 @@ const SettingsPage = () => {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <Link
                 to="/"
-                className="app-button app-button-secondary inline-flex items-center gap-3 self-start text-gray-400 hover:text-white"
+                className="app-button app-button-secondary inline-flex items-center gap-3 self-start text-secondary hover:text-primary"
               >
                 <ArrowLeft size={18} />
                 Back to chat
@@ -120,7 +120,7 @@ const SettingsPage = () => {
                   Personalize workspace
                 </span>
                 <div>
-                  <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">Settings</h1>
+                  <h1 className="text-3xl font-black tracking-tight text-primary sm:text-5xl">Settings</h1>
                   <p className="mt-2 max-w-xl text-sm leading-6 text-gray-400 sm:text-base">
                     Cleaner controls for your profile, theme, and device checks in one place.
                   </p>
@@ -128,15 +128,15 @@ const SettingsPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Theme</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{isLightMode ? "Light mode" : "Dark mode"}</p>
+                <div className="rounded-2xl border border-primary bg-surface p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">Theme</p>
+                  <p className="mt-2 text-sm font-semibold text-primary">{isLightMode ? "Light mode" : "Dark mode"}</p>
                 </div>
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Accent</p>
+                <div className="rounded-2xl border border-primary bg-surface p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">Accent</p>
                   <div className="mt-2 flex items-center gap-3">
                     <div className="size-4 rounded-full" style={{ backgroundColor: themeColor }} />
-                    <p className="text-sm font-semibold text-white">{themeColor.toUpperCase()}</p>
+                    <p className="text-sm font-semibold text-primary">{themeColor.toUpperCase()}</p>
                   </div>
                 </div>
               </div>
@@ -159,7 +159,7 @@ const SettingsPage = () => {
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUpdatingProfile}
-                    className="absolute -bottom-2 -right-2 inline-flex items-center gap-2 rounded-2xl border border-white/5 bg-[#0a0a0a] px-3 py-2 text-xs font-bold text-white transition hover:scale-105 disabled:opacity-50"
+                    className="absolute -bottom-2 -right-2 inline-flex items-center gap-2 rounded-2xl border border-primary bg-secondary px-3 py-2 text-xs font-bold text-primary transition hover:scale-105 disabled:opacity-50"
                   >
                     <Camera size={14} />
                     {isUpdatingProfile ? "Updating" : "Change"}
@@ -169,27 +169,27 @@ const SettingsPage = () => {
 
                 <div className="flex-1 space-y-3 text-center sm:text-left">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-500">Profile</p>
-                    <h2 className="mt-2 text-2xl font-black text-white">{authUser.username}</h2>
-                    <p className="mt-1 break-all text-sm text-gray-500">{authUser.email}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-secondary">Profile</p>
+                    <h2 className="mt-2 text-2xl font-black text-primary">{authUser.username}</h2>
+                    <p className="mt-1 break-all text-sm text-secondary">{authUser.email}</p>
                   </div>
-                  <p className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm leading-6 text-gray-300">
+                  <p className="rounded-2xl border border-primary bg-surface px-4 py-3 text-sm leading-6 text-secondary">
                     {authUser.bio || "No bio added yet. Add one from your profile to make your account feel complete."}
                   </p>
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Account status</p>
-                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-primary bg-surface p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">Account status</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-primary">
                     <Check size={16} className="text-green-500" />
                     Active session
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Security</p>
-                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-primary bg-surface p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">Security</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-primary">
                     <Shield size={16} className="text-accent" />
                     Protected
                   </div>
@@ -209,22 +209,22 @@ const SettingsPage = () => {
           <div className="space-y-6">
             <section className={`${cardClass} p-6 sm:p-8`}>
               <div className="flex items-start gap-4">
-                <div className="flex size-12 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.03]">
+                <div className="flex size-12 items-center justify-center rounded-2xl border border-primary bg-surface">
                   <Palette size={20} style={{ color: themeColor }} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white">Appearance</h3>
+                  <h3 className="text-lg font-black text-primary">Appearance</h3>
                   <p className="mt-1 text-sm leading-6 text-gray-400">
                     Pick an accent color and keep the rest of the app aligned with your style.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-[1.75rem] border border-white/5 bg-white/[0.03] p-5">
+              <div className="mt-6 rounded-[1.75rem] border border-primary bg-surface p-5">
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Live preview</p>
                 <div className="mt-4 flex items-center justify-between rounded-[1.5rem] border border-white/5 bg-black/30 p-4">
                   <div>
-                    <p className="text-sm font-semibold text-white">Message highlight</p>
+                    <p className="text-sm font-semibold text-primary">Message highlight</p>
                     <p className="mt-1 text-xs text-gray-500">Buttons, badges and links use this color.</p>
                   </div>
                   <div
@@ -253,16 +253,16 @@ const SettingsPage = () => {
                         <div className="size-5 rounded-full shadow-lg" style={{ backgroundColor: preset.color }} />
                         {isActive && <Check size={16} className="text-accent" />}
                       </div>
-                      <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-white">{preset.name}</p>
+                      <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-primary">{preset.name}</p>
                       <p className="mt-1 text-[11px] text-gray-500">{preset.color}</p>
                     </button>
                   );
                 })}
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-[1.75rem] border border-white/5 bg-white/[0.03] px-4 py-4">
+              <div className="mt-6 flex items-center justify-between rounded-[1.75rem] border border-primary bg-surface px-4 py-4">
                 <div>
-                  <p className="text-sm font-semibold text-white">Custom color</p>
+                  <p className="text-sm font-semibold text-primary">Custom color</p>
                   <p className="mt-1 text-xs text-gray-500">Use any color beyond the presets.</p>
                 </div>
                 <input
@@ -276,11 +276,11 @@ const SettingsPage = () => {
 
             <section className={`${cardClass} p-6 sm:p-8`}>
               <div className="flex items-start gap-4">
-                <div className="flex size-12 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.03]">
+                <div className="flex size-12 items-center justify-center rounded-2xl border border-primary bg-surface">
                   <Zap size={20} className="text-yellow-500" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white">Device checks</h3>
+                  <h3 className="text-lg font-black text-primary">Device checks</h3>
                   <p className="mt-1 text-sm leading-6 text-gray-400">
                     Verify browser notifications and audio without leaving the page.
                   </p>
@@ -288,8 +288,8 @@ const SettingsPage = () => {
               </div>
 
               <div className="mt-6 space-y-3">
-                <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <span className="text-sm font-semibold text-white">Notification permission</span>
+                <div className="flex items-center justify-between rounded-2xl border border-primary bg-surface p-4">
+                  <span className="text-sm font-semibold text-primary">Notification permission</span>
                   <span
                     className={`text-xs font-black uppercase tracking-[0.2em] ${
                       notificationPermission === "granted"
@@ -303,8 +303,8 @@ const SettingsPage = () => {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                  <span className="text-sm font-semibold text-white">Audio playback</span>
+                <div className="flex items-center justify-between rounded-2xl border border-primary bg-surface p-4">
+                  <span className="text-sm font-semibold text-primary">Audio playback</span>
                   <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">Ready</span>
                 </div>
               </div>
@@ -324,13 +324,13 @@ const SettingsPage = () => {
 
                 <button
                   onClick={handleSoundTest}
-                  className="flex items-center justify-between rounded-[1.5rem] border border-white/5 bg-white/[0.03] p-4 text-left transition hover:bg-white/[0.05]"
+                  className="flex items-center justify-between rounded-[1.5rem] border border-primary bg-surface p-4 text-left transition hover:bg-secondary/10"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-white">Test sound</p>
-                    <p className="mt-1 text-xs text-gray-400">Play the incoming tone once.</p>
+                    <p className="text-sm font-semibold text-primary">Test sound</p>
+                    <p className="mt-1 text-xs text-secondary">Play the incoming tone once.</p>
                   </div>
-                  <Volume2 size={18} className="text-white" />
+                  <Volume2 size={18} className="text-primary" />
                 </button>
               </div>
             </section>
