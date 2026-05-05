@@ -221,11 +221,11 @@ const SettingsPage = () => {
               </div>
 
               <div className="mt-6 rounded-[1.75rem] border border-primary bg-surface p-5">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Live preview</p>
-                <div className="mt-4 flex items-center justify-between rounded-[1.5rem] border border-white/5 bg-black/30 p-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">Live preview</p>
+                <div className="mt-4 flex items-center justify-between rounded-[1.5rem] border border-primary bg-secondary/30 p-4">
                   <div>
                     <p className="text-sm font-semibold text-primary">Message highlight</p>
-                    <p className="mt-1 text-xs text-gray-500">Buttons, badges and links use this color.</p>
+                    <p className="mt-1 text-xs text-secondary">Buttons, badges and links use this color.</p>
                   </div>
                   <div
                     className="flex h-11 min-w-[96px] items-center justify-center rounded-2xl px-4 text-xs font-black uppercase tracking-[0.2em] text-black"
@@ -245,9 +245,9 @@ const SettingsPage = () => {
                       key={preset.name}
                       onClick={() => setThemeColor(preset.color)}
                       className={`rounded-[1.5rem] border p-4 text-left transition ${
-                        isActive ? "bg-white/[0.05]" : "bg-white/[0.03] hover:bg-white/[0.05]"
+                        isActive ? "bg-primary/5" : "bg-surface hover:bg-primary/5"
                       }`}
-                      style={{ borderColor: isActive ? themeColor : "rgba(255,255,255,0.05)" }}
+                      style={{ borderColor: isActive ? themeColor : "transparent" }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="size-5 rounded-full shadow-lg" style={{ backgroundColor: preset.color }} />
@@ -269,7 +269,7 @@ const SettingsPage = () => {
                   type="color"
                   value={themeColor}
                   onChange={(e) => setThemeColor(e.target.value)}
-                  className="h-11 w-14 cursor-pointer rounded-xl border border-white/5 bg-transparent p-1"
+                  className="h-11 w-14 cursor-pointer rounded-xl border border-primary bg-transparent p-1"
                 />
               </div>
             </section>
