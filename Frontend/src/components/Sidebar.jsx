@@ -65,6 +65,9 @@ const Sidebar = () => {
     return name?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
+  const hasUnreadChats = (users || []).some(u => u.unreadCount > 0);
+  const hasUnreadGroups = (groups || []).some(g => g.unreadCount > 0);
+
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
   return (
@@ -76,15 +79,21 @@ const Sidebar = () => {
         <div className="flex flex-col items-center gap-5 sm:gap-8 flex-1 w-full">
           <button
             onClick={() => setActiveTab("chats")}
-            className={`rounded-2xl p-3 transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`relative rounded-2xl p-3 transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
           >
             <MessageSquare size={22} fill={activeTab === "chats" ? "currentColor" : "none"} />
+            {hasUnreadChats && activeTab !== "chats" && (
+              <div className="absolute right-2 top-2 size-2.5 rounded-full border-2 border-secondary animate-pulse" style={{ backgroundColor: themeColor }} />
+            )}
           </button>
           <button 
             onClick={() => setActiveTab("groups")} 
-            className={`rounded-2xl p-3 transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`relative rounded-2xl p-3 transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
           >
             <Users size={22} fill={activeTab === "groups" ? "currentColor" : "none"} />
+            {hasUnreadGroups && activeTab !== "groups" && (
+              <div className="absolute right-2 top-2 size-2.5 rounded-full border-2 border-secondary animate-pulse" style={{ backgroundColor: themeColor }} />
+            )}
           </button>
           <button 
             onClick={() => setActiveTab("discover")} 
@@ -142,15 +151,21 @@ const Sidebar = () => {
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => setActiveTab("chats")}
-              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
+              className={`relative rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
             >
               Chats
+              {hasUnreadChats && activeTab !== "chats" && (
+                <div className="absolute right-2 top-2 size-2 rounded-full" style={{ backgroundColor: themeColor }} />
+              )}
             </button>
             <button
               onClick={() => setActiveTab("groups")}
-              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
+              className={`relative rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
             >
               Groups
+              {hasUnreadGroups && activeTab !== "groups" && (
+                <div className="absolute right-2 top-2 size-2 rounded-full" style={{ backgroundColor: themeColor }} />
+              )}
             </button>
             <button
               onClick={() => setActiveTab("discover")}

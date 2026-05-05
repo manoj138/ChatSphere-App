@@ -56,6 +56,8 @@ const getMyGroups = async(req, res)=>{
                 groupId: group._id
             }).sort({ createdAt: -1 }).populate("senderId", "username");
 
+            const unreadCount = lastMessage && lastMessage.senderId?._id.toString() !== userId.toString() ? 1 : 0;
+
             return {
                 ...group,
                 lastMessage: lastMessage ? {
@@ -63,7 +65,8 @@ const getMyGroups = async(req, res)=>{
                     image: !!lastMessage.image,
                     createdAt: lastMessage.createdAt,
                     senderName: lastMessage.senderId?.username || "Member"
-                } : null
+                } : null,
+                unreadCount
             };
         }));
 

@@ -266,11 +266,17 @@ export const useChatStore = create((set, get) => ({
     }
   },
   setSelectedGroup: (selectedGroup) => {
-      set({ selectedGroup, selectedUser: null });
-      if (selectedGroup) {
-          const socket = useAuthStore.getState().socket;
-          if (socket) socket.emit("joinGroup", selectedGroup._id);
-      }
+    if (selectedGroup) {
+      set((state) => ({
+        selectedGroup,
+        selectedUser: null,
+        groups: state.groups.map((g) => (g._id === selectedGroup._id ? { ...g, unreadCount: 0 } : g)),
+      }));
+      const socket = useAuthStore.getState().socket;
+      if (socket) socket.emit("joinGroup", selectedGroup._id);
+    } else {
+      set({ selectedUser: null, selectedGroup: null });
+    }
   },
 
   updateGroup: async (groupId, groupData) => {
