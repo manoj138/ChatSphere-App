@@ -230,9 +230,19 @@ const Sidebar = () => {
                       <h3 className="truncate text-sm font-black tracking-tight text-primary">
                         {activeTab === "groups" ? item.name : item.username}
                       </h3>
-                      <span className="ml-2 text-[10px] font-semibold text-gray-500">
+                    <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
+                      <span className="text-[10px] font-semibold text-secondary/60">
                         {formatTime(lastMsg?.createdAt) || "NEW"}
                       </span>
+                      {item.unreadCount > 0 && (
+                        <span 
+                          className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
+                          style={{ backgroundColor: themeColor }}
+                        >
+                          {item.unreadCount}
+                        </span>
+                      )}
+                    </div>
                     </div>
 
                     <div className="flex items-center gap-1.5">

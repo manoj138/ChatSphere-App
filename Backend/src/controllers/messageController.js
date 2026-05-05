@@ -28,6 +28,13 @@ const getUsersForSlideBar = async(req, res)=>{
                     { senderId: friend._id, receiverId: loggedInUserId }
                 ]
             }).sort({ createdAt: -1 });
+
+            const unreadCount = await Message.countDocuments({
+                senderId: friend._id,
+                receiverId: loggedInUserId,
+                isSeen: false
+            });
+
             return {
                 ...friend,
                 lastMessage: lastMessage ? {
@@ -36,7 +43,8 @@ const getUsersForSlideBar = async(req, res)=>{
                     createdAt: lastMessage.createdAt,
                     senderId: lastMessage.senderId,
                     isSeen: lastMessage.isSeen
-                } : null
+                } : null,
+                unreadCount
             };
         }));
         return handle200(res, friendsWithLastMessage);

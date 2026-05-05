@@ -169,6 +169,7 @@ export const useChatStore = create((set, get) => ({
         const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
         if (isMessageFromSelectedUser) {
             get().appendMessageIfMissing(newMessage);
+            get().markMessagesAsSeen(newMessage.senderId);
         }
         // Silent refresh on receiving message
         get().getUsers(true);
@@ -252,7 +253,18 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  setSelectedUser: (selectedUser) => set({ selectedUser, selectedGroup: null }),
+  setSelectedUser: (selectedUser) => {
+    if (selectedUser) {
+      set((state) => ({
+        selectedUser,
+        selectedGroup: null,
+        users: state.users.map((u) => (u._id === selectedUser._id ? { ...u, unreadCount: 0 } : u)),
+      }));
+      get().markMessagesAsSeen(selectedUser._id);
+    } else {
+      set({ selectedUser: null, selectedGroup: null });
+    }
+  },
   setSelectedGroup: (selectedGroup) => {
       set({ selectedGroup, selectedUser: null });
       if (selectedGroup) {
