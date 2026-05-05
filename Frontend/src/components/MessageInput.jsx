@@ -78,21 +78,32 @@ const MessageInput = () => {
     <div className="w-full relative py-2">
       
       {/* Image Preview Floating Card */}
-      {imagePreview && (
+      {(imagePreview || isProcessingImage) && (
         <div className="absolute bottom-full left-0 mb-4 animate-in zoom-in-95 duration-300">
-          <div className="app-modal relative group rounded-[1.25rem] p-1">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="size-24 rounded-[1rem] border border-white/10 object-cover opacity-90"
-            />
-            <button
-              onClick={removeImage}
-              className="absolute -top-2 -right-2 size-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-              type="button"
-            >
-              <X size={12} strokeWidth={3} />
-            </button>
+          <div className="app-modal relative group rounded-[1.5rem] p-1.5 shadow-2xl overflow-hidden">
+            <div className="relative size-24 sm:size-32">
+              {isProcessingImage ? (
+                <div className="flex size-full items-center justify-center rounded-[1rem] bg-secondary/50 backdrop-blur-md">
+                   <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+              ) : (
+                <>
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="size-full rounded-[1rem] border border-white/10 object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                  />
+                  <button
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 size-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all hover:scale-110 shadow-lg z-10"
+                    type="button"
+                  >
+                    <X size={14} strokeWidth={3} />
+                  </button>
+                  <div className="absolute inset-0 bg-black/20 rounded-[1rem] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -14,6 +14,8 @@ import {
   X,
 } from "lucide-react";
 
+import ImageModal from "../components/ImageModal";
+
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { optimizeImageFile } from "../lib/image";
@@ -25,6 +27,7 @@ const ProfilePage = () => {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [bio, setBio] = useState(authUser?.bio || "Tell people a little about yourself.");
   const [showAvatarGallery, setShowAvatarGallery] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     if (authUser?.bio) setBio(authUser.bio);
@@ -114,7 +117,8 @@ const ProfilePage = () => {
                     <img
                       src={selectedImg || authUser.profilePicture || "/avatar.png"}
                       alt="Profile"
-                      className="size-full object-cover"
+                      className="size-full object-cover cursor-zoom-in"
+                      onClick={() => setPreviewImage(selectedImg || authUser.profilePicture || "/avatar.png")}
                     />
                     <label className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/55 opacity-0 transition-opacity hover:opacity-100">
                       <Camera className="mb-2 h-6 w-6 text-white" />
@@ -269,6 +273,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      {previewImage && <ImageModal src={previewImage} onClose={() => setPreviewImage(null)} />}
     </div>
   );
 };

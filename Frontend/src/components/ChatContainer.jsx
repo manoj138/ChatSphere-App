@@ -18,6 +18,7 @@ import MessageInput from "./MessageInput";
 import ForwardModal from "./ForwardModal";
 import ChatInfoModal from "./ChatInfoModal";
 import ConfirmationModal from "./ConfirmationModal";
+import ImageModal from "./ImageModal";
 
 const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -44,6 +45,7 @@ const ChatContainer = () => {
   const [forwardingMessage, setForwardingMessage] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const isTyping = selectedUser && typingStatus[selectedUser._id];
 
@@ -317,9 +319,14 @@ const ChatContainer = () => {
                         )}
 
                         {message.image && (
-                          <div className="group/img relative mt-3 overflow-hidden rounded-2xl border border-white/10 shadow-inner">
-                            <img src={message.image} className="h-auto max-w-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100" />
+                          <div 
+                            className="group/img relative mt-3 cursor-zoom-in overflow-hidden rounded-2xl border border-white/10 shadow-inner"
+                            onClick={() => setPreviewImage(message.image)}
+                          >
+                            <img src={message.image} className="h-auto max-w-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100 flex items-end justify-center pb-4">
+                               <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 translate-y-2 transition-transform group-hover/img:translate-y-0">Click to expand</span>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -368,6 +375,8 @@ const ChatContainer = () => {
           type="danger"
         />
       )}
+
+      {previewImage && <ImageModal src={previewImage} onClose={() => setPreviewImage(null)} />}
 
       <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-primary bg-gradient-to-t from-primary via-primary/95 to-primary p-3 sm:p-4 lg:p-6">
         <div className="mx-auto max-w-4xl">
