@@ -71,7 +71,7 @@ const Sidebar = () => {
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="relative flex h-screen w-full overflow-hidden border-r border-primary bg-secondary font-sans transition-all duration-500 select-none lg:h-full lg:w-[420px]">
+    <aside className="relative flex h-[100dvh] w-full overflow-hidden border-r border-primary bg-secondary font-sans transition-all duration-500 select-none lg:h-full lg:w-[380px] xl:w-[420px]">
 
       {/* Desktop Navigation Strip */}
       <div className="relative z-20 hidden h-full w-[74px] flex-col items-center gap-8 border-r border-primary bg-secondary py-6 lg:flex">
@@ -227,7 +227,7 @@ const Sidebar = () => {
                 <button
                   key={item._id}
                   onClick={() => activeTab === "discover" ? null : (activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item))}
-                  className={`relative flex w-full items-center gap-3 px-4 py-4 transition-all sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
+                  className={`relative flex w-full items-center gap-3 px-4 py-4 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
                 >
                   <div className="relative flex-shrink-0">
                     <div className="size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-xl transition-transform group-hover:scale-105 sm:size-14">

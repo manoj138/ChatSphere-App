@@ -23,10 +23,16 @@
   --shadow-primary: 0 24px 60px rgba(0, 0, 0, 0.08);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -47,7 +53,7 @@ body {
 
 .app-shell {
   background:
-    radial-gradient(circle at top, color-mix(in srgb, var(--accent-color) 12%, transparent) 0%, transparent 35%),
+    radial-gradient(circle at top, color-mix(in srgb, var(--accent-color) 8%, transparent) 0%, transparent 45%),
     var(--bg-primary);
 }
 
@@ -55,62 +61,46 @@ body {
   background-color: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-primary);
+  backdrop-filter: blur(12px);
 }
 
 .app-hero-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
     color-mix(in srgb, var(--bg-secondary) 95%, transparent);
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-primary);
+  backdrop-filter: blur(20px);
 }
 
 .app-soft-panel {
   background-color: color-mix(in srgb, var(--bg-surface) 100%, transparent);
   border: 1px solid var(--border-primary);
+  backdrop-filter: blur(8px);
 }
 
 .app-modal {
-  background-color: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
+  background-color: color-mix(in srgb, var(--bg-secondary) 98%, transparent);
   border: 1px solid var(--border-primary);
-  box-shadow: var(--shadow-primary);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
 }
 
 .app-input {
   background-color: color-mix(in srgb, var(--bg-surface) 100%, transparent);
   border: 1px solid var(--border-primary);
   color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .app-input::placeholder {
-  color: color-mix(in srgb, var(--text-secondary) 86%, transparent);
+  color: color-mix(in srgb, var(--text-secondary) 60%, transparent);
 }
 
 .app-input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--accent-color) 40%, var(--border-primary));
-}
-
-.app-muted {
-  color: color-mix(in srgb, var(--text-secondary) 94%, transparent);
-}
-
-.app-hairline {
-  border-color: color-mix(in srgb, var(--border-primary) 100%, transparent);
-}
-
-.app-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border-radius: 999px;
-  border: 1px solid var(--border-primary);
-  background-color: color-mix(in srgb, var(--bg-surface) 130%, transparent);
-  padding: 0.45rem 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
 
 .app-button {
@@ -118,11 +108,15 @@ body {
   padding: 0.8rem 1rem;
   font-size: 0.875rem;
   font-weight: 600;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .app-button:active {
-  transform: scale(0.99);
+  transform: scale(0.96);
 }
 
 .app-button-secondary {
@@ -132,7 +126,8 @@ body {
 }
 
 .app-button-secondary:hover {
-  background-color: color-mix(in srgb, var(--bg-surface) 140%, transparent);
+  background-color: color-mix(in srgb, var(--bg-surface) 160%, transparent);
+  border-color: color-mix(in srgb, var(--text-secondary) 30%, transparent);
 }
 
 .app-button-danger {
@@ -142,11 +137,12 @@ body {
 }
 
 .app-button-danger:hover {
-  background-color: rgba(239, 68, 68, 0.14);
+  background-color: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -156,18 +152,45 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 20px;
+  transition: background 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
-  opacity: 0.1;
+  background: color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Smooth entry animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.animate-slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.animate-slide-in-left { animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+.transition-premium {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-effect {
+  backdrop-filter: blur(12px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }

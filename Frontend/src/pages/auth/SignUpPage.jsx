@@ -45,7 +45,7 @@ const SignUpPage = () => {
 
       <div className="mx-auto grid min-h-screen max-w-7xl overflow-hidden lg:grid-cols-[0.95fr_1.05fr]">
         <section className="hidden items-center justify-center border-r border-white/5 px-10 py-6 lg:flex">
-          <div className="app-hero-panel relative w-full max-w-2xl h-[620px] sm:h-[680px] overflow-hidden rounded-[2.5rem] p-6">
+          <div className="app-hero-panel relative w-full max-w-2xl min-h-[620px] h-fit sm:min-h-[680px] overflow-hidden rounded-[2.5rem] p-6">
             <div className="absolute inset-x-10 top-0 h-40 opacity-20 blur-3xl" style={{ backgroundColor: themeColor }} />
             <div className="relative space-y-4">
               <div className="app-chip w-fit" style={{ borderColor: `${themeColor}33`, color: themeColor }}>
@@ -78,7 +78,7 @@ const SignUpPage = () => {
 
         <section className="relative flex items-center px-4 py-4 sm:px-6 sm:py-6 lg:px-10">
 
-          <div className="app-hero-panel relative mx-auto flex h-[620px] w-full max-w-xl flex-col overflow-hidden rounded-[2rem] p-5 sm:h-[680px] sm:rounded-[2.5rem] sm:p-6 lg:p-8">
+          <div className="app-hero-panel relative mx-auto flex min-h-[620px] h-fit w-full max-w-xl flex-col overflow-hidden rounded-[2rem] p-5 sm:min-h-[680px] sm:rounded-[2.5rem] sm:p-6 lg:p-8">
             <div className="absolute right-0 top-0 h-28 w-40 opacity-15 blur-3xl" style={{ backgroundColor: themeColor }} />
             <div className="space-y-4">
               <div className="space-y-4">

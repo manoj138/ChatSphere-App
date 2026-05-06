@@ -181,7 +181,7 @@ const ProfilePage = () => {
                     </button>
                   </div>
 
-                  <div className="mt-5 grid gap-6 md:grid-cols-2">
+                  <div className="mt-5 grid gap-6 sm:grid-cols-2">
                     <div className="space-y-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Masculine avatars</p>
                       <div className="grid grid-cols-3 gap-3">
@@ -247,10 +247,10 @@ const ProfilePage = () => {
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Write something about yourself..."
                     />
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                       <button
                         onClick={() => setIsEditingBio(false)}
-                        className="flex-1 rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
+                        className="rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
                       >
                         Cancel
                       </button>

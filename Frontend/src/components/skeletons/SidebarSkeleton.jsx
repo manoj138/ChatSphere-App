@@ -5,10 +5,10 @@ const SidebarSkeleton = () => {
   const skeletonContacts = Array(8).fill(null);
 
   return (
-    <aside className="h-full w-[420px] border-r border-primary flex transition-all duration-500 bg-secondary">
+    <aside className="h-full w-full lg:w-[380px] xl:w-[420px] border-r border-primary flex transition-all duration-500 bg-secondary">
       
       {/* Navigation Strip Skeleton */}
-      <div className="w-[70px] border-r border-primary flex flex-col items-center py-6 gap-8">
+      <div className="w-[70px] border-r border-primary hidden lg:flex flex-col items-center py-6 gap-8">
          <div className="size-10 bg-surface rounded-xl animate-pulse" />
          <div className="size-10 bg-surface rounded-xl animate-pulse" />
          <div className="size-10 bg-surface rounded-xl animate-pulse" />

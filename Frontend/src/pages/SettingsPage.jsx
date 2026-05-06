@@ -236,7 +236,7 @@ const SettingsPage = () => {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
                 {NEON_PRESETS.map((preset) => {
                   const isActive = themeColor === preset.color;
 

@@ -79,7 +79,7 @@ const MessageInput = () => {
       
       {/* Image Preview Floating Card */}
       {(imagePreview || isProcessingImage) && (
-        <div className="absolute bottom-full left-0 mb-4 animate-in zoom-in-95 duration-300">
+        <div className="absolute bottom-full left-0 mb-4 animate-scale-in">
           <div className="app-modal relative group rounded-[1.5rem] p-1.5 shadow-2xl overflow-hidden">
             <div className="relative size-24 sm:size-32">
               {isProcessingImage ? (
@@ -110,15 +110,15 @@ const MessageInput = () => {
 
       {/* Emoji Picker Overlay */}
       {showEmojiPicker && (
-        <div className="absolute bottom-full right-0 mb-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
-           <div className="rounded-[2rem] overflow-hidden border border-primary shadow-[0_0_50px_rgba(0,0,0,0.4)]">
+        <div className="absolute bottom-full right-0 mb-4 z-50 animate-slide-up w-full max-w-[320px] sm:max-w-[350px]">
+           <div className="rounded-[2rem] overflow-hidden border border-primary shadow-[0_0_50px_rgba(0,0,0,0.4)] bg-secondary">
               <EmojiPicker 
                 onEmojiClick={onEmojiClick}
                 theme={isLightMode ? "light" : "dark"}
                 lazyLoadEmojis={true}
                 searchPlaceholder="Search emojis..."
-                width={300}
-                height={400}
+                width="100%"
+                height={350}
               />
            </div>
         </div>

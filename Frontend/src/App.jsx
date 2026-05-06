@@ -72,7 +72,7 @@ function App() {
 
   return (
     <div className={`min-h-screen bg-primary font-sans text-primary selection:bg-accent selection:text-black ${isHomeRoute ? "overflow-hidden" : "overflow-y-auto"}`}>
-      <main className={isHomeRoute ? "h-screen" : "min-h-screen"}>
+      <main className={isHomeRoute ? "h-[100dvh]" : "min-h-screen"}>
         <Routes>
           <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
           <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />

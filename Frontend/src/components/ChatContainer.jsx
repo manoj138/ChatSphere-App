@@ -117,23 +117,23 @@ const ChatContainer = () => {
         style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }}
       />
 
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-primary bg-secondary/80 px-3 py-4 backdrop-blur-2xl sm:px-4 sm:py-5 lg:px-8">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-primary bg-secondary/80 px-2 py-3 backdrop-blur-2xl sm:px-4 sm:py-5 lg:px-8">
         {!isSearching ? (
-          <div className="animate-in slide-in-from-left-4 flex items-center gap-3 duration-300 lg:gap-4">
+          <div className="animate-in slide-in-from-left-4 flex items-center gap-2 duration-300 lg:gap-4">
             <button
               onClick={() => {
                 const { setSelectedUser, setSelectedGroup } = useChatStore.getState();
                 setSelectedUser(null);
                 setSelectedGroup(null);
               }}
-              className="p-2 text-gray-500 transition-colors hover:text-white lg:hidden"
+              className="p-1.5 text-gray-500 transition-colors hover:text-white lg:hidden"
             >
-              <ArrowLeft size={20} />
+              <ArrowLeft size={18} />
             </button>
 
-            <div className="group flex cursor-pointer items-center gap-3 lg:gap-4" onClick={() => setIsInfoModalOpen(true)}>
+            <div className="group flex cursor-pointer items-center gap-2 lg:gap-4" onClick={() => setIsInfoModalOpen(true)}>
               <div className="relative">
-                <div className="relative z-10 size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-2xl transition-all group-hover:border-white/20">
+                <div className="relative z-10 size-10 overflow-hidden rounded-[1rem] border border-white/10 shadow-2xl transition-all group-hover:border-white/20 sm:size-12 sm:rounded-[1.2rem]">
                   {selectedUser ? (
                     <img src={getAvatarSrc(selectedUser)} className="h-full w-full object-cover" alt="" />
                   ) : (
@@ -191,17 +191,17 @@ const ChatContainer = () => {
           </div>
         )}
 
-        <div className="ml-4 flex items-center gap-4 text-gray-400">
+        <div className="ml-2 flex items-center gap-2 text-gray-400 sm:ml-4 sm:gap-4">
           {!isSearching && (
-            <button onClick={() => setIsSearching(true)} className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 transition-all hover:bg-white/[0.05] hover:text-white">
-              <Search size={18} />
+            <button onClick={() => setIsSearching(true)} className="rounded-xl border border-white/5 bg-white/[0.03] p-2 transition-all hover:bg-white/[0.05] hover:text-white sm:p-2.5">
+              <Search size={16} className="sm:size-[18px]" />
             </button>
           )}
           <button
             onClick={() => setIsInfoModalOpen(true)}
-            className="rounded-xl border border-white/5 bg-white/[0.03] p-2.5 transition-all hover:bg-white/[0.05] hover:text-white"
+            className="rounded-xl border border-white/5 bg-white/[0.03] p-2 transition-all hover:bg-white/[0.05] hover:text-white sm:p-2.5"
           >
-            <Info size={18} />
+            <Info size={16} className="sm:size-[18px]" />
           </button>
         </div>
       </header>
@@ -217,7 +217,7 @@ const ChatContainer = () => {
             const isBigEmoji = emojiCount > 0 && emojiCount <= 3 && !message.image && !message.isDeleted;
 
             return (
-              <div key={message._id} className={`group/msg relative mb-6 flex w-full ${isMine ? "justify-end" : "justify-start"}`}>
+              <div key={message._id} className={`group/msg relative mb-6 flex w-full animate-scale-in ${isMine ? "justify-end" : "justify-start"}`}>
                 <div className={`flex max-w-[92%] items-end gap-2 sm:max-w-[85%] sm:gap-3 lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                   {!isMine && (selectedGroup || message.groupId) && (
                     <div className="relative z-10 mb-6 size-9 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-xl">
