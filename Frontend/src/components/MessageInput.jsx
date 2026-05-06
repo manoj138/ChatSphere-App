@@ -75,7 +75,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="w-full relative py-2">
+    <div className="w-full relative py-1.5">
       
       {/* Image Preview Floating Card */}
       {(imagePreview || isProcessingImage) && (
@@ -127,16 +127,15 @@ const MessageInput = () => {
       {/* Main Console Input */}
       <form onSubmit={handleSendMessage} className="relative group">
         
-        {/* Glow Effect */}
-        <div className="absolute -inset-1 rounded-full blur-md opacity-10 group-focus-within:opacity-30 transition-opacity" style={{ backgroundColor: themeColor }} />
 
-        <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl backdrop-blur-2xl transition-all duration-500">
+
+        <div className="relative flex items-center gap-1.5 overflow-hidden rounded-full border border-primary bg-secondary/90 p-1 shadow-lg backdrop-blur-2xl transition-all duration-500">
            
            {/* Utility Buttons Area */}
            <div className="ml-1 flex items-center gap-0.5">
               <button
                 type="button"
-                className={`rounded-full p-2.5 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+                className={`rounded-full p-2 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSending || isProcessingImage}
               >
@@ -144,7 +143,7 @@ const MessageInput = () => {
               </button>
               <button
                 type="button"
-                className={`rounded-full p-2.5 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+                className={`rounded-full p-2 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 disabled={isSending || isProcessingImage}
               >
@@ -164,7 +163,7 @@ const MessageInput = () => {
            <div className="relative flex-1">
               <input
                 type="text"
-                className="w-full bg-transparent border-none px-1 py-2 text-[14px] font-medium text-primary placeholder:text-gray-500 focus:outline-none"
+                className="w-full bg-transparent border-none px-1 py-1.5 text-[14px] font-medium text-primary placeholder:text-gray-500 focus:outline-none"
                 placeholder="Type a message..."
                 value={text}
                 onChange={handleTyping}
@@ -176,7 +175,7 @@ const MessageInput = () => {
            <button
              type="submit"
              disabled={isSending || isProcessingImage || (!text.trim() && !imagePreview)}
-             className="mr-1 flex size-10 flex-shrink-0 items-center justify-center rounded-full shadow-xl transition-all group/btn disabled:grayscale disabled:opacity-20"
+             className="mr-0.5 flex size-8 flex-shrink-0 items-center justify-center rounded-full shadow-xl transition-all group/btn disabled:grayscale disabled:opacity-20"
              style={{ backgroundColor: themeColor }}
            >
               <Send size={16} className="text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" strokeWidth={3} />

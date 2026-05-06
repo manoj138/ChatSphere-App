@@ -47,12 +47,20 @@ const sendFriendRequest = async (req, res) => {
 const getPendingRequests = async (req, res) => {
     try {
         const userId = req.user._id;
-        const requests = await FriendRequest.find({
+        
+        // Incoming requests (Received)
+        const incoming = await FriendRequest.find({
             receiver: userId,
             status: "pending"
         }).populate("sender", "username profilePicture email");
 
-        return handle200(res, requests);
+        // Outgoing requests (Sent)
+        const outgoing = await FriendRequest.find({
+            sender: userId,
+            status: "pending"
+        }).populate("receiver", "username profilePicture email");
+
+        return handle200(res, { incoming, outgoing });
     } catch (error) {
         handle500(res, error);
     }

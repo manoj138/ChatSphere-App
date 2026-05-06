@@ -83,7 +83,7 @@ const ImageModal = ({ src, onClose }) => {
            <img 
              src={src} 
              alt="Full size" 
-             className="max-h-[85vh] max-w-[90vw] rounded-2xl border border-white/10 object-contain shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+             className="max-h-[85vh] max-w-[90vw] rounded-xl border border-white/5 object-contain shadow-[0_0_100px_rgba(0,0,0,0.5)]"
            />
         </div>
       </div>

@@ -19,6 +19,7 @@ import ForwardModal from "./ForwardModal";
 import ChatInfoModal from "./ChatInfoModal";
 import ConfirmationModal from "./ConfirmationModal";
 import ImageModal from "./ImageModal";
+import DeleteMessageModal from "./DeleteMessageModal";
 
 const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -233,14 +234,12 @@ const ChatContainer = () => {
                     )}
 
                     <div className="group relative flex items-center gap-2">
-                      {isMine && !message.isDeleted && (
-                        <button
-                          onClick={() => setMessageToDelete(message._id)}
-                          className="order-last p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-red-400 active:scale-90"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => setMessageToDelete(message._id)}
+                        className={`${isMine ? "order-last" : "order-first"} p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-red-400 active:scale-90`}
+                      >
+                        <Trash2 size={16} />
+                      </button>
 
                       {!isMine && !message.isDeleted && (
                         <button
@@ -255,7 +254,7 @@ const ChatContainer = () => {
                         className={`relative transition-premium ${
                           isBigEmoji
                             ? "bg-transparent"
-                            : `rounded-[1.5rem] border px-4 py-3 shadow-2xl sm:rounded-[2rem] sm:px-6 sm:py-4 ${
+                            : `rounded-2xl border ${message.image && !message.text ? "p-1.5" : "px-4 py-3"} shadow-2xl ${message.image && !message.text ? "sm:p-2" : "sm:px-6 sm:py-4"} ${
                                 isMine
                                   ? "rounded-tr-none bubble-mine text-primary"
                                   : "rounded-tl-none bubble-other text-primary"
@@ -320,10 +319,10 @@ const ChatContainer = () => {
 
                         {message.image && (
                           <div 
-                            className="group/img relative mt-3 cursor-zoom-in overflow-hidden rounded-2xl border border-white/10 shadow-inner"
+                            className={`group/img relative ${message.text ? "mt-3" : ""} cursor-zoom-in overflow-hidden rounded-2xl border border-white/5 shadow-inner`}
                             onClick={() => setPreviewImage(message.image)}
                           >
-                            <img src={message.image} className="h-auto max-w-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
+                            <img src={message.image} className="h-auto max-w-[200px] sm:max-w-[250px] max-h-[300px] object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100 flex items-end justify-center pb-4">
                                <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 translate-y-2 transition-transform group-hover/img:translate-y-0">Click to expand</span>
                             </div>
@@ -357,28 +356,26 @@ const ChatContainer = () => {
             <p className="text-sm font-semibold text-primary">No messages yet.</p>
           </div>
         )}
-        <div ref={scrollRef} className="h-32 w-full" />
+        <div ref={scrollRef} className="h-2 w-full" />
       </div>
 
       {forwardingMessage && <ForwardModal message={forwardingMessage} onClose={() => setForwardingMessage(null)} />}
       {isInfoModalOpen && <ChatInfoModal onClose={() => setIsInfoModalOpen(false)} />}
 
       {messageToDelete && (
-        <ConfirmationModal
-          title="Delete message?"
-          description="This message will be removed. Do you want to continue?"
-          onConfirm={() => {
-            deleteMessage(messageToDelete);
+        <DeleteMessageModal
+          message={messages.find(m => m._id === messageToDelete)}
+          onConfirm={(type) => {
+            deleteMessage(messageToDelete, type);
             setMessageToDelete(null);
           }}
           onCancel={() => setMessageToDelete(null)}
-          type="danger"
         />
       )}
 
       {previewImage && <ImageModal src={previewImage} onClose={() => setPreviewImage(null)} />}
 
-      <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-primary bg-gradient-to-t from-primary via-primary/95 to-primary p-3 sm:p-4 lg:p-6">
+      <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-primary bg-gradient-to-t from-primary via-primary/95 to-primary p-2 sm:p-3 lg:p-4">
         <div className="mx-auto max-w-4xl">
           <MessageInput />
         </div>

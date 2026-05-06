@@ -24,8 +24,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.data?.title || "New Signal Received";
   const notificationOptions = {
     body: payload.data?.body || "Check your grid for updates.",
-    icon: "/favicon.png",
-    badge: "/favicon.png",
+    icon: "/favicon.svg",
+    badge: "/favicon.svg",
     tag: "chatsphere-unique-msg",
     renotify: true,
     requireInteraction: true,

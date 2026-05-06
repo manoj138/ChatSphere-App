@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 export const useFriendStore = create((set, get) => ({
     allUsers: [],
-    friendRequests: [],
+    friendRequests: { incoming: [], outgoing: [] },
     isUsersLoading: false,
     isRequestsLoading: false,
 
@@ -46,7 +46,16 @@ export const useFriendStore = create((set, get) => ({
         try {
             await axiosInstance.post("/friends/respond", { requestId, status });
             toast.success(`Request ${status}`);
+            
+            // Refresh both lists in this store
             get().getFriendRequests();
+            get().getAllUsers();
+            
+            // If accepted, also refresh the Chat sidebar users list
+            if (status === "accepted") {
+                const { useChatStore } = await import("./useChatStore");
+                useChatStore.getState().getUsers(true);
+            }
         } catch (error) {
             toast.error("Failed to respond to request");
         }

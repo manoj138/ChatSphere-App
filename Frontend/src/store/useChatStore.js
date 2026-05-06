@@ -126,15 +126,22 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  deleteMessage: async (messageId) => {
+  deleteMessage: async (messageId, type = "everyone") => {
     try {
-      await axiosInstance.delete(`/messages/delete/${messageId}`);
-      set((state) => ({
-        messages: state.messages.map((m) =>
-          m._id === messageId ? { ...m, isDeleted: true, text: "This message was deleted", image: null } : m
-        ),
-      }));
-      toast.success("Message deleted");
+      await axiosInstance.delete(`/messages/delete/${messageId}`, { data: { type } });
+      
+      if (type === "me") {
+        set((state) => ({
+          messages: state.messages.filter((m) => m._id !== messageId),
+        }));
+      } else {
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m._id === messageId ? { ...m, isDeleted: true, text: "This message was deleted", image: null } : m
+          ),
+        }));
+      }
+      toast.success(`Message removed for ${type === "me" ? "you" : "everyone"}`);
     } catch (error) {
       toast.error(error.response?.data?.message || "Error deleting message");
     }
@@ -164,6 +171,8 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
+    socket.off("newFriendRequest");
+    socket.off("friendRequestAccepted");
 
     socket.on("newMessage", (newMessage) => {
         const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
@@ -179,6 +188,25 @@ export const useChatStore = create((set, get) => ({
             const audio = new Audio("/recieve-tone.mp3");
             audio.play().catch(e => console.log("Receive sound failed"));
         }
+    });
+
+    socket.on("newFriendRequest", () => {
+        // Silently refresh friend requests if store exists
+        import("./useFriendStore").then((mod) => {
+            mod.useFriendStore.getState().getFriendRequests();
+        });
+        const audio = new Audio("/recieve-tone.mp3");
+        audio.play().catch(e => console.log("Sound blocked"));
+    });
+
+    socket.on("friendRequestAccepted", () => {
+        // Refresh everything to show the new friend
+        get().getUsers(true);
+        import("./useFriendStore").then((mod) => {
+            mod.useFriendStore.getState().getFriendRequests();
+            mod.useFriendStore.getState().getAllUsers();
+        });
+        toast.success("A friend request was accepted!");
     });
 
     socket.on("newGroupMessage", (newMessage) => {
@@ -243,6 +271,8 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
+    socket.off("newFriendRequest");
+    socket.off("friendRequestAccepted");
   },
 
   markMessagesAsSeen: async (userId) => {

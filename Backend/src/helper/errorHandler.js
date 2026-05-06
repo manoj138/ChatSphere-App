@@ -1,7 +1,17 @@
 const sendError = (res, statusCode = 500, errors = {}) => {
+  // Extract a single message for simple toast notifications on frontend
+  let message = "An error occurred";
+  if (typeof errors === "string") {
+    message = errors;
+  } else if (typeof errors === "object") {
+    const values = Object.values(errors);
+    if (values.length > 0) message = values[0];
+  }
+
   return res.status(statusCode).json({
     success: false,
-    errors
+    message,
+    errors: typeof errors === "string" ? { error: errors } : errors
   });
 };
 

@@ -24,8 +24,8 @@ const getUsersForSlideBar = async(req, res)=>{
         const friendsWithLastMessage = await Promise.all(friends.map(async (friend) => {
             const lastMessage = await Message.findOne({
                 $or: [
-                    { senderId: loggedInUserId, receiverId: friend._id },
-                    { senderId: friend._id, receiverId: loggedInUserId }
+                    { senderId: loggedInUserId, receiverId: friend._id, deletedBy: { $ne: loggedInUserId } },
+                    { senderId: friend._id, receiverId: loggedInUserId, deletedBy: { $ne: loggedInUserId } }
                 ]
             }).sort({ createdAt: -1 });
 
@@ -57,10 +57,17 @@ const getMessages = async(req, res)=>{
   try {
     const {id: userToChatId} = req.params;
      const myId = req.user._id;
-     const messages = await Message.find({$or:[
-        {senderId:myId, receiverId:userToChatId},
-        {senderId:userToChatId, receiverId:myId}
-     ]})
+     const messages = await Message.find({
+        $and: [
+            {
+                $or: [
+                    { senderId: myId, receiverId: userToChatId },
+                    { senderId: userToChatId, receiverId: myId }
+                ]
+            },
+            { deletedBy: { $ne: myId } }
+        ]
+     })
      return handle200(res, messages, "Messages fetched successfully")
   } catch (error) {
     handle500(res, error);
@@ -107,10 +114,28 @@ const sendMessage = async(req, res)=>{
 
         await newMessage.save();
 
-        // Immediate Socket Emission
+        // Immediate Socket Emission & Push Notifications
         if(groupId){ 
             const populatedMessage = await Message.findById(newMessage._id).populate("senderId", "username profilePicture");
-            io.to(groupId).emit("newGroupMessage", populatedMessage)
+            io.to(groupId).emit("newGroupMessage", populatedMessage);
+
+            // Fetch group members to send push notifications
+            const Group = require("../models/groupModel");
+            Group.findById(groupId).populate("members", "fcmToken username").then(group => {
+                if (group && group.members) {
+                    group.members.forEach(member => {
+                        // Don't notify the sender and only notify if member has an FCM token
+                        if (member._id.toString() !== senderId.toString() && member.fcmToken) {
+                            sendNotification(
+                                member.fcmToken,
+                                `${group.name}: ${req.user.username}`,
+                                text || "Shared an asset",
+                                { groupId: groupId.toString(), senderId: senderId.toString() }
+                            ).catch(err => console.error("Group Notify Error:", err.message));
+                        }
+                    });
+                }
+            }).catch(err => console.error("Group Fetch Error for Notify:", err.message));
         } else {
             if(receiverSocketId){
                 io.to(receiverSocketId).emit("newMessage", newMessage);
@@ -142,23 +167,34 @@ const sendMessage = async(req, res)=>{
 const deleteMessage = async(req, res)=>{
     try{
         const {id:messageId} = req.params;
+        const {type} = req.body; // "me" or "everyone"
         const userId = req.user._id;
+        
         const message = await Message.findById(messageId);
         if(!message) return handle404(res, "Message not found");
-        if(message.senderId.toString() !== userId.toString()) return handle401(res, "Unauthorized");
 
-        message.isDeleted = true;
-        message.text = "This message was deleted";
-        if(message.image) message.image = null;
-        await message.save();
+        if(type === "everyone"){
+            if(message.senderId.toString() !== userId.toString()) return handle401(res, "Only the sender can delete for everyone");
+            message.isDeleted = true;
+            message.text = "This message was deleted";
+            if(message.image) message.image = null;
+            await message.save();
 
-        if(message.groupId){
-            io.to(message.groupId.toString()).emit("messageDeleted", { messageId, groupId: message.groupId });
+            if(message.groupId){
+                io.to(message.groupId.toString()).emit("messageDeleted", { messageId, groupId: message.groupId });
+            } else {
+                const receiverSocketId = getReceiverSocketId(message.receiverId);
+                if(receiverSocketId) io.to(receiverSocketId).emit("messageDeleted", { messageId, senderId: message.senderId });
+            }
         } else {
-            const receiverSocketId = getReceiverSocketId(message.receiverId);
-            if(receiverSocketId) io.to(receiverSocketId).emit("messageDeleted", { messageId, senderId: message.senderId });
+            // Delete for me
+            if (!message.deletedBy.includes(userId)) {
+                message.deletedBy.push(userId);
+                await message.save();
+            }
         }
-        return handle200(res, message, "Message deleted successfully")
+        
+        return handle200(res, message, `Message deleted for ${type === "everyone" ? "everyone" : "you"}`)
     }catch(error){
         handle500(res, error);
     }
@@ -226,7 +262,10 @@ const searchUsers = async(req, res)=>{
 const getGroupMessages = async (req, res)=>{
     try {
         const {id:groupId} = req.params;
-        const messages =  await Message.find({groupId}).populate("senderId", "username profilePicture");
+        const messages =  await Message.find({
+            groupId,
+            deletedBy: { $ne: req.user._id }
+        }).populate("senderId", "username profilePicture");
         return handle200(res, messages, "Group messages fetched successfully")
     } catch (error) {
         handle500(res, error);

@@ -39,6 +39,9 @@ const messageSchema = new mongoose.Schema({
             userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
             emoji: { type: String }
         }
+    ],
+    deletedBy: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "User" }
     ]
 }, {timestamps:true})
 

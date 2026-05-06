@@ -38,13 +38,23 @@ function App() {
         onMessageListener()
           .then((payload) => {
             console.log("Foreground message received:", payload);
+            
+            // Extract data from payload (since we send data-only messages)
+            const title = payload.data?.title || "New Signal";
+            const body = payload.data?.body || "Check your grid for updates.";
+            const senderId = payload.data?.senderId;
+
+            // Don't show toast if we are already chatting with this person
+            const currentSelectedId = useChatStore.getState().selectedUser?._id;
+            if (senderId && currentSelectedId === senderId) return;
+
             toast(
               () => (
                 <div className="flex flex-col gap-1">
                   <span className="text-[10px] font-black text-accent sm:text-[11px]">
-                    {payload.notification.title}
+                    {title}
                   </span>
-                  <span className="text-[11px] opacity-70 normal-case">{payload.notification.body}</span>
+                  <span className="text-[11px] opacity-70 normal-case">{body}</span>
                 </div>
               ),
               { icon: "🔔" }

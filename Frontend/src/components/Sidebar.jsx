@@ -43,10 +43,15 @@ const Sidebar = () => {
   const isOnline = (userId) => onlineUsers.includes(userId);
 
   const getAvatarSrc = (item) => {
-    const photo = activeTab === "groups" ? item.groupImage : (activeTab === "requests" ? item.sender?.profilePicture : item.profilePicture);
+    let photo;
+    if (activeTab === "groups") photo = item.groupImage;
+    else if (activeTab === "requests") photo = item.requestType === "incoming" ? item.sender?.profilePicture : item.receiver?.profilePicture;
+    else photo = item.profilePicture;
+
     if (photo) return photo;
     if (activeTab === "groups") return "/favicon.svg";
-    const userItem = activeTab === "requests" ? item.sender : item;
+    
+    const userItem = activeTab === "requests" ? (item.requestType === "incoming" ? item.sender : item.receiver) : item;
     const idNum = userItem?._id ? userItem._id.charCodeAt(userItem._id.length - 1) : 0;
     return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
   };
@@ -60,15 +65,20 @@ const Sidebar = () => {
   const filteredItems = (
     activeTab === "chats" ? (users || []) :
     activeTab === "groups" ? (groups || []) :
-    activeTab === "requests" ? (friendRequests || []) :
+    activeTab === "requests" ? [
+      ...(friendRequests?.incoming || []).map(r => ({ ...r, requestType: "incoming" })),
+      ...(friendRequests?.outgoing || []).map(r => ({ ...r, requestType: "outgoing" }))
+    ] :
     (allUsers || [])
   ).filter((item) => {
-    const name = activeTab === "groups" ? item.name : (activeTab === "requests" ? item.sender?.username : item.username);
+    const name = activeTab === "groups" ? item.name : 
+                 (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username);
     return name?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   const hasUnreadChats = (users || []).some(u => u.unreadCount > 0);
   const hasUnreadGroups = (groups || []).some(g => g.unreadCount > 0);
+  const totalRequests = (friendRequests?.incoming?.length || 0);
 
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
@@ -101,7 +111,18 @@ const Sidebar = () => {
             onClick={() => setActiveTab("discover")} 
             className={`rounded-2xl p-3 transition-all ${activeTab === "discover" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
           >
+            <Search size={22} />
+          </button>
+          <button 
+            onClick={() => setActiveTab("requests")} 
+            className={`relative rounded-2xl p-3 transition-all ${activeTab === "requests" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+          >
             <UserPlus size={22} />
+            {friendRequests.length > 0 && (
+              <div className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
+                {friendRequests.length}
+              </div>
+            )}
           </button>
         </div>
 
@@ -125,10 +146,12 @@ const Sidebar = () => {
         <div className="sticky top-0 z-20 border-b border-primary bg-secondary/95 px-4 pb-3 pt-4 backdrop-blur-xl lg:hidden">
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="min-w-0">
-              <h1 className="text-lg font-black tracking-tight text-primary">
-                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
-              </h1>
-              <p className="text-xs text-gray-500">Browse chats, groups, and people.</p>
+                <h1 className="text-lg font-black tracking-tight text-primary">
+                  {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : activeTab === "discover" ? "Discover" : "Requests"}
+                </h1>
+                <p className="text-xs text-gray-500">
+                  {activeTab === "requests" ? "Manage friend requests" : "Browse chats, groups, and people."}
+                </p>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
@@ -184,9 +207,9 @@ const Sidebar = () => {
             >
               <UserPlus size={18} className={activeTab === "requests" ? "text-accent" : "group-hover:text-primary"} />
               <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Requests</span>
-              {friendRequests.length > 0 && (
+              {totalRequests > 0 && (
                 <div className="absolute right-3 top-3 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
-                  {friendRequests.length}
+                  {totalRequests}
                 </div>
               )}
             </button>
@@ -198,9 +221,11 @@ const Sidebar = () => {
           <div>
               <span className="app-chip mb-3" style={{ color: themeColor }}>Chat navigation</span>
               <h1 className="text-lg font-black tracking-tight text-primary sm:text-xl">
-                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : "Discover"}
+                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : activeTab === "discover" ? "Discover" : "Requests"}
               </h1>
-            <p className="mt-1 text-xs text-gray-500">Browse chats, groups, and people.</p>
+            <p className="mt-1 text-xs text-gray-500">
+              {activeTab === "requests" ? "Manage friend requests" : "Browse chats, groups, and people."}
+            </p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -263,7 +288,7 @@ const Sidebar = () => {
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex items-center justify-between mb-0.5">
                       <h3 className="truncate text-sm font-black tracking-tight text-primary">
-                        {activeTab === "groups" ? item.name : (activeTab === "requests" ? item.sender?.username : item.username)}
+                        {activeTab === "groups" ? item.name : (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username)}
                       </h3>
                       {activeTab !== "discover" && activeTab !== "requests" && (
                         <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
@@ -280,6 +305,11 @@ const Sidebar = () => {
                           )}
                         </div>
                       )}
+                      {activeTab === "requests" && (
+                        <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${item.requestType === "incoming" ? "bg-blue-500/10 text-blue-500" : "bg-orange-500/10 text-orange-500"}`}>
+                          {item.requestType}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
@@ -288,7 +318,7 @@ const Sidebar = () => {
                           <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
                         )}
                         <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
-                          {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.sender?.email || "Wants to connect") : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
+                          {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.requestType === "incoming" ? (item.sender?.email || "Wants to connect") : (item.receiver?.email || "Request sent")) : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
                         </p>
                       </div>
 
@@ -305,7 +335,7 @@ const Sidebar = () => {
                         </button>
                       )}
 
-                      {activeTab === "requests" && (
+                      {activeTab === "requests" && item.requestType === "incoming" && (
                         <div className="flex items-center gap-2">
                           <button
                             onClick={(e) => {
@@ -325,6 +355,13 @@ const Sidebar = () => {
                           >
                             <X size={16} />
                           </button>
+                        </div>
+                      )}
+
+                      {activeTab === "requests" && item.requestType === "outgoing" && (
+                        <div className="flex items-center gap-1.5 rounded-lg bg-secondary/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-secondary">
+                          <CheckCheck size={12} className="text-gray-400" />
+                          Sent
                         </div>
                       )}
                     </div>
