@@ -252,13 +252,13 @@ const ChatContainer = () => {
                       )}
 
                       <div
-                        className={`relative transition-all duration-500 ${
+                        className={`relative transition-premium ${
                           isBigEmoji
                             ? "bg-transparent"
                             : `rounded-[1.5rem] border px-4 py-3 shadow-2xl sm:rounded-[2rem] sm:px-6 sm:py-4 ${
                                 isMine
-                                  ? "rounded-tr-none border-primary bg-accent/10 text-primary"
-                                  : "rounded-tl-none border-primary bg-secondary text-primary"
+                                  ? "rounded-tr-none bubble-mine text-primary"
+                                  : "rounded-tl-none bubble-other text-primary"
                               } ${message.isDeleted ? "opacity-40 italic" : ""}`
                         }`}
                       >

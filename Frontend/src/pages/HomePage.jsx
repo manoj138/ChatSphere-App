@@ -20,7 +20,7 @@ const HomePage = () => {
       {/* Main Content Area */}
       <main className={`
         ${!selectedUser && !selectedGroup ? "hidden lg:flex" : "flex"} 
-        relative h-full min-w-0 flex-1 overflow-hidden bg-[#080808] transition-all duration-300
+        relative h-full min-w-0 flex-1 overflow-hidden bg-primary transition-all duration-300
       `}>
         {!selectedUser && !selectedGroup ? (
           <NoChatSelected />

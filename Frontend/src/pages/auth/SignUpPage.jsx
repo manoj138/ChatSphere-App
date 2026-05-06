@@ -43,73 +43,79 @@ const SignUpPage = () => {
         Back
       </button>
 
-      <div className="mx-auto grid min-h-screen max-w-7xl overflow-hidden lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="hidden items-center justify-center border-r border-white/5 px-10 py-6 lg:flex">
-          <div className="app-hero-panel relative w-full max-w-2xl min-h-[620px] h-fit sm:min-h-[680px] overflow-hidden rounded-[2.5rem] p-6">
+      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="app-hero-panel grid w-full max-w-5xl overflow-hidden rounded-[2.5rem] lg:grid-cols-[1fr_1fr]">
+          
+          {/* Left Side: Visual Content */}
+          <section className="relative hidden flex-col justify-center border-r border-primary bg-surface/50 p-8 lg:flex lg:p-10">
             <div className="absolute inset-x-10 top-0 h-40 opacity-20 blur-3xl" style={{ backgroundColor: themeColor }} />
-            <div className="relative space-y-4">
+            
+            <div className="relative space-y-6">
               <div className="app-chip w-fit" style={{ borderColor: `${themeColor}33`, color: themeColor }}>
                 Build your profile
               </div>
+              
               <div>
-                <h2 className="text-5xl font-black leading-tight tracking-tight text-primary">Join the conversation.</h2>
-                <p className="mt-4 max-w-lg text-sm leading-6 text-secondary">
+                <h2 className="text-4xl font-black leading-tight tracking-tight text-primary">
+                  Join the<br />conversation.
+                </h2>
+                <p className="mt-3 text-xs leading-5 text-secondary">
                   Start with a polished account setup and move into the same visual system used across the app.
                 </p>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-secondary">Identity</p>
-                  <p className="mt-2 text-sm font-semibold text-primary">Custom profile</p>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-xl border border-primary bg-secondary/50 p-3 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-secondary">Identity</p>
+                  <p className="mt-0.5 text-[10px] font-black text-primary">Custom</p>
                 </div>
-                <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">Groups</p>
-                  <p className="mt-2 text-sm font-semibold text-white">Shared chats</p>
+                <div className="rounded-xl border border-primary bg-secondary/50 p-3 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-secondary">Groups</p>
+                  <p className="mt-0.5 text-[10px] font-black text-primary">Shared</p>
                 </div>
-                <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">Theme</p>
-                  <p className="mt-2 text-sm font-semibold text-white">Personal style</p>
+                <div className="rounded-xl border border-primary bg-secondary/50 p-3 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-secondary">Theme</p>
+                  <p className="mt-0.5 text-[10px] font-black text-primary">Style</p>
                 </div>
               </div>
-              <img src="/signup-png.png" alt="Signup visual" className="mx-auto max-h-[240px] w-full object-contain" />
+
+              <div className="relative pt-2">
+                <img src="/signup-png.png" alt="Signup visual" className="mx-auto max-h-[220px] w-full object-contain" />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="relative flex items-center px-4 py-4 sm:px-6 sm:py-6 lg:px-10">
-
-          <div className="app-hero-panel relative mx-auto flex min-h-[620px] h-fit w-full max-w-xl flex-col overflow-hidden rounded-[2rem] p-5 sm:min-h-[680px] sm:rounded-[2.5rem] sm:p-6 lg:p-8">
+          {/* Right Side: Form */}
+          <section className="relative flex flex-col justify-center p-6 sm:p-8 lg:p-10">
             <div className="absolute right-0 top-0 h-28 w-40 opacity-15 blur-3xl" style={{ backgroundColor: themeColor }} />
-            <div className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-2xl shadow-lg" style={{ backgroundColor: themeColor }}>
-                    <MessageSquare className="h-5 w-5 text-black" fill="currentColor" />
-                  </div>
-                  <div>
-                    <p className="text-lg font-black tracking-tight text-primary">ChatSphere</p>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-secondary">Create your space</p>
-                  </div>
+            
+            <div className="relative space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl shadow-lg" style={{ backgroundColor: themeColor }}>
+                  <MessageSquare className="h-5 w-5 text-black" fill="currentColor" />
                 </div>
-
-                <div className="space-y-4">
-                  <span className="app-chip" style={{ color: themeColor }}>
-                    Create your space
-                  </span>
-                  <h1 className="text-4xl font-black tracking-tight text-primary sm:text-5xl">Create account</h1>
-                  <p className="mt-3 max-w-md text-sm leading-6 text-secondary">
-                    Set up your profile once and keep the same clean UI rhythm across the rest of the app.
-                  </p>
+                <div>
+                  <p className="text-lg font-black tracking-tight text-primary">ChatSphere</p>
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-secondary">Create your space</p>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-4">
+              <div className="space-y-2">
+                <span className="app-chip" style={{ color: themeColor }}>New account</span>
+                <h1 className="text-3xl font-black tracking-tight text-primary sm:text-4xl">Register</h1>
+                <p className="text-xs leading-5 text-secondary">
+                  Set up your profile once and keep the same clean UI rhythm across the rest of the app.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-3">
                   <label className="block">
-                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">Username</span>
+                    <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Username</span>
                     <input
                       type="text"
-                      className="app-input w-full rounded-2xl px-4 py-3.5 text-sm"
+                      required
+                      className="app-input w-full rounded-xl px-4 py-3 text-sm"
                       placeholder="Choose a username"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -117,10 +123,11 @@ const SignUpPage = () => {
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Email</span>
+                    <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Email</span>
                     <input
                       type="email"
-                      className="app-input w-full rounded-2xl px-4 py-3.5 text-sm"
+                      required
+                      className="app-input w-full rounded-xl px-4 py-3 text-sm"
                       placeholder="you@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -128,10 +135,11 @@ const SignUpPage = () => {
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Password</span>
-                    <div className="app-input flex items-center rounded-2xl px-4 py-3.5">
+                    <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Password</span>
+                    <div className="app-input flex items-center rounded-xl px-4 py-3">
                       <input
                         type={showPassword ? "text" : "password"}
+                        required
                         className="w-full bg-transparent text-sm text-primary outline-none"
                         placeholder="Create a password"
                         value={formData.password}
@@ -150,7 +158,7 @@ const SignUpPage = () => {
 
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center rounded-2xl px-4 py-3.5 text-sm font-black uppercase tracking-[0.2em] text-black transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50"
+                  className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-black uppercase tracking-[0.2em] text-black transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50"
                   style={{ backgroundColor: themeColor }}
                   disabled={isSigningUp}
                 >
@@ -158,15 +166,15 @@ const SignUpPage = () => {
                 </button>
               </form>
 
-              <p className="text-sm text-secondary">
+              <p className="text-xs text-secondary">
                 Already have an account?{" "}
                 <Link to="/login" className="font-bold text-primary transition hover:text-accent">
                   Sign in
                 </Link>
               </p>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   );
