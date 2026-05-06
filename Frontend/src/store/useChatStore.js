@@ -2,6 +2,7 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../services/api";
 import { useAuthStore } from "./useAuthStore";
+import { useThemeStore } from "./useThemeStore";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
