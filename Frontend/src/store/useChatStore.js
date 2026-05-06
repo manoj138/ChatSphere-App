@@ -12,7 +12,7 @@ export const useChatStore = create((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   isGroupsLoading: false,
-  typingStatus: {}, // { userId: boolean }
+  typingStatus: {}, 
 
   appendMessageIfMissing: (message) => {
     if (!message?._id) return;
@@ -101,7 +101,6 @@ export const useChatStore = create((set, get) => ({
       const newMessage = res.data.data;
       get().appendMessageIfMissing(newMessage);
       
-      // Silent refresh
       get().getUsers(true); 
       if (selectedGroup) get().getGroups(true);
     } catch (error) {
@@ -167,8 +166,6 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
-    socket.off("newFriendRequest");
-    socket.off("friendRequestAccepted");
 
     socket.on("newMessage", (newMessage) => {
         const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
@@ -177,22 +174,6 @@ export const useChatStore = create((set, get) => ({
             get().markMessagesAsSeen(newMessage.senderId);
         }
         get().getUsers(true);
-    });
-
-    socket.on("newFriendRequest", () => {
-        // Silently refresh friend requests if store exists
-        import("./useFriendStore").then((mod) => {
-            mod.useFriendStore.getState().getFriendRequests();
-        });
-    });
-
-    socket.on("friendRequestAccepted", () => {
-        get().getUsers(true);
-        import("./useFriendStore").then((mod) => {
-            mod.useFriendStore.getState().getFriendRequests();
-            mod.useFriendStore.getState().getAllUsers();
-        });
-        toast.success("A friend request was accepted!");
     });
 
     socket.on("newGroupMessage", (newMessage) => {
@@ -239,6 +220,11 @@ export const useChatStore = create((set, get) => ({
             });
         }
     });
+
+    // Handle cross-store refresh event
+    const refreshHandler = () => get().getUsers(true);
+    window.addEventListener("refreshChatUsers", refreshHandler);
+    get()._refreshHandler = refreshHandler;
   },
 
   unsubscribeFromEvents: () => {
@@ -251,8 +237,10 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
-    socket.off("newFriendRequest");
-    socket.off("friendRequestAccepted");
+    
+    if (get()._refreshHandler) {
+        window.removeEventListener("refreshChatUsers", get()._refreshHandler);
+    }
   },
 
   markMessagesAsSeen: async (userId) => {
