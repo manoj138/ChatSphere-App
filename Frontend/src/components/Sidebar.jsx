@@ -6,7 +6,7 @@ import { useFriendStore } from "../store/useFriendStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import {
   MessageSquare, Settings, LogOut, Plus,
-  Search, CheckCheck, Users, UserPlus
+  Search, CheckCheck, Users, UserPlus, Check, X
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CreateGroupModal from "./CreateGroupModal";
@@ -19,7 +19,7 @@ const Sidebar = () => {
   } = useChatStore();
 
   const {
-    getAllUsers, allUsers = [], getFriendRequests
+    getAllUsers, allUsers = [], getFriendRequests, sendFriendRequest, friendRequests = [], respondToRequest
   } = useFriendStore();
 
   const { authUser, logout, onlineUsers = [] } = useAuthStore();
@@ -43,10 +43,11 @@ const Sidebar = () => {
   const isOnline = (userId) => onlineUsers.includes(userId);
 
   const getAvatarSrc = (item) => {
-    const photo = activeTab === "groups" ? item.groupImage : item.profilePicture;
+    const photo = activeTab === "groups" ? item.groupImage : (activeTab === "requests" ? item.sender?.profilePicture : item.profilePicture);
     if (photo) return photo;
     if (activeTab === "groups") return "/favicon.svg";
-    const idNum = item._id ? item._id.charCodeAt(item._id.length - 1) : 0;
+    const userItem = activeTab === "requests" ? item.sender : item;
+    const idNum = userItem?._id ? userItem._id.charCodeAt(userItem._id.length - 1) : 0;
     return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
   };
 
@@ -58,10 +59,11 @@ const Sidebar = () => {
 
   const filteredItems = (
     activeTab === "chats" ? (users || []) :
-      activeTab === "groups" ? (groups || []) :
-        (allUsers || [])
-  ).filter(item => {
-    const name = activeTab === "groups" ? item.name : item.username;
+    activeTab === "groups" ? (groups || []) :
+    activeTab === "requests" ? (friendRequests || []) :
+    (allUsers || [])
+  ).filter((item) => {
+    const name = activeTab === "groups" ? item.name : (activeTab === "requests" ? item.sender?.username : item.username);
     return name?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -148,30 +150,45 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-1">
             <button
               onClick={() => setActiveTab("chats")}
-              className={`relative rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
+              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "chats" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
             >
-              Chats
+              <MessageSquare size={18} className={activeTab === "chats" ? "text-accent" : "group-hover:text-primary"} />
+              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Chats</span>
               {hasUnreadChats && activeTab !== "chats" && (
-                <div className="absolute right-2 top-2 size-2 rounded-full" style={{ backgroundColor: themeColor }} />
+                <div className="absolute right-3 top-3 size-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
               )}
             </button>
             <button
               onClick={() => setActiveTab("groups")}
-              className={`relative rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
+              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "groups" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
             >
-              Groups
+              <Users size={18} className={activeTab === "groups" ? "text-accent" : "group-hover:text-primary"} />
+              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Groups</span>
               {hasUnreadGroups && activeTab !== "groups" && (
-                <div className="absolute right-2 top-2 size-2 rounded-full" style={{ backgroundColor: themeColor }} />
+                <div className="absolute right-3 top-3 size-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
               )}
             </button>
             <button
               onClick={() => setActiveTab("discover")}
-              className={`rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${activeTab === "discover" ? "border border-primary bg-surface text-primary" : "border border-transparent text-secondary hover:bg-secondary/10"}`}
+              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "discover" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
             >
-              Discover
+              <Search size={18} className={activeTab === "discover" ? "text-accent" : "group-hover:text-primary"} />
+              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Discover</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("requests")}
+              className={`group relative flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "requests" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
+            >
+              <UserPlus size={18} className={activeTab === "requests" ? "text-accent" : "group-hover:text-primary"} />
+              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Requests</span>
+              {friendRequests.length > 0 && (
+                <div className="absolute right-3 top-3 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
+                  {friendRequests.length}
+                </div>
+              )}
             </button>
           </div>
         </div>
@@ -226,7 +243,10 @@ const Sidebar = () => {
               return (
                 <button
                   key={item._id}
-                  onClick={() => activeTab === "discover" ? null : (activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item))}
+                  onClick={() => {
+                    if (activeTab === "discover" || activeTab === "requests") return;
+                    activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item);
+                  }}
                   className={`relative flex w-full items-center gap-3 px-4 py-4 transition-premium hover:scale-[1.01] active:scale-[0.99] sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
                 >
                   <div className="relative flex-shrink-0">
@@ -243,33 +263,73 @@ const Sidebar = () => {
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex items-center justify-between mb-0.5">
                       <h3 className="truncate text-sm font-black tracking-tight text-primary">
-                        {activeTab === "groups" ? item.name : item.username}
+                        {activeTab === "groups" ? item.name : (activeTab === "requests" ? item.sender?.username : item.username)}
                       </h3>
-                    <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
-                      <span className="text-[10px] font-semibold text-secondary/60">
-                        {formatTime(lastMsg?.createdAt) || "NEW"}
-                      </span>
-                      {item.unreadCount > 0 && (
-                        <span 
-                          className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
-                          style={{ backgroundColor: themeColor }}
-                        >
-                          {item.unreadCount}
-                        </span>
+                      {activeTab !== "discover" && activeTab !== "requests" && (
+                        <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
+                          <span className="text-[10px] font-semibold text-secondary/60">
+                            {formatTime(lastMsg?.createdAt) || "NEW"}
+                          </span>
+                          {item.unreadCount > 0 && (
+                            <span 
+                              className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
+                              style={{ backgroundColor: themeColor }}
+                            >
+                              {item.unreadCount}
+                            </span>
+                          )}
+                        </div>
                       )}
-                    </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      {activeTab === "chats" && lastMsg && (
-                        <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-1 items-center gap-1.5 min-w-0">
+                        {activeTab === "chats" && lastMsg && (
+                          <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+                        )}
+                        <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
+                          {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.sender?.email || "Wants to connect") : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
+                        </p>
+                      </div>
+
+                      {activeTab === "discover" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            sendFriendRequest(item._id);
+                          }}
+                          className="flex items-center gap-1 rounded-lg bg-surface px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-secondary transition-all hover:bg-primary/10 hover:text-primary active:scale-90"
+                        >
+                          <UserPlus size={14} />
+                          Add
+                        </button>
                       )}
-                      <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
-                        {lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"}
-                      </p>
+
+                      {activeTab === "requests" && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              respondToRequest(item._id, "accepted");
+                            }}
+                            className="rounded-lg bg-green-500/10 p-1.5 text-green-500 transition-all hover:bg-green-500/20 active:scale-90"
+                          >
+                            <Check size={16} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              respondToRequest(item._id, "rejected");
+                            }}
+                            className="rounded-lg bg-red-500/10 p-1.5 text-red-500 transition-all hover:bg-red-500/20 active:scale-90"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  {isSelected && (
+                  {isSelected && activeTab !== "discover" && activeTab !== "requests" && (
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-l-full" style={{ backgroundColor: themeColor }} />
                   )}
                 </button>
