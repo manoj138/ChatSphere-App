@@ -47,39 +47,17 @@ export const useFriendStore = create((set, get) => ({
             await axiosInstance.post("/friends/respond", { requestId, status });
             toast.success(`Request ${status}`);
             
+            // Refresh both lists in this store
             get().getFriendRequests();
             get().getAllUsers();
             
-            // Dispatch a custom event to notify useChatStore to refresh users
+            // If accepted, also refresh the Chat sidebar users list
             if (status === "accepted") {
-                window.dispatchEvent(new CustomEvent("refreshChatUsers"));
+                const { useChatStore } = await import("./useChatStore");
+                useChatStore.getState().getUsers(true);
             }
         } catch (error) {
             toast.error("Failed to respond to request");
         }
     },
-
-    subscribeToFriendEvents: (socket) => {
-        if (!socket) return;
-        
-        socket.off("newFriendRequest");
-        socket.off("friendRequestAccepted");
-
-        socket.on("newFriendRequest", () => {
-            get().getFriendRequests();
-        });
-
-        socket.on("friendRequestAccepted", () => {
-            get().getFriendRequests();
-            get().getAllUsers();
-            window.dispatchEvent(new CustomEvent("refreshChatUsers"));
-            toast.success("A friend request was accepted!");
-        });
-    },
-
-    unsubscribeFromFriendEvents: (socket) => {
-        if (!socket) return;
-        socket.off("newFriendRequest");
-        socket.off("friendRequestAccepted");
-    }
 }));

@@ -12,7 +12,7 @@ export const useChatStore = create((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   isGroupsLoading: false,
-  typingStatus: {}, 
+  typingStatus: {}, // { userId: boolean }
 
   appendMessageIfMissing: (message) => {
     if (!message?._id) return;
@@ -101,6 +101,13 @@ export const useChatStore = create((set, get) => ({
       const newMessage = res.data.data;
       get().appendMessageIfMissing(newMessage);
       
+      if (import("./useThemeStore").then(mod => mod.useThemeStore.getState().soundEnabled)) {
+        const sendAudio = new Audio("/send-tone.mp3");
+        sendAudio.volume = 0.5;
+        sendAudio.play().catch(e => console.log("Send sound blocked:", e));
+      }
+
+      // Silent refresh to update last message in sidebar without skeleton flicker
       get().getUsers(true); 
       if (selectedGroup) get().getGroups(true);
     } catch (error) {
@@ -166,6 +173,8 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
+    socket.off("newFriendRequest");
+    socket.off("friendRequestAccepted");
 
     socket.on("newMessage", (newMessage) => {
         const isMessageFromSelectedUser = newMessage.senderId === get().selectedUser?._id;
@@ -173,7 +182,41 @@ export const useChatStore = create((set, get) => ({
             get().appendMessageIfMissing(newMessage);
             get().markMessagesAsSeen(newMessage.senderId);
         }
+        // Silent refresh on receiving message
         get().getUsers(true);
+        
+        const myId = useAuthStore.getState().authUser?._id;
+        if (newMessage.senderId !== myId) {
+            import("./useThemeStore").then(mod => {
+                if (mod.useThemeStore.getState().soundEnabled) {
+                    const audio = new Audio("/recieve-tone.mp3");
+                    audio.play().catch(e => console.log("Receive sound failed"));
+                }
+            });
+        }
+    });
+
+    socket.on("newFriendRequest", () => {
+        // Silently refresh friend requests if store exists
+        import("./useFriendStore").then((mod) => {
+            mod.useFriendStore.getState().getFriendRequests();
+        });
+        import("./useThemeStore").then(mod => {
+            if (mod.useThemeStore.getState().soundEnabled) {
+                const audio = new Audio("/recieve-tone.mp3");
+                audio.play().catch(e => console.log("Sound blocked"));
+            }
+        });
+    });
+
+    socket.on("friendRequestAccepted", () => {
+        // Refresh everything to show the new friend
+        get().getUsers(true);
+        import("./useFriendStore").then((mod) => {
+            mod.useFriendStore.getState().getFriendRequests();
+            mod.useFriendStore.getState().getAllUsers();
+        });
+        toast.success("A friend request was accepted!");
     });
 
     socket.on("newGroupMessage", (newMessage) => {
@@ -182,6 +225,16 @@ export const useChatStore = create((set, get) => ({
             get().appendMessageIfMissing(newMessage);
         }
         get().getGroups(true);
+
+        const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
+        if (!isMyMessage) {
+            import("./useThemeStore").then(mod => {
+                if (mod.useThemeStore.getState().soundEnabled) {
+                    const audio = new Audio("/recieve-tone.mp3");
+                    audio.play().catch(e => console.log("Receive sound failed"));
+                }
+            });
+        }
     });
 
     socket.on("messageDeleted", ({ messageId }) => {
@@ -220,11 +273,6 @@ export const useChatStore = create((set, get) => ({
             });
         }
     });
-
-    // Handle cross-store refresh event
-    const refreshHandler = () => get().getUsers(true);
-    window.addEventListener("refreshChatUsers", refreshHandler);
-    get()._refreshHandler = refreshHandler;
   },
 
   unsubscribeFromEvents: () => {
@@ -237,10 +285,8 @@ export const useChatStore = create((set, get) => ({
     socket.off("usertyping");
     socket.off("userStopTyping");
     socket.off("messagesSeen");
-    
-    if (get()._refreshHandler) {
-        window.removeEventListener("refreshChatUsers", get()._refreshHandler);
-    }
+    socket.off("newFriendRequest");
+    socket.off("friendRequestAccepted");
   },
 
   markMessagesAsSeen: async (userId) => {

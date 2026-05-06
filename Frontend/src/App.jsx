@@ -5,7 +5,6 @@ import { Toaster, toast } from "react-hot-toast";
 
 import { useAuthStore } from "./store/useAuthStore";
 import { useChatStore } from "./store/useChatStore";
-import { useFriendStore } from "./store/useFriendStore";
 import { useThemeStore } from "./store/useThemeStore";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
@@ -18,7 +17,6 @@ import LoadingScreen from "./components/LoadingScreen";
 function App() {
   const { authUser, checkAuth, isCheckingAuth, socket } = useAuthStore();
   const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
-  const { subscribeToFriendEvents, unsubscribeFromFriendEvents } = useFriendStore();
   const { themeColor, initTheme } = useThemeStore();
   const { pathname } = useLocation();
   const isHomeRoute = pathname === "/";
@@ -67,17 +65,11 @@ function App() {
           .catch((err) => console.log("failed: ", err));
       });
 
-      if (socket) {
-        subscribeToEvents();
-        subscribeToFriendEvents(socket);
-      }
+      if (socket) subscribeToEvents();
     }
 
-    return () => {
-      unsubscribeFromEvents();
-      unsubscribeFromFriendEvents(socket);
-    };
-  }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents, subscribeToFriendEvents, unsubscribeFromFriendEvents]);
+    return () => unsubscribeFromEvents();
+  }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents]);
 
   if (isCheckingAuth && !authUser) {
     return <LoadingScreen />;
