@@ -10,6 +10,14 @@
   --border-primary: rgba(255, 255, 255, 0.06);
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
   --shadow-primary: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
 [data-theme="dark"] body {
