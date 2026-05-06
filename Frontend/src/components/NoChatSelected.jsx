@@ -8,87 +8,89 @@ const NoChatSelected = () => {
   const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-primary p-4 font-sans transition-colors duration-500 sm:p-8">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-transparent p-6 font-sans transition-all duration-500 sm:p-12">
       
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] blur-[150px] opacity-[0.1] pointer-events-none rounded-full" style={{ backgroundColor: themeColor }} />
-      <div className={`absolute inset-0 opacity-[0.02] pointer-events-none ${isLightMode ? "bg-black" : "bg-white"}`} style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/black-linen.png')" }} />
+      <div className="absolute top-1/4 left-1/4 size-[300px] blur-[120px] opacity-[0.05] pointer-events-none rounded-full bg-emerald-400" />
 
-      <div className="relative z-10 w-full max-w-3xl space-y-6 sm:space-y-10">
+      <div className="relative z-10 w-full max-w-2xl space-y-6 sm:space-y-8">
         
         {/* Compact Profile Identity */}
-        <div className="animate-in fade-in zoom-in flex flex-col items-center gap-4 duration-700">
-           <div className="relative group">
-              <div className="size-20 rounded-[1.5rem] overflow-hidden border-2 border-primary group-hover:border-accent/40 transition-all p-0.5 shadow-2xl">
-                 <img 
-                   src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
-                   className="w-full h-full object-cover rounded-[1.3rem]" 
-                 />
-              </div>
-              <div className="absolute -bottom-1 -right-1 size-6 bg-primary rounded-full p-1 transition-colors">
-                 <div className="size-full bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.4)]" />
-              </div>
-           </div>
-           <div className="text-center">
-               <span className="app-chip mb-4" style={{ color: themeColor }}>Workspace ready</span>
-               <h3 className="text-3xl font-black tracking-tight text-primary">Welcome, @{authUser?.username}</h3>
-               <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-secondary">Pick a conversation, discover new people, or tune your account before you jump back into chat.</p>
-           </div>
+         <div className="animate-in fade-in zoom-in flex flex-col items-center gap-4 duration-1000">
+            <div className="relative group">
+               <div className="size-16 rounded-2xl overflow-hidden bg-white shadow-xl p-1 ring-2 ring-white transition-all group-hover:scale-105">
+                  <img 
+                    src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length-1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length-1) % 4) + 1}.png?v=3`)} 
+                    className="w-full h-full object-cover rounded-[0.8rem]" 
+                  />
+               </div>
+               <div className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-lg bg-white shadow-lg transition-transform group-hover:rotate-12">
+                  <div className="size-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
+               </div>
+            </div>
+            <div className="text-center space-y-2">
+                <span className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-accent">
+                  Neural Network Active
+                </span>
+                <h3 className="text-xl font-black tracking-tight text-primary sm:text-2xl">Welcome back, {authUser?.username}</h3>
+                <p className="mx-auto max-w-lg text-[13px] font-medium leading-relaxed text-secondary opacity-70">Initiate a secure stream or synchronize your identity.</p>
+            </div>
         </div>
 
         {/* Action Grid */}
-        <div className="animate-in slide-in-from-bottom-8 grid grid-cols-1 gap-4 duration-700 delay-200 md:grid-cols-2">
+        <div className="animate-in slide-in-from-bottom-12 grid grid-cols-1 gap-6 duration-1000 delay-300 md:grid-cols-2">
            
-           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-primary bg-surface p-6 transition-all hover:bg-secondary/40">
-              <div className="flex size-10 items-center justify-center rounded-xl border border-primary bg-secondary text-primary transition-colors group-hover:text-accent">
-                 <MessageSquarePlus size={20} />
+           <div className="group flex flex-col gap-4 rounded-2xl bg-white/40 p-5 shadow-lg backdrop-blur-3xl transition-all hover:bg-white hover:scale-[1.02] ring-1 ring-black/5">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent transition-all group-hover:scale-110 shadow-lg shadow-accent/10">
+                 <MessageSquarePlus size={18} />
               </div>
               <div>
-                 <h4 className="mb-1 text-sm font-black text-primary">Start a conversation</h4>
-                 <p className="text-xs font-medium leading-relaxed text-secondary">Select a friend from the sidebar to open your chat and continue where you left off.</p>
+                 <h4 className="mb-1 text-base font-black text-primary uppercase tracking-tight">Initiate Stream</h4>
+                 <p className="text-xs font-medium leading-relaxed text-secondary opacity-70">Access your secure channels via the terminal sidebar.</p>
               </div>
            </div>
 
-           <div className="group flex flex-col gap-4 rounded-[2.5rem] border border-primary bg-surface p-6 transition-all hover:bg-secondary/40">
-              <div className="flex size-10 items-center justify-center rounded-xl border border-primary bg-secondary text-primary transition-colors group-hover:text-accent">
-                 <UserPlus size={20} />
+           <div className="group flex flex-col gap-4 rounded-2xl bg-white/40 p-5 shadow-lg backdrop-blur-3xl transition-all hover:bg-white hover:scale-[1.02] ring-1 ring-black/5">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 transition-all group-hover:scale-110 shadow-lg shadow-emerald-500/10">
+                 <UserPlus size={18} />
               </div>
               <div>
-                 <h4 className="mb-1 text-sm font-black text-primary">Discover people</h4>
-                 <p className="text-xs font-medium leading-relaxed text-secondary">Update your profile or settings, then use the sidebar to discover new people and groups.</p>
+                 <h4 className="mb-1 text-base font-black text-primary uppercase tracking-tight">Expand Network</h4>
+                 <p className="text-xs font-medium leading-relaxed text-secondary opacity-70">Locate new operators or fine-tune your core parameters.</p>
               </div>
            </div>
 
         </div>
 
         {/* Global Stats Bar */}
-        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-[2rem] border border-primary bg-surface px-6 py-5 duration-1000 delay-500 sm:flex-row sm:gap-8">
+        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-xl bg-white/40 px-6 py-3.5 duration-1000 delay-500 sm:flex-row sm:gap-8 shadow-lg backdrop-blur-2xl ring-1 ring-black/5">
            <div className="flex items-center gap-2">
-              <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
-              <span className="text-[11px] font-semibold text-secondary opacity-80">{onlineUsers.length} people online</span>
+              <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary opacity-60">{onlineUsers.length} Live Nodes</span>
            </div>
            <div className="flex items-center gap-2">
-              <ShieldCheck size={12} className="text-accent opacity-40" />
-              <span className="text-[11px] font-semibold text-secondary opacity-80">Secure messaging enabled</span>
+              <ShieldCheck size={14} className="text-accent" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary opacity-60">E2E Secure</span>
            </div>
            <div className="flex items-center gap-2">
-              <Globe size={12} className="text-blue-500 opacity-40" />
-              <span className="text-[11px] font-semibold text-secondary opacity-80">Realtime sync active</span>
+              <Globe size={14} className="text-blue-500" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary opacity-60">Sync: 100%</span>
            </div>
         </div>
 
-        {/* Bottom CTA */}
-           <div className="text-center animate-in fade-in duration-1000 delay-700">
-           <p className="text-sm font-semibold text-secondary mb-4">Choose a chat from the sidebar, or update your account first.</p>
-           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/profile" className="rounded-2xl border border-primary bg-surface px-5 py-3 text-sm font-semibold text-primary transition-all hover:bg-secondary/40">
-                Open Profile
-              </Link>
-              <Link to="/settings" className="px-5 py-3 rounded-2xl text-sm font-semibold text-black hover:brightness-110 transition-all" style={{ backgroundColor: themeColor }}>
-                Open Settings
-              </Link>
-           </div>
-        </div>
+         {/* Bottom CTA */}
+            <div className="text-center animate-in fade-in duration-1000 delay-700 flex flex-col items-center gap-4">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-accent animate-pulse">Awaiting operator input...</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+               <Link to="/profile" className="w-full sm:w-auto rounded-xl bg-white px-6 py-3 text-xs font-black uppercase tracking-widest text-primary shadow-lg transition-all hover:scale-105 active:scale-95">
+                 Identity
+               </Link>
+               <Link to="/settings" className="w-full sm:w-auto rounded-xl px-6 py-3 text-xs font-black uppercase tracking-widest text-black shadow-xl transition-all hover:scale-105 active:scale-95 hover:brightness-110" style={{ backgroundColor: themeColor }}>
+                 Config
+               </Link>
+            </div>
+         </div>
 
       </div>
 

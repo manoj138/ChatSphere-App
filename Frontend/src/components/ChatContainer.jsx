@@ -71,24 +71,24 @@ const MessageItem = memo(({
 
   return (
     <div className={`group/msg relative mb-6 flex w-full animate-slide-up ${isMine ? "justify-end" : "justify-start"}`}>
-      <div className={`flex max-w-[92%] items-end gap-2 sm:max-w-[85%] sm:gap-3 lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+      <div className={`flex max-w-[92%] items-end gap-2 sm:max-w-[85%] sm:gap-4 lg:max-w-[75%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
         {!isMine && (selectedGroup || message.groupId) && (
-          <div className="relative z-10 mb-6 size-9 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-xl">
+          <div className="relative z-10 mb-8 size-10 flex-shrink-0 overflow-hidden rounded-[1.25rem] border-2 border-white bg-white shadow-xl transition-transform hover:scale-110">
             <img src={getAvatarSrc(message.senderId)} className="h-full w-full object-cover" alt="Avatar" />
           </div>
         )}
 
         <div className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}>
           {!isMine && (selectedGroup || message.groupId) && (
-            <span className="mb-1.5 ml-1 text-[11px] font-semibold" style={{ color: getUserColor(message.senderId?.username) }}>
+            <span className="mb-2 ml-1 text-[11px] font-black uppercase tracking-widest" style={{ color: getUserColor(message.senderId?.username) }}>
               {message.senderId?.username || "Unknown user"}
             </span>
           )}
 
-          <div className="group relative flex items-center gap-2">
+          <div className="group relative flex items-center gap-3">
             <button
               onClick={() => setMessageToDelete(message._id)}
-              className={`${isMine ? "order-last" : "order-first"} p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-red-400 active:scale-90`}
+              className={`${isMine ? "order-last" : "order-first"} rounded-xl bg-red-500/5 p-2.5 text-red-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-500 hover:text-white hover:shadow-lg active:scale-90`}
             >
               <Trash2 size={16} />
             </button>
@@ -96,7 +96,7 @@ const MessageItem = memo(({
             {!isMine && !message.isDeleted && (
               <button
                 onClick={() => setForwardingMessage(message)}
-                className="order-first p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-white"
+                className="order-first rounded-xl bg-accent/5 p-2.5 text-accent opacity-0 transition-all group-hover:opacity-100 hover:bg-accent hover:text-black hover:shadow-lg"
               >
                 <Forward size={16} />
               </button>
@@ -106,16 +106,16 @@ const MessageItem = memo(({
               className={`relative transition-all duration-300 ${
                 isBigEmoji
                   ? "bg-transparent"
-                  : `rounded-2xl border ${message.image && !message.text ? "p-1.5" : "px-4 py-3"} shadow-2xl ${message.image && !message.text ? "sm:p-2" : "sm:px-6 sm:py-4"} ${
+                  : `rounded-[1.75rem] border-none ${message.image && !message.text ? "p-2" : "px-5 py-4"} shadow-xl ${message.image && !message.text ? "sm:p-3" : "sm:px-8 sm:py-5"} ${
                       isMine
-                        ? "rounded-tr-none bubble-mine text-primary"
-                        : "rounded-tl-none bubble-other text-primary"
-                    } ${message.isDeleted ? "opacity-40 italic" : ""}`
+                        ? "rounded-tr-none bubble-mine"
+                        : "rounded-tl-none bubble-other"
+                    } ${message.isDeleted ? "opacity-50 grayscale italic" : ""}`
               }`}
             >
-              <div className={`absolute -bottom-3 z-20 flex items-center gap-1 ${isMine ? "right-4" : "left-4"}`}>
+              <div className={`absolute -bottom-4 z-20 flex items-center gap-1.5 ${isMine ? "right-6" : "left-6"}`}>
                 {message.reactions?.map((reaction, rIdx) => (
-                  <div key={rIdx} className="rounded-full border border-primary bg-secondary px-1.5 py-0.5 text-[12px] shadow-lg animate-in zoom-in">
+                  <div key={rIdx} className="rounded-full border-2 border-white bg-white px-2 py-0.5 text-[14px] font-bold shadow-xl animate-in zoom-in ring-1 ring-black/5">
                     {reaction.emoji}
                   </div>
                 ))}
@@ -124,14 +124,14 @@ const MessageItem = memo(({
               {!message.isDeleted && (
                 <button
                   onClick={() => setActiveMessageMenu(activeMessageMenu === message._id ? null : message._id)}
-                  className={`absolute -top-3 z-30 flex size-8 items-center justify-center rounded-full border border-primary bg-primary text-secondary opacity-0 transition-all group-hover:opacity-100 hover:text-accent ${isMine ? "-left-3" : "-right-3"}`}
+                  className={`absolute -top-4 z-30 flex size-10 items-center justify-center rounded-2xl bg-white text-accent opacity-0 shadow-xl ring-1 ring-black/5 transition-all group-hover:opacity-100 hover:scale-110 active:scale-125 ${isMine ? "-left-5" : "-right-5"}`}
                 >
-                  <SmilePlus size={16} />
+                  <SmilePlus size={20} />
                 </button>
               )}
 
               {activeMessageMenu === message._id && (
-                <div className={`absolute bottom-full z-[100] mb-3 flex items-center gap-0.5 rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl animate-in slide-in-from-bottom-2 duration-300 ${isMine ? "right-0" : "left-0"}`}>
+                <div className={`absolute bottom-full z-[100] mb-5 flex items-center gap-1 rounded-[1.5rem] bg-white/95 p-2 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-500 ring-1 ring-black/5 ${isMine ? "right-0" : "left-0"}`}>
                   {QUICK_REACTIONS.map((emoji) => (
                     <button
                       key={emoji}
@@ -139,7 +139,7 @@ const MessageItem = memo(({
                         reactToMessage(message._id, emoji);
                         setActiveMessageMenu(null);
                       }}
-                      className="flex size-9 items-center justify-center rounded-full text-xl transition-all hover:scale-110 hover:bg-white/[0.05] active:scale-150"
+                      className="flex size-11 items-center justify-center rounded-xl text-2xl transition-all hover:scale-125 hover:bg-accent/10 active:scale-150"
                     >
                       {emoji}
                     </button>
@@ -151,14 +151,14 @@ const MessageItem = memo(({
                 <p
                   className={`relative z-10 whitespace-pre-wrap leading-relaxed ${
                     isBigEmoji
-                      ? `drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] ${emojiCount > 1 ? "text-5xl" : "text-7xl"}`
-                      : "text-[14px] font-medium tracking-tight"
+                      ? `drop-shadow-[0_15px_30px_rgba(0,0,0,0.15)] ${emojiCount > 1 ? "text-6xl" : "text-8xl"}`
+                      : "text-[15px] font-bold tracking-tight"
                   }`}
                 >
                   {searchQuery
                     ? message.text.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
                         part.toLowerCase() === searchQuery.toLowerCase() ? (
-                          <mark key={i} className="rounded-sm bg-yellow-500/30 p-0 text-yellow-300">
+                          <mark key={i} className="rounded-md bg-accent/20 p-0.5 text-accent">
                             {part}
                           </mark>
                         ) : (
@@ -171,27 +171,27 @@ const MessageItem = memo(({
 
               {message.image && (
                 <div 
-                  className={`group/img relative ${message.text ? "mt-3" : ""} cursor-zoom-in overflow-hidden rounded-2xl border border-white/5 shadow-inner`}
+                  className={`group/img relative ${message.text ? "mt-4" : ""} cursor-zoom-in overflow-hidden rounded-2xl border-4 border-white/20 bg-white shadow-inner transition-all hover:shadow-2xl`}
                   onClick={() => setPreviewImage(message.image)}
                 >
-                  <img src={message.image} loading="lazy" className="h-auto max-w-[200px] sm:max-w-[250px] max-h-[300px] object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100 flex items-end justify-center pb-4">
-                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 translate-y-2 transition-transform group-hover/img:translate-y-0">Click to expand</span>
+                  <img src={message.image} loading="lazy" className="h-auto max-w-[220px] sm:max-w-[280px] max-h-[350px] object-cover transition-transform duration-1000 group-hover/img:scale-110" alt="Sent asset" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-all duration-500 group-hover/img:opacity-100 flex items-end justify-center pb-5">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-white translate-y-4 transition-transform group-hover/img:translate-y-0">Expand Visual</span>
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className={`mt-2.5 flex items-center gap-3 px-3 ${isMine ? "justify-end" : "justify-start"}`}>
-            <span className="text-[10px] font-medium text-gray-500">
+          <div className={`mt-3.5 flex items-center gap-4 px-4 ${isMine ? "justify-end" : "justify-start"}`}>
+            <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400">
               {message.createdAt
                 ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                 : "NOW"}
             </span>
             {isMine && !selectedGroup && !message.isDeleted && (
-              <div className="flex items-center gap-1">
-                <CheckCheck size={14} className={message.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+              <div className="flex items-center gap-1.5">
+                <CheckCheck size={16} className={message.isSeen ? "text-accent" : "text-gray-300"} strokeWidth={3} />
               </div>
             )}
           </div>
@@ -262,12 +262,12 @@ const ChatContainer = () => {
 
   if (isMessagesLoading) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-primary">
+      <div className="flex flex-1 flex-col items-center justify-center bg-transparent">
         <div className="relative">
-          <div className="size-16 animate-spin rounded-full border-r-2 border-t-2" style={{ borderColor: themeColor }} />
-          <MessageSquare className="absolute inset-0 m-auto opacity-20" size={24} />
+          <div className="size-20 animate-spin rounded-[2rem] border-r-4 border-t-4 shadow-2xl" style={{ borderColor: themeColor }} />
+          <MessageSquare className="absolute inset-0 m-auto text-accent opacity-40" size={32} />
         </div>
-        <p className="mt-6 animate-pulse text-sm font-semibold text-gray-400">Loading messages...</p>
+        <p className="mt-8 animate-pulse text-[11px] font-black uppercase tracking-[0.4em] text-accent">Decoding Stream...</p>
       </div>
     );
   }
@@ -276,62 +276,59 @@ const ChatContainer = () => {
   if (!activeChat) return null;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-primary font-sans transition-colors duration-500">
-      <div className="pointer-events-none absolute -right-24 top-1/4 size-64 opacity-10 blur-[120px]" style={{ backgroundColor: themeColor }} />
-      <div
-        className={`pointer-events-none absolute inset-0 opacity-[0.02] ${isLightMode ? "bg-black" : "bg-white"}`}
-        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }}
-      />
+    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-transparent font-sans transition-all duration-500">
+      <div className="pointer-events-none absolute -right-24 top-1/4 size-96 opacity-20 blur-[150px]" style={{ backgroundColor: themeColor }} />
+      <div className="pointer-events-none absolute -left-24 bottom-1/4 size-96 opacity-10 blur-[150px] bg-emerald-400" />
 
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-primary bg-secondary/80 px-2 py-3 backdrop-blur-2xl sm:px-4 sm:py-5 lg:px-8">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-black/5 bg-white/40 px-4 py-3.5 backdrop-blur-3xl sm:px-6 lg:px-8">
         {!isSearching ? (
-          <div className="animate-in slide-in-from-left-4 flex items-center gap-2 duration-300 lg:gap-4">
+          <div className="animate-in slide-in-from-left-6 flex items-center gap-4 duration-500 lg:gap-6">
             <button
               onClick={() => {
                 const { setSelectedUser, setSelectedGroup } = useChatStore.getState();
                 setSelectedUser(null);
                 setSelectedGroup(null);
               }}
-              className="p-1.5 text-gray-500 transition-colors hover:text-white lg:hidden"
+              className="rounded-xl bg-white p-2.5 text-gray-400 shadow-lg transition-all hover:text-primary lg:hidden active:scale-90"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={20} />
             </button>
 
-            <div className="group flex cursor-pointer items-center gap-2 lg:gap-4" onClick={() => setIsInfoModalOpen(true)}>
+            <div className="group flex cursor-pointer items-center gap-4 lg:gap-6" onClick={() => setIsInfoModalOpen(true)}>
               <div className="relative">
-                <div className="relative z-10 size-10 overflow-hidden rounded-[1rem] border border-white/10 shadow-2xl transition-all group-hover:border-white/20 sm:size-12 sm:rounded-[1.2rem]">
+                <div className="relative z-10 size-10 overflow-hidden rounded-2xl border-2 border-white bg-white shadow-2xl transition-all group-hover:scale-105 sm:size-11">
                   {selectedUser ? (
                     <img src={getAvatarSrc(selectedUser)} className="h-full w-full object-cover" alt="" />
                   ) : (
                     <img src={selectedGroup.groupImage || "/favicon.svg"} className="h-full w-full object-cover" alt="" />
                   )}
                 </div>
-                <div className="absolute -inset-1 rounded-[1.4rem] opacity-20 blur-md transition-opacity group-hover:opacity-40" style={{ backgroundColor: themeColor }} />
+                <div className="absolute -inset-2 rounded-[1.75rem] opacity-20 blur-xl transition-all group-hover:opacity-40" style={{ backgroundColor: themeColor }} />
               </div>
 
               <div className="min-w-0">
-                <h3 className="mb-1.5 truncate text-sm font-black leading-none tracking-tight text-primary transition-colors group-hover:text-accent sm:text-base">
+                <h3 className="mb-1 truncate text-lg font-black leading-none tracking-tight text-primary transition-colors group-hover:text-accent sm:text-xl">
                   {selectedUser ? selectedUser.username : selectedGroup.name}
                 </h3>
                 <div className="flex items-center gap-2">
                   {isTyping ? (
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex gap-0.5">
-                        <span className="size-1 rounded-full animate-bounce" style={{ backgroundColor: themeColor }} />
-                        <span className="size-1 rounded-full animate-bounce [animation-delay:0.2s]" style={{ backgroundColor: themeColor }} />
-                        <span className="size-1 rounded-full animate-bounce [animation-delay:0.4s]" style={{ backgroundColor: themeColor }} />
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        <span className="size-1.5 rounded-full animate-bounce bg-accent" />
+                        <span className="size-1.5 rounded-full animate-bounce [animation-delay:0.2s] bg-accent" />
+                        <span className="size-1.5 rounded-full animate-bounce [animation-delay:0.4s] bg-accent" />
                       </div>
-                      <span className="text-[11px] font-semibold" style={{ color: themeColor }}>Typing...</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-accent">Transmitting...</span>
                     </div>
                   ) : selectedUser && useAuthStore.getState().onlineUsers.includes(selectedUser._id) ? (
-                    <div className="flex items-center gap-1.5">
-                      <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-                      <span className="text-[11px] font-semibold text-green-500">Online</span>
+                    <div className="flex items-center gap-2">
+                      <div className="size-2 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)] animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-green-500">Live Connection</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5">
-                      <ShieldCheck size={10} className="text-gray-600" />
-                      <span className="text-[11px] font-semibold text-gray-500">Offline</span>
+                    <div className="flex items-center gap-2">
+                      <div className="size-2 rounded-full bg-gray-300" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Offline Space</span>
                     </div>
                   )}
                 </div>
@@ -339,40 +336,40 @@ const ChatContainer = () => {
             </div>
           </div>
         ) : (
-          <div className="animate-in slide-in-from-right-4 flex flex-1 items-center gap-4 duration-300">
-            <button onClick={() => { setIsSearching(false); setSearchQuery(""); }} className="p-2 text-gray-500 transition-all hover:text-white">
+          <div className="animate-in slide-in-from-right-6 flex flex-1 items-center gap-6 duration-500">
+            <button onClick={() => { setIsSearching(false); setSearchQuery(""); }} className="rounded-xl bg-white p-2.5 text-gray-400 shadow-lg transition-all hover:text-primary active:scale-90">
               <ArrowLeft size={20} />
             </button>
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+              <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 autoFocus
-                placeholder="Search messages..."
+                placeholder="Locate message..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="app-input w-full rounded-2xl py-3 pl-10 pr-4 text-sm"
+                className="app-input w-full rounded-[1.5rem] border-none bg-white/60 px-6 py-4 pl-14 text-sm font-bold shadow-xl backdrop-blur-xl transition-all focus:bg-white"
               />
             </div>
           </div>
         )}
 
-        <div className="ml-2 flex items-center gap-2 text-gray-400 sm:ml-4 sm:gap-4">
+        <div className="ml-4 flex items-center gap-3 sm:gap-4">
           {!isSearching && (
-            <button onClick={() => setIsSearching(true)} className="rounded-xl border border-white/5 bg-white/[0.03] p-2 transition-all hover:bg-white/[0.05] hover:text-white sm:p-2.5">
-              <Search size={16} className="sm:size-[18px]" />
+            <button onClick={() => setIsSearching(true)} className="rounded-2xl bg-white p-3 text-gray-400 shadow-xl ring-1 ring-black/5 transition-all hover:scale-110 hover:text-accent active:scale-90">
+              <Search size={20} />
             </button>
           )}
           <button
             onClick={() => setIsInfoModalOpen(true)}
-            className="rounded-xl border border-white/5 bg-white/[0.03] p-2 transition-all hover:bg-white/[0.05] hover:text-white sm:p-2.5"
+            className="rounded-2xl bg-white p-3 text-gray-400 shadow-xl ring-1 ring-black/5 transition-all hover:scale-110 hover:text-accent active:scale-90"
           >
-            <Info size={16} className="sm:size-[18px]" />
+            <Info size={20} />
           </button>
         </div>
       </header>
 
-      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 sm:space-y-10 sm:p-4 lg:p-8 space-y-6">
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-8 lg:p-12 space-y-10">
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => (
             <MessageItem 
@@ -392,14 +389,17 @@ const ChatContainer = () => {
             />
           ))
         ) : (
-          <div className="flex h-full select-none flex-col items-center justify-center space-y-6 px-4 text-center opacity-30">
-            <div className="rounded-[3rem] border-2 border-dashed border-primary p-10">
-              <MessageSquare size={80} className="text-primary" />
+          <div className="flex h-full select-none flex-col items-center justify-center space-y-8 px-6 text-center opacity-40">
+            <div className="rounded-[4rem] border-4 border-dashed border-accent/20 p-16 animate-pulse">
+              <MessageSquare size={100} className="text-accent/30" />
             </div>
-            <p className="text-sm font-semibold text-primary">No messages yet.</p>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black tracking-tight text-primary">Absolute Silence</h3>
+              <p className="text-sm font-bold uppercase tracking-widest text-accent">Initiate the first pulse</p>
+            </div>
           </div>
         )}
-        <div ref={scrollRef} className="h-2 w-full" />
+        <div ref={scrollRef} className="h-4 w-full" />
       </div>
 
       {forwardingMessage && <ForwardModal message={forwardingMessage} onClose={() => setForwardingMessage(null)} />}
@@ -418,8 +418,8 @@ const ChatContainer = () => {
 
       {previewImage && <ImageModal src={previewImage} onClose={() => setPreviewImage(null)} />}
 
-      <div className="sticky bottom-0 z-40 w-full shrink-0 border-t border-primary bg-gradient-to-t from-primary via-primary/95 to-primary p-2 sm:p-3 lg:p-4">
-        <div className="mx-auto max-w-4xl">
+      <div className="sticky bottom-0 z-40 w-full shrink-0 bg-transparent px-4 pb-6 pt-2 sm:px-12 sm:pb-10 lg:px-20">
+        <div className="mx-auto max-w-5xl">
           <MessageInput />
         </div>
       </div>

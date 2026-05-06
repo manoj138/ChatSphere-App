@@ -12,6 +12,8 @@ import SignUpPage from "./pages/auth/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 
+import LoadingScreen from "./components/LoadingScreen";
+
 function App() {
   const { authUser, checkAuth, isCheckingAuth, socket } = useAuthStore();
   const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
@@ -70,14 +72,7 @@ function App() {
   }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents]);
 
   if (isCheckingAuth && !authUser) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-primary">
-        <div className="relative">
-          <Loader className="size-12 animate-spin" style={{ color: themeColor }} />
-          <div className="absolute inset-0 opacity-20 blur-3xl" style={{ backgroundColor: themeColor }} />
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

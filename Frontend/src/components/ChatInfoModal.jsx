@@ -105,31 +105,35 @@ const ChatInfoModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[300] flex items-end justify-center bg-black/40 p-0 backdrop-blur-xl sm:items-center sm:p-4 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[300] flex items-end justify-center bg-black/40 p-0 backdrop-blur-md sm:items-center sm:p-4 animate-in fade-in duration-500"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="app-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2rem] sm:max-w-md sm:rounded-[2rem]">
+      <div className="app-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl sm:max-w-md sm:rounded-[2.5rem]">
+        {/* Abstract Wavy Shapes (Mint Aesthetic) */}
+        <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -left-16 size-48 rounded-full bg-emerald-400/10 blur-3xl" />
+
         {showDeleteConfirm && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-secondary/95 p-8 text-center backdrop-blur-md animate-in zoom-in duration-300">
-            <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-red-500/10 text-red-400">
-              <AlertTriangle size={28} />
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 p-8 text-center backdrop-blur-md animate-in zoom-in duration-300">
+            <div className="mb-6 flex size-20 items-center justify-center rounded-[2rem] bg-red-500/10 text-red-500 shadow-xl">
+              <AlertTriangle size={32} />
             </div>
-            <h3 className="text-xl font-black tracking-tight text-primary">Delete group?</h3>
-            <p className="mt-3 text-sm leading-6 text-secondary">
-              This will permanently remove the group and its messages. This action cannot be undone.
+            <h3 className="text-2xl font-black tracking-tight text-primary">Delete?</h3>
+            <p className="mt-4 text-[13px] font-medium leading-relaxed text-secondary">
+              This will permanently remove everything. This action cannot be undone.
             </p>
-            <div className="mt-6 grid w-full gap-3">
+            <div className="mt-10 grid w-full gap-3">
               <button
                 onClick={handleDeleteGroup}
-                className="w-full rounded-2xl bg-red-600 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-500"
+                className="w-full rounded-2xl bg-red-600 py-4 text-[13px] font-black uppercase tracking-[0.2em] text-white shadow-lg transition hover:bg-red-500"
               >
-                Delete group
+                Delete Forever
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="w-full rounded-2xl border border-primary bg-surface px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-secondary/10"
+                className="w-full rounded-2xl border border-primary bg-surface py-4 text-[13px] font-bold text-secondary transition hover:bg-white hover:text-primary"
               >
                 Cancel
               </button>
@@ -137,21 +141,21 @@ const ChatInfoModal = ({ onClose }) => {
           </div>
         )}
 
-        <div className="relative border-b border-primary bg-surface px-5 pb-6 pt-5 sm:px-6">
+        <div className="relative border-b border-primary/10 bg-surface/30 px-5 pb-8 pt-5 sm:px-8">
           <button
             onClick={onClose}
-            className="absolute right-5 top-5 rounded-xl border border-primary bg-surface p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary"
+            className="absolute right-5 top-5 rounded-2xl bg-surface/50 p-2.5 text-secondary transition hover:bg-white hover:text-primary hover:shadow-lg"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
 
-          <div className="flex flex-col items-center pt-2">
+          <div className="flex flex-col items-center pt-6">
             <div className="relative">
-              <div className="size-28 overflow-hidden rounded-[2rem] border-4 border-[#0a0a0a] bg-[#080808] shadow-2xl sm:size-32">
+              <div className="size-32 overflow-hidden rounded-[2.5rem] border-4 border-white bg-white shadow-2xl transition-transform hover:scale-105 sm:size-36">
                 <img src={getAvatarSrc(info)} className={`size-full object-cover ${isUpdating ? "opacity-50" : ""}`} alt="" />
                 {isUpdating && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 className="animate-spin text-white" size={24} />
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/40">
+                    <Loader2 className="animate-spin text-accent" size={28} />
                   </div>
                 )}
               </div>
@@ -159,23 +163,23 @@ const ChatInfoModal = ({ onClose }) => {
               {isAdmin && !isUpdating && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 rounded-xl p-2 text-black shadow-lg"
+                  className="absolute -bottom-1 -right-1 flex size-10 items-center justify-center rounded-2xl text-black shadow-xl ring-4 ring-white"
                   style={{ backgroundColor: themeColor }}
                 >
-                  <Camera size={14} />
+                  <Camera size={16} />
                 </button>
               )}
 
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
 
               {!isGroup && onlineUsers.includes(info._id) && (
-                <div className="absolute bottom-1 right-1 flex size-5 items-center justify-center rounded-full bg-[#0a0a0a]">
-                  <div className="size-2.5 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" />
+                <div className="absolute bottom-1 right-1 flex size-6 items-center justify-center rounded-full bg-white ring-4 ring-white shadow-lg">
+                  <div className="size-3 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" />
                 </div>
               )}
             </div>
 
-            <div className="mt-5 w-full text-center">
+            <div className="mt-6 w-full text-center">
               {isEditing ? (
                 <div className="mx-auto flex max-w-xs items-center gap-2">
                   <input
@@ -184,40 +188,40 @@ const ChatInfoModal = ({ onClose }) => {
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleUpdateName()}
-                    className="app-input flex-1 rounded-2xl px-4 py-3 text-center text-sm font-semibold"
+                    className="app-input flex-1 rounded-2xl border-none bg-white px-5 py-4 text-center text-[15px] font-bold shadow-inner"
                   />
                   <button
                     onClick={handleUpdateName}
-                    className="rounded-xl p-3 text-black"
+                    className="flex size-12 shrink-0 items-center justify-center rounded-2xl text-black shadow-lg"
                     style={{ backgroundColor: themeColor }}
                   >
-                    <Check size={16} />
+                    <Check size={20} />
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-3">
-                  <h2 className="break-words text-2xl font-black tracking-tight text-primary">
+                  <h2 className="break-words text-3xl font-black tracking-tight text-primary">
                     {isGroup ? info.name : info.username}
                   </h2>
                   {isAdmin && (
-                    <button onClick={() => setIsEditing(true)} className="rounded-xl p-2 text-secondary transition hover:bg-secondary/10 hover:text-primary">
-                      <Edit2 size={14} />
+                    <button onClick={() => setIsEditing(true)} className="rounded-2xl bg-surface/50 p-2.5 text-secondary transition hover:bg-white hover:text-primary hover:shadow-md">
+                      <Edit2 size={16} />
                     </button>
                   )}
                 </div>
               )}
 
-              <div className="mt-2 flex flex-col items-center gap-1">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+              <div className="mt-3 flex flex-col items-center gap-1">
+                <p className="text-[11px] font-black uppercase tracking-[0.25em] text-accent">
                   {isGroup
-                    ? `Group ID ${info._id.substring(0, 8)}`
+                    ? `Public Community`
                     : onlineUsers.includes(info._id)
-                      ? "Online now"
-                      : "Offline"}
+                      ? "Online Now"
+                      : "Recently Active"}
                 </p>
                 {!isGroup && !onlineUsers.includes(info._id) && (
-                  <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <Clock size={10} />
+                  <div className="flex items-center gap-2 text-[12px] font-medium text-gray-500">
+                    <Clock size={12} className="text-accent" />
                     <span>Last seen {formatLastSeen(info.lastSeen)}</span>
                   </div>
                 )}
@@ -226,36 +230,36 @@ const ChatInfoModal = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="space-y-5 overflow-y-auto custom-scrollbar p-5 sm:p-6">
+        <div className="relative space-y-6 overflow-y-auto custom-scrollbar p-5 sm:p-8">
           {isGroup ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Members</h4>
-                <span className="text-xs text-gray-500">{info.members?.length} people</span>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between px-1">
+                <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Members</h4>
+                <span className="text-[11px] font-bold text-accent">{info.members?.length} people</span>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {info.members?.map((member) => {
                   const isMemberAdmin = member._id === (info.admin?._id || info.admin);
 
                   return (
-                    <div key={member._id} className="flex items-center gap-3 rounded-2xl border border-primary bg-surface p-3">
-                      <div className="relative size-10 overflow-hidden rounded-xl border border-white/10">
+                    <div key={member._id} className="group flex items-center gap-4 rounded-[1.5rem] bg-surface/30 p-3 transition-all hover:bg-white hover:shadow-lg">
+                      <div className="relative size-12 overflow-hidden rounded-[1.25rem] border-2 border-white bg-white shadow-sm transition-transform group-hover:scale-105">
                         <img
                           src={member.profilePicture || (member._id.charCodeAt(member._id.length - 1) % 2 === 0 ? "/boy_1.png" : "/girl_1.png")}
                           className="size-full object-cover"
                         />
                         {onlineUsers.includes(member._id) && (
-                          <div className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#0a0a0a] bg-green-500" />
+                          <div className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-white bg-green-500" />
                         )}
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-primary">@{member.username}</p>
+                        <p className="truncate text-[15px] font-bold text-primary group-hover:text-accent transition-colors">@{member.username}</p>
                         {isMemberAdmin && (
-                          <div className="mt-1 inline-flex items-center gap-1 text-[11px] text-yellow-400">
-                            <ShieldCheck size={10} />
-                            Admin
+                          <div className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-500">
+                            <ShieldCheck size={12} />
+                            Moderator
                           </div>
                         )}
                       </div>
@@ -263,9 +267,9 @@ const ChatInfoModal = ({ onClose }) => {
                       {isAdmin && !isMemberAdmin && (
                         <button
                           onClick={() => handleKick(member._id, member.username)}
-                          className="rounded-xl p-2 text-gray-500 transition hover:bg-red-500/10 hover:text-red-400"
+                          className="rounded-xl p-2.5 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-500 hover:shadow-md"
                         >
-                          <UserMinus size={16} />
+                          <UserMinus size={18} />
                         </button>
                       )}
                     </div>
@@ -276,32 +280,32 @@ const ChatInfoModal = ({ onClose }) => {
               {isAdmin && (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10"
+                  className="mt-4 flex w-full items-center justify-center gap-3 rounded-[1.5rem] bg-red-500/5 px-4 py-4 text-[13px] font-black uppercase tracking-[0.15em] text-red-500 transition-all hover:bg-red-500/10 hover:shadow-xl"
                 >
-                  <Trash2 size={14} />
-                  Delete group
+                  <Trash2 size={16} />
+                  Terminate Community
                 </button>
               )}
             </div>
           ) : (
-            <div className="space-y-3">
-              <div className="flex items-center gap-4 rounded-2xl border border-primary bg-surface p-4">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-secondary">
-                  <Mail size={18} />
+            <div className="space-y-4">
+              <div className="group flex items-center gap-5 rounded-[1.5rem] bg-surface/30 p-5 transition-all hover:bg-white hover:shadow-lg">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-white text-accent shadow-sm transition-transform group-hover:scale-110">
+                  <Mail size={24} />
                 </div>
                 <div className="min-w-0 flex-1 text-left">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">Email</p>
-                  <p className="mt-1 truncate text-sm font-semibold text-primary">{info.email}</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Email Address</p>
+                  <p className="mt-1 truncate text-[15px] font-bold text-primary">{info.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 rounded-2xl border border-primary bg-surface p-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-secondary">
-                  <Info size={18} />
+              <div className="group flex items-start gap-5 rounded-[1.5rem] bg-surface/30 p-5 transition-all hover:bg-white hover:shadow-lg">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white text-accent shadow-sm transition-transform group-hover:scale-110">
+                  <Info size={24} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary">Bio</p>
-                  <p className="mt-1 text-sm leading-6 text-secondary">{info.bio || "No bio added yet."}</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">About Me</p>
+                  <p className="mt-1 text-[14px] font-medium leading-relaxed text-secondary">{info.bio || "No bio added yet."}</p>
                 </div>
               </div>
             </div>

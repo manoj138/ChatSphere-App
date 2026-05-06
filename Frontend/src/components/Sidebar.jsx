@@ -51,32 +51,32 @@ const SidebarItem = memo(({
         if (activeTab === "discover" || activeTab === "requests") return;
         activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item);
       }}
-      className={`relative flex w-full items-center gap-3 px-4 py-4 transition-premium hover:scale-[1.01] active:scale-[0.99] sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
+      className={`relative flex w-full items-center gap-3 px-4 py-3.5 transition-all hover:bg-white/60 active:scale-[0.98] sm:gap-4 sm:px-6 ${isSelected ? "bg-white shadow-xl ring-1 ring-black/5" : ""}`}
     >
       <div className="relative flex-shrink-0">
-        <div className="size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-xl transition-transform group-hover:scale-105 sm:size-14">
-          <img src={getAvatarSrc()} loading="lazy" className="w-full h-full object-cover" />
+        <div className={`size-12 overflow-hidden rounded-2xl bg-white shadow-lg transition-all ${isSelected ? "ring-2 ring-accent ring-offset-2" : "ring-1 ring-black/5"}`}>
+          <img src={getAvatarSrc()} loading="lazy" className="size-full object-cover" />
         </div>
         {online && (
-          <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-secondary p-0.5 transition-colors">
-            <div className="size-full bg-green-500 rounded-full shadow-[0_0_100px_rgba(34,197,94,1)] animate-pulse" />
+          <div className="absolute -bottom-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-white shadow-md">
+            <div className="size-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
           </div>
         )}
       </div>
 
       <div className="flex-1 min-w-0 text-left">
         <div className="flex items-center justify-between mb-0.5">
-          <h3 className="truncate text-sm font-black tracking-tight text-primary">
+          <h3 className={`truncate text-sm font-black tracking-tight text-primary`}>
             {activeTab === "groups" ? item.name : (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username)}
           </h3>
           {activeTab !== "discover" && activeTab !== "requests" && (
             <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
-              <span className="text-[10px] font-semibold text-secondary/60">
+              <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
                 {formatTime(lastMsg?.createdAt) || "NEW"}
               </span>
               {item.unreadCount > 0 && (
                 <span 
-                  className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
+                  className="flex size-4.5 items-center justify-center rounded-lg text-[9px] font-black text-black shadow-md"
                   style={{ backgroundColor: themeColor }}
                 >
                   {item.unreadCount}
@@ -85,7 +85,7 @@ const SidebarItem = memo(({
             </div>
           )}
           {activeTab === "requests" && (
-            <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${item.requestType === "incoming" ? "bg-blue-500/10 text-blue-500" : "bg-orange-500/10 text-orange-500"}`}>
+            <span className={`rounded-lg px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${item.requestType === "incoming" ? "bg-blue-500/10 text-blue-500" : "bg-orange-500/10 text-orange-500"}`}>
               {item.requestType}
             </span>
           )}
@@ -94,59 +94,16 @@ const SidebarItem = memo(({
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-1 items-center gap-1.5 min-w-0">
             {activeTab === "chats" && lastMsg && (
-              <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+              <CheckCheck size={13} className={lastMsg?.isSeen ? "text-accent" : "text-gray-300"} strokeWidth={3} />
             )}
-            <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
-              {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.requestType === "incoming" ? (item.sender?.email || "Wants to connect") : (item.receiver?.email || "Request sent")) : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
+            <p className={`truncate text-[12px] font-bold text-gray-400`}>
+              {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.requestType === "incoming" ? (item.sender?.email || "Wants to connect") : (item.receiver?.email || "Request sent")) : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "Ready for connection"))}
             </p>
           </div>
-
-          {activeTab === "discover" && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                sendFriendRequest(item._id);
-              }}
-              className="flex items-center gap-1 rounded-lg bg-surface px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-secondary transition-all hover:bg-primary/10 hover:text-primary active:scale-90"
-            >
-              <UserPlus size={14} />
-              Add
-            </button>
-          )}
-
-          {activeTab === "requests" && item.requestType === "incoming" && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  respondToRequest(item._id, "accepted");
-                }}
-                className="rounded-lg bg-green-500/10 p-1.5 text-green-500 transition-all hover:bg-green-500/20 active:scale-90"
-              >
-                <Check size={16} />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  respondToRequest(item._id, "rejected");
-                }}
-                className="rounded-lg bg-red-500/10 p-1.5 text-red-500 transition-all hover:bg-red-500/20 active:scale-90"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-
-          {activeTab === "requests" && item.requestType === "outgoing" && (
-            <div className="flex items-center gap-1.5 rounded-lg bg-secondary/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-secondary">
-              <CheckCheck size={12} className="text-gray-400" />
-              Sent
-            </div>
-          )}
         </div>
       </div>
       {isSelected && activeTab !== "discover" && activeTab !== "requests" && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-l-full" style={{ backgroundColor: themeColor }} />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full shadow-lg" style={{ backgroundColor: themeColor }} />
       )}
     </button>
   );
@@ -206,58 +163,58 @@ const Sidebar = () => {
   if (isUsersLoading || isGroupsLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="relative flex h-[100dvh] w-full overflow-hidden border-r border-primary bg-secondary font-sans transition-all duration-500 select-none lg:h-full lg:w-[380px] xl:w-[420px]">
+    <aside className="relative flex h-[100dvh] w-full overflow-hidden border-r border-black/5 bg-white/40 backdrop-blur-3xl font-sans transition-all duration-500 select-none lg:h-full lg:w-[380px] xl:w-[420px]">
 
       {/* Desktop Navigation Strip */}
-      <div className="relative z-20 hidden h-full w-[74px] flex-col items-center gap-8 border-r border-primary bg-secondary py-6 lg:flex">
-        <div className="absolute inset-x-3 top-3 h-24 rounded-[1.5rem] opacity-20 blur-2xl" style={{ backgroundColor: themeColor }} />
-        <div className="flex flex-col items-center gap-5 sm:gap-8 flex-1 w-full">
+      <div className="relative z-20 hidden h-full w-[76px] flex-col items-center gap-6 border-r border-black/5 bg-white/60 py-6 lg:flex">
+        <div className="absolute inset-x-3 top-3 h-20 rounded-2xl opacity-20 blur-3xl" style={{ backgroundColor: themeColor }} />
+        <div className="flex flex-col items-center gap-6 flex-1 w-full">
           <button
             onClick={() => setActiveTab("chats")}
-            className={`relative rounded-2xl p-3 transition-all ${activeTab === "chats" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`group relative rounded-xl p-3 transition-all hover:scale-110 active:scale-95 ${activeTab === "chats" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400 hover:text-accent"}`}
           >
             <MessageSquare size={22} fill={activeTab === "chats" ? "currentColor" : "none"} />
             {hasUnreadChats && activeTab !== "chats" && (
-              <div className="absolute right-2 top-2 size-2.5 rounded-full border-2 border-secondary animate-pulse" style={{ backgroundColor: themeColor }} />
+              <div className="absolute right-2 top-2 size-2.5 rounded-full ring-2 ring-white animate-pulse" style={{ backgroundColor: themeColor }} />
             )}
           </button>
           <button 
             onClick={() => setActiveTab("groups")} 
-            className={`relative rounded-2xl p-3 transition-all ${activeTab === "groups" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`group relative rounded-xl p-3 transition-all hover:scale-110 active:scale-95 ${activeTab === "groups" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400 hover:text-accent"}`}
           >
             <Users size={22} fill={activeTab === "groups" ? "currentColor" : "none"} />
             {hasUnreadGroups && activeTab !== "groups" && (
-              <div className="absolute right-2 top-2 size-2.5 rounded-full border-2 border-secondary animate-pulse" style={{ backgroundColor: themeColor }} />
+              <div className="absolute right-2 top-2 size-2.5 rounded-full ring-2 ring-white animate-pulse" style={{ backgroundColor: themeColor }} />
             )}
           </button>
           <button 
             onClick={() => setActiveTab("discover")} 
-            className={`rounded-2xl p-3 transition-all ${activeTab === "discover" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`group rounded-xl p-3 transition-all hover:scale-110 active:scale-95 ${activeTab === "discover" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400 hover:text-accent"}`}
           >
             <Search size={22} />
           </button>
           <button 
             onClick={() => setActiveTab("requests")} 
-            className={`relative rounded-2xl p-3 transition-all ${activeTab === "requests" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+            className={`group relative rounded-xl p-3 transition-all hover:scale-110 active:scale-95 ${activeTab === "requests" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400 hover:text-accent"}`}
           >
             <UserPlus size={22} />
             {totalRequests > 0 && (
-              <div className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
+              <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-lg bg-red-500 text-[9px] font-black text-white ring-2 ring-white shadow-xl">
                 {totalRequests}
               </div>
             )}
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-5 sm:gap-8 w-full">
-          <Link to="/settings" className="text-secondary transition-all hover:text-primary">
+        <div className="flex flex-col items-center gap-5 w-full">
+          <Link to="/settings" className="rounded-xl p-3 text-gray-400 transition-all hover:bg-white hover:text-accent hover:shadow-2xl active:scale-95">
             <Settings size={22} />
           </Link>
-          <Link to="/profile" className="mb-2">
-            <div className="group size-10 overflow-hidden rounded-full border border-white/10 shadow-lg">
+          <Link to="/profile" className="mb-4">
+            <div className="group size-11 overflow-hidden rounded-2xl bg-white shadow-2xl transition-all hover:scale-110 ring-2 ring-white">
               <img
                 src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length - 1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 4) + 1}.png?v=3`)}
-                className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                className="size-full object-cover"
               />
             </div>
           </Link>
@@ -265,73 +222,61 @@ const Sidebar = () => {
       </div>
 
       {/* 2. Content Area */}
-      <div className="flex flex-1 flex-col bg-secondary">
-        <div className="sticky top-0 z-20 border-b border-primary bg-secondary/95 px-4 pb-3 pt-4 backdrop-blur-xl lg:hidden">
-          <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex flex-1 flex-col bg-transparent">
+        <div className="sticky top-0 z-20 bg-white/60 px-5 pb-4 pt-6 backdrop-blur-3xl lg:hidden">
+          <div className="flex items-center justify-between gap-3 mb-6">
             <div className="min-w-0">
-                <h1 className="text-lg font-black tracking-tight text-primary">
-                  {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : activeTab === "discover" ? "Discover" : "Requests"}
+                <h1 className="text-2xl font-black tracking-tight text-primary">
+                  {activeTab === "chats" ? "ChatStream" : activeTab === "groups" ? "Nodes" : activeTab === "discover" ? "Locate" : "Protocols"}
                 </h1>
-                <p className="text-xs text-gray-500">
-                  {activeTab === "requests" ? "Manage friend requests" : "Browse chats, groups, and people."}
+                <p className="text-[10px] font-black uppercase tracking-widest text-accent">
+                   Secure Neural Link
                 </p>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              <Link to="/profile" className="size-10 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+            <div className="flex items-center gap-3 shrink-0">
+              <Link to="/profile" className="size-10 overflow-hidden rounded-xl bg-white shadow-xl ring-2 ring-white transition-all active:scale-95">
                 <img
                   src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length - 1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 4) + 1}.png?v=3`)}
-                  className="w-full h-full object-cover"
+                  className="size-full object-cover"
                 />
               </Link>
-              <Link to="/settings" className="rounded-xl border border-primary bg-surface p-2.5 text-secondary transition-all hover:bg-secondary/10 hover:text-primary">
+              <Link to="/settings" className="flex size-10 items-center justify-center rounded-xl bg-white text-gray-400 shadow-lg transition-all active:scale-90 hover:text-accent">
                 <Settings size={18} />
               </Link>
-              <button
-                onClick={() => setShowLogoutConfirm(true)}
-                className="rounded-xl border border-primary bg-surface p-2.5 text-secondary transition-all active:scale-90 hover:text-red-400"
-              >
-                <LogOut size={18} />
-              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-4 gap-2">
             <button
               onClick={() => setActiveTab("chats")}
-              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "chats" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "chats" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
             >
-              <MessageSquare size={18} className={activeTab === "chats" ? "text-accent" : "group-hover:text-primary"} />
-              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Chats</span>
-              {hasUnreadChats && activeTab !== "chats" && (
-                <div className="absolute right-3 top-3 size-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
-              )}
+              <MessageSquare size={18} fill={activeTab === "chats" ? "currentColor" : "none"} />
+              <span className="mt-1.5 text-[8px] font-black uppercase tracking-widest">Chats</span>
             </button>
             <button
               onClick={() => setActiveTab("groups")}
-              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "groups" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "groups" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
             >
-              <Users size={18} className={activeTab === "groups" ? "text-accent" : "group-hover:text-primary"} />
-              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Groups</span>
-              {hasUnreadGroups && activeTab !== "groups" && (
-                <div className="absolute right-3 top-3 size-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
-              )}
+              <Users size={18} fill={activeTab === "groups" ? "currentColor" : "none"} />
+              <span className="mt-1.5 text-[8px] font-black uppercase tracking-widest">Nodes</span>
             </button>
             <button
               onClick={() => setActiveTab("discover")}
-              className={`group flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "discover" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "discover" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
             >
-              <Search size={18} className={activeTab === "discover" ? "text-accent" : "group-hover:text-primary"} />
-              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Discover</span>
+              <Search size={18} />
+              <span className="mt-1.5 text-[8px] font-black uppercase tracking-widest">Global</span>
             </button>
             <button
               onClick={() => setActiveTab("requests")}
-              className={`group relative flex flex-col items-center justify-center rounded-2xl py-2.5 transition-all ${activeTab === "requests" ? "bg-surface text-primary shadow-sm ring-1 ring-white/10" : "text-secondary hover:bg-white/5"}`}
+              className={`group relative flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "requests" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
             >
-              <UserPlus size={18} className={activeTab === "requests" ? "text-accent" : "group-hover:text-primary"} />
-              <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Requests</span>
+              <UserPlus size={18} />
+              <span className="mt-1.5 text-[8px] font-black uppercase tracking-widest">Requests</span>
               {totalRequests > 0 && (
-                <div className="absolute right-3 top-3 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
+                <div className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-md bg-red-500 text-[8px] font-black text-white ring-2 ring-white">
                   {totalRequests}
                 </div>
               )}
@@ -340,67 +285,74 @@ const Sidebar = () => {
         </div>
 
         {/* Minimalist Header */}
-        <div className="sticky top-0 z-20 hidden items-center justify-between gap-3 bg-secondary/95 p-4 pb-2 backdrop-blur-xl sm:p-6 lg:flex">
+        <div className="sticky top-0 z-20 hidden items-center justify-between gap-3 bg-white/40 px-5 py-5 backdrop-blur-3xl lg:flex">
           <div>
-              <span className="app-chip mb-3" style={{ color: themeColor }}>Chat navigation</span>
-              <h1 className="text-lg font-black tracking-tight text-primary sm:text-xl">
-                {activeTab === "chats" ? "Chats" : activeTab === "groups" ? "Groups" : activeTab === "discover" ? "Discover" : "Requests"}
+              <span className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-accent">
+                <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+                {activeTab} active
+              </span>
+              <h1 className="mt-2 text-xl font-black tracking-tight text-primary">
+                {activeTab === "chats" ? "ChatStream" : activeTab === "groups" ? "Nodes" : activeTab === "discover" ? "Locate" : "Protocols"}
               </h1>
-            <p className="mt-1 text-xs text-gray-500">
-              {activeTab === "requests" ? "Manage friend requests" : "Browse chats, groups, and people."}
-            </p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {activeTab === "groups" && (
               <button 
                 onClick={() => setIsCreateGroupOpen(true)}
-                className="rounded-xl border border-primary bg-surface p-2.5 text-secondary transition-all active:scale-90 hover:bg-secondary/10 hover:text-primary"
+                className="flex size-10 items-center justify-center rounded-xl bg-white text-accent shadow-xl ring-1 ring-black/5 transition-all hover:scale-110 active:scale-90"
               >
-                <Plus size={18} />
+                <Plus size={18} strokeWidth={3} />
               </button>
             )}
-            <button onClick={() => setShowLogoutConfirm(true)} className="rounded-xl border border-primary bg-surface p-2.5 text-secondary transition-all active:scale-90 hover:text-red-400">
+            <button onClick={() => setShowLogoutConfirm(true)} className="flex size-10 items-center justify-center rounded-xl bg-red-500/5 text-red-400 shadow-md ring-1 ring-red-500/10 transition-all hover:bg-red-500 hover:text-white hover:shadow-xl active:scale-90">
               <LogOut size={18} />
             </button>
           </div>
         </div>
 
         {/* Search Pill */}
-        <div className="sticky top-[76px] z-20 bg-secondary/95 px-4 py-3 backdrop-blur-xl sm:px-6 sm:py-4 lg:top-[88px]">
+        <div className="sticky top-[164px] z-20 bg-transparent px-5 py-4 lg:top-[88px]">
           <div className="relative group">
-            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+              <Search size={18} className="text-gray-400 transition-colors group-focus-within:text-accent" />
+            </div>
             <input
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="app-input w-full rounded-2xl py-3 pl-10 pr-4 text-sm"
+              className="w-full rounded-2xl border-none bg-white px-5 py-3.5 pl-12 text-[14px] font-bold text-primary shadow-xl ring-1 ring-black/5 transition-all focus:ring-1 focus:ring-accent/20 placeholder:text-gray-400"
             />
           </div>
         </div>
 
         {/* List Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-6 lg:pb-10">
+        <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-10">
           {filteredItems.length > 0 ? (
-            filteredItems.map((item) => (
-              <SidebarItem 
-                key={item._id}
-                item={item}
-                activeTab={activeTab}
-                isSelected={activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id}
-                online={activeTab === "chats" ? isOnline(item._id) : false}
-                themeColor={themeColor}
-                setSelectedUser={setSelectedUser}
-                setSelectedGroup={setSelectedGroup}
-                sendFriendRequest={sendFriendRequest}
-                respondToRequest={respondToRequest}
-              />
-            ))
+            <div className="space-y-0.5">
+              {filteredItems.map((item) => (
+                <SidebarItem 
+                  key={item._id}
+                  item={item}
+                  activeTab={activeTab}
+                  isSelected={activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id}
+                  online={activeTab === "chats" ? isOnline(item._id) : false}
+                  themeColor={themeColor}
+                  setSelectedUser={setSelectedUser}
+                  setSelectedGroup={setSelectedGroup}
+                  sendFriendRequest={sendFriendRequest}
+                  respondToRequest={respondToRequest}
+                />
+              ))}
+            </div>
           ) : (
-            <div className="py-20 text-center opacity-30 px-4">
-              <MessageSquare size={60} className="mx-auto" />
-              <p className="mt-4 text-sm font-semibold text-secondary">Nothing to show here yet.</p>
+            <div className="py-24 text-center px-8">
+              <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl bg-white shadow-xl">
+                <MessageSquare size={32} className="text-accent opacity-20" />
+              </div>
+              <h3 className="text-lg font-black text-primary">No Data Streams</h3>
+              <p className="mt-2 text-xs font-medium text-gray-400">Expand your search or switch protocols.</p>
             </div>
           )}
         </div>
@@ -414,8 +366,8 @@ const Sidebar = () => {
       {/* Logout Confirmation */}
       {showLogoutConfirm && (
         <ConfirmationModal 
-          title="Log out?"
-          description="You are about to end your current session. Do you want to continue?"
+          title="Terminate Link?"
+          description="Are you sure you want to disconnect your neural stream?"
           onConfirm={logout}
           onCancel={() => setShowLogoutConfirm(false)}
           type="danger"

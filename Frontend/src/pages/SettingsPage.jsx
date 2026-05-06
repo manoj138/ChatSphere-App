@@ -30,7 +30,7 @@ const NEON_PRESETS = [
 ];
 
 const cardClass =
-  "rounded-[2rem] sm:rounded-[2.5rem] border border-primary bg-secondary shadow-2xl";
+  "rounded-[2rem] bg-white/40 shadow-2xl backdrop-blur-3xl ring-1 ring-black/5";
 
 const SettingsPage = () => {
   const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
@@ -100,177 +100,179 @@ const SettingsPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-primary text-primary overflow-y-hidden px-4 pb-4 pt-4 transition-colors duration-500 sm:px-6 sm:pt-6">
-      <div className="mx-auto max-w-6xl h-full flex flex-col gap-4">
-        <section className={`${cardClass} relative overflow-hidden p-3 sm:p-4 shrink-0`}>
+      <div className="min-h-screen overflow-y-auto custom-scrollbar px-4 pb-20 pt-8 transition-colors duration-500 sm:px-10 sm:pt-12">
+      <div className="mx-auto max-w-5xl space-y-6">
+        <section className={`${cardClass} relative overflow-hidden p-5 sm:p-8`}>
             <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-15 blur-3xl"
+              className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-20 blur-[100px]"
               style={{ background: `linear-gradient(90deg, transparent 0%, ${themeColor} 50%, transparent 100%)` }}
             />
 
-            <div className="relative flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-black tracking-tight text-primary sm:text-2xl">Settings</h1>
-                <p className="hidden sm:block text-xs text-gray-400">Manage profile & preferences.</p>
+            <div className="relative flex flex-col gap-6">
+              <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <span className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-accent">
+                   System Control
+                </span>
+                <h1 className="mt-3 text-3xl font-black tracking-tight text-primary sm:text-4xl">Settings</h1>
+                <p className="hidden sm:block mt-1 text-sm font-bold text-gray-400 uppercase tracking-tighter">Architect your digital environment</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-3">
                 <Link
                   to="/"
-                  className="app-button app-button-secondary inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-secondary hover:text-primary"
+                  className="flex size-12 items-center justify-center rounded-2xl bg-white text-gray-400 shadow-xl transition-all hover:scale-110 hover:text-accent sm:size-14 sm:rounded-[1.25rem]"
                 >
-                  <ArrowLeft size={12} />
-                  Back
+                  <ArrowLeft size={24} />
                 </Link>
                 <button
                   onClick={toggleThemeMode}
-                  className="app-button app-button-secondary inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider"
+                  className="flex size-12 items-center justify-center rounded-2xl bg-white text-accent shadow-xl transition-all hover:scale-110 sm:size-14 sm:rounded-[1.25rem]"
                 >
-                  {isLightMode ? <Moon size={12} className="text-accent" /> : <Sun size={12} className="text-accent" />}
-                  {isLightMode ? "Dark" : "Light"}
+                  {isLightMode ? <Moon size={24} /> : <Sun size={24} />}
                 </button>
               </div>
             </div>
           </div>
         </section>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.1fr] flex-1 min-h-0">
-            <div className="space-y-4 min-h-0">
-              <section className={`${cardClass} p-4 sm:p-5`}>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr]">
+            <div className="space-y-8">
+              <section className={`${cardClass} p-6 sm:p-10`}>
+                <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
                   <div className="relative mx-auto sm:mx-0">
-                    <div className="size-20 overflow-hidden rounded-[1.5rem] border-2 shadow-xl" style={{ borderColor: themeColor }}>
+                    <div className="size-28 overflow-hidden rounded-[2rem] border-4 bg-white shadow-2xl sm:size-32" style={{ borderColor: "white" }}>
                       <img
                         src={authUser.profilePicture || "/boy_1.png"}
-                        className={`h-full w-full object-cover transition duration-500 ${isUpdatingProfile ? "scale-95 opacity-60" : ""}`}
+                        className={`h-full w-full object-cover transition duration-700 ${isUpdatingProfile ? "scale-95 opacity-60" : "hover:scale-110"}`}
                         alt={authUser.username}
                       />
                     </div>
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUpdatingProfile}
-                      className="absolute -bottom-2 -right-2 inline-flex items-center gap-2 rounded-2xl border border-primary bg-secondary px-3 py-2 text-xs font-bold text-primary transition hover:scale-105 disabled:opacity-50"
+                      className="absolute -bottom-2 -right-2 flex items-center justify-center rounded-2xl bg-black px-4 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-2xl transition-all hover:scale-105 disabled:opacity-50"
                     >
-                      <Camera size={14} />
-                      {isUpdatingProfile ? "Updating" : "Change"}
+                      <Camera size={16} className="mr-2" />
+                      Modify
                     </button>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
                   </div>
 
-                  <div className="flex-1 space-y-2 text-center sm:text-left">
+                  <div className="flex-1 space-y-4 text-center sm:text-left">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Profile</p>
-                      <h2 className="text-lg font-black text-primary">{authUser.username}</h2>
-                      <p className="truncate text-xs text-secondary">{authUser.email}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-accent">Active Operator</p>
+                      <h2 className="mt-1 text-2xl font-black text-primary">{authUser.username}</h2>
+                      <p className="truncate text-sm font-bold text-gray-400">{authUser.email}</p>
                     </div>
-                    <p className="rounded-xl border border-primary bg-surface px-3 py-2 text-[11px] leading-relaxed text-secondary line-clamp-2">
-                      {authUser.bio || "No bio added yet."}
+                    <p className="rounded-2xl bg-white/50 px-5 py-4 text-sm font-medium leading-relaxed text-secondary shadow-inner ring-1 ring-black/5">
+                      {authUser.bio || "No mission statement defined yet."}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <div className="rounded-xl border border-primary bg-surface p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-secondary">Status</p>
-                    <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-primary">
-                      <Check size={14} className="text-green-500" /> Active
+                <div className="mt-8 grid grid-cols-2 gap-4">
+                  <div className="rounded-[1.5rem] bg-white p-5 shadow-xl shadow-black/[0.02]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Connection</p>
+                    <div className="mt-2 flex items-center gap-2 text-sm font-black text-primary">
+                      <div className="size-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" /> 
+                      Live Pulse
                     </div>
                   </div>
-                  <div className="rounded-xl border border-primary bg-surface p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-secondary">Security</p>
-                    <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-primary">
-                      <Shield size={14} className="text-accent" /> Protected
+                  <div className="rounded-[1.5rem] bg-white p-5 shadow-xl shadow-black/[0.02]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Protocol</p>
+                    <div className="mt-2 flex items-center gap-2 text-sm font-black text-primary">
+                      <Shield size={16} className="text-accent" /> Encrypted
                     </div>
                   </div>
                 </div>
               </section>
 
-              <section className={`${cardClass} p-4 sm:p-5`}>
-                <div className="flex items-start gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-2xl border border-primary bg-surface">
-                    <Zap size={20} className="text-yellow-500" />
+              <section className={`${cardClass} p-6 sm:p-10`}>
+                <div className="flex items-start gap-5">
+                  <div className="flex size-14 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-500 shadow-lg">
+                    <Zap size={24} fill="currentColor" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-primary">Device checks</h3>
-                    <p className="mt-1 text-sm leading-6 text-gray-400">
-                      Verify browser notifications and audio without leaving the page.
+                    <h3 className="text-xl font-black text-primary">Diagnostic Checks</h3>
+                    <p className="mt-1 text-[13px] font-medium leading-relaxed text-gray-400">
+                      Validate sensory feedback protocols.
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between rounded-xl border border-primary bg-surface p-3">
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center justify-between rounded-[1.5rem] bg-white p-5 shadow-xl">
                     <div>
-                      <p className="text-xs font-semibold text-primary">Notifications</p>
-                      <p className="text-[9px] text-secondary uppercase tracking-wider font-bold">{notificationPermission}</p>
+                      <p className="text-sm font-black text-primary">Visual Alerts</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-accent">{notificationPermission}</p>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input type="checkbox" className="peer sr-only" checked={notificationsEnabled} onChange={toggleNotifications} />
-                      <div className="peer h-5 w-9 rounded-full bg-secondary after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-accent peer-checked:after:translate-x-full peer-checked:after:border-white" style={{ backgroundColor: notificationsEnabled ? themeColor : "" }}></div>
+                      <div className="peer h-7 w-12 rounded-full bg-gray-100 after:absolute after:left-[4px] after:top-[4px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-lg after:transition-all peer-checked:bg-accent peer-checked:after:translate-x-5" style={{ backgroundColor: notificationsEnabled ? themeColor : "" }}></div>
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between rounded-xl border border-primary bg-surface p-3">
+                  <div className="flex items-center justify-between rounded-[1.5rem] bg-white p-5 shadow-xl">
                     <div>
-                      <p className="text-xs font-semibold text-primary">Sound</p>
-                      <p className="text-[9px] text-secondary uppercase tracking-wider font-bold">{soundEnabled ? "Enabled" : "Muted"}</p>
+                      <p className="text-sm font-black text-primary">Audio Feedback</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-accent">{soundEnabled ? "Active" : "Disabled"}</p>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input type="checkbox" className="peer sr-only" checked={soundEnabled} onChange={toggleSound} />
-                      <div className="peer h-5 w-9 rounded-full bg-secondary after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white" style={{ backgroundColor: soundEnabled ? themeColor : "" }}></div>
+                      <div className="peer h-7 w-12 rounded-full bg-gray-100 after:absolute after:left-[4px] after:top-[4px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-lg after:transition-all peer-checked:after:translate-x-5" style={{ backgroundColor: soundEnabled ? themeColor : "" }}></div>
                     </label>
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="mt-6 grid grid-cols-2 gap-4">
                   <button
                     onClick={handleNotificationTest}
-                    className="flex items-center justify-between rounded-xl border p-3 text-left transition hover:scale-[1.01]"
-                    style={{ borderColor: `${themeColor}33`, backgroundColor: `${themeColor}12` }}
+                    className="flex items-center justify-between rounded-2xl p-5 text-left shadow-xl transition-all hover:scale-105"
+                    style={{ backgroundColor: `${themeColor}15`, color: themeColor }}
                   >
-                    <p className="text-[11px] font-semibold text-accent">Test Alert</p>
-                    <Bell size={14} className="text-accent" />
+                    <p className="text-[11px] font-black uppercase tracking-widest">Signal Test</p>
+                    <Bell size={18} />
                   </button>
 
                   <button
                     onClick={handleSoundTest}
-                    className="flex items-center justify-between rounded-xl border border-primary bg-surface p-3 text-left transition hover:bg-secondary/10"
+                    className="flex items-center justify-between rounded-2xl bg-white p-5 text-left text-gray-400 shadow-xl transition-all hover:scale-105 hover:text-primary"
                   >
-                    <p className="text-[11px] font-semibold text-primary">Test Sound</p>
-                    <Volume2 size={14} className="text-primary" />
+                    <p className="text-[11px] font-black uppercase tracking-widest">Acoustic Test</p>
+                    <Volume2 size={18} />
                   </button>
                 </div>
               </section>
             </div>
 
-            <div className="space-y-4 min-h-0">
-              <section className={`${cardClass} p-4 sm:p-5`}>
-                <div className="flex items-start gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-xl border border-primary bg-surface">
-                    <Palette size={18} style={{ color: themeColor }} />
+            <div className="space-y-8">
+              <section className={`${cardClass} p-6 sm:p-10`}>
+                <div className="flex items-start gap-5">
+                  <div className="flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent shadow-lg">
+                    <Palette size={24} />
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-primary">Appearance</h3>
-                    <p className="hidden sm:block text-[11px] text-gray-400">Personalize your accent color.</p>
+                    <h3 className="text-xl font-black text-primary">Vibe & Aesthetics</h3>
+                    <p className="text-[13px] font-medium leading-relaxed text-gray-400">Architect your unique visual signature.</p>
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-2xl border border-primary bg-surface p-3">
-                  <div className="flex items-center justify-between rounded-xl border border-primary bg-secondary/30 p-3">
+                <div className="mt-8 rounded-[2rem] bg-white p-6 shadow-xl">
+                  <div className="flex items-center justify-between rounded-2xl bg-accent/5 p-5 shadow-inner">
                     <div>
-                      <p className="text-xs font-semibold text-primary">Highlight</p>
-                      <p className="text-[10px] text-secondary">Accent color preview.</p>
+                      <p className="text-sm font-black text-primary">Core Accent</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-accent">Active Spectrum</p>
                     </div>
                     <div
-                      className="flex h-8 min-w-[72px] items-center justify-center rounded-lg px-3 text-[10px] font-black uppercase tracking-wider text-black"
+                      className="flex h-10 min-w-[100px] items-center justify-center rounded-xl px-4 text-[10px] font-black uppercase tracking-widest text-black shadow-xl"
                       style={{ backgroundColor: themeColor }}
                     >
-                      Preview
+                      Chromancy
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="mt-8 grid grid-cols-3 gap-4">
                   {NEON_PRESETS.map((preset) => {
                     const isActive = themeColor === preset.color;
 
@@ -278,35 +280,34 @@ const SettingsPage = () => {
                       <button
                         key={preset.name}
                         onClick={() => setThemeColor(preset.color)}
-                        className={`rounded-xl border p-2 text-center transition ${
-                          isActive ? "bg-primary/5" : "bg-surface hover:bg-primary/5"
+                        className={`group relative flex flex-col items-center gap-2 rounded-xl bg-white p-3 shadow-lg transition-all hover:scale-110 ${
+                          isActive ? "ring-2 ring-accent shadow-accent/20" : "hover:shadow-accent/10"
                         }`}
-                        style={{ borderColor: isActive ? themeColor : "transparent" }}
                       >
-                        <div className="mx-auto size-4 rounded-full shadow-md" style={{ backgroundColor: preset.color }} />
-                        <p className="mt-2 text-[9px] font-black uppercase tracking-wider text-primary">{preset.name}</p>
+                        <div className="size-8 rounded-full shadow-2xl transition-transform group-hover:rotate-12" style={{ backgroundColor: preset.color }} />
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 group-hover:text-primary">{preset.name}</p>
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between rounded-xl border border-primary bg-surface p-3">
-                  <p className="text-xs font-semibold text-primary">Custom</p>
+                <div className="mt-8 flex items-center justify-between rounded-2xl bg-white p-5 shadow-xl">
+                  <p className="text-sm font-black text-primary">Custom Spectrum</p>
                   <input
                     type="color"
                     value={themeColor}
                     onChange={(e) => setThemeColor(e.target.value)}
-                    className="h-8 w-12 cursor-pointer rounded-lg border border-primary bg-transparent p-0.5"
+                    className="h-10 w-16 cursor-pointer rounded-xl border-4 border-white bg-white shadow-lg"
                   />
                 </div>
               </section>
 
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="group app-button app-button-danger flex w-full items-center justify-center gap-3 rounded-2xl px-5 py-3.5 font-black uppercase tracking-[0.15em] text-sm"
+                className="group flex w-full items-center justify-center gap-4 rounded-[2rem] bg-red-500 p-6 font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-red-500/30 transition-all hover:brightness-110 active:scale-95"
               >
-                <LogOut size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                Log out
+                <LogOut size={20} className="transition-transform duration-300 group-hover:translate-x-2" />
+                Terminate Session
               </button>
             </div>
           </div>
@@ -314,8 +315,8 @@ const SettingsPage = () => {
 
         {showLogoutConfirm && (
           <ConfirmationModal
-            title="Log out?"
-            description="You are about to end your current session. Do you want to continue?"
+            title="Terminate Session?"
+            description="You are about to disconnect from the secure stream. Proceed with termination?"
             onConfirm={logout}
             onCancel={() => setShowLogoutConfirm(false)}
             type="danger"

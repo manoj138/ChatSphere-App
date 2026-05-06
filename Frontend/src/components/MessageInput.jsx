@@ -75,32 +75,31 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="w-full relative py-1.5">
+    <div className="relative w-full py-2">
       
       {/* Image Preview Floating Card */}
       {(imagePreview || isProcessingImage) && (
-        <div className="absolute bottom-full left-0 mb-4 animate-scale-in">
-          <div className="app-modal relative group rounded-[1.5rem] p-1.5 shadow-2xl overflow-hidden">
-            <div className="relative size-24 sm:size-32">
+        <div className="absolute bottom-full left-0 mb-6 animate-scale-in">
+          <div className="relative overflow-hidden rounded-[2rem] bg-white/80 p-2 shadow-2xl backdrop-blur-xl ring-1 ring-black/5">
+            <div className="relative size-28 sm:size-36">
               {isProcessingImage ? (
-                <div className="flex size-full items-center justify-center rounded-[1rem] bg-secondary/50 backdrop-blur-md">
-                   <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <div className="flex size-full items-center justify-center rounded-[1.5rem] bg-accent/5">
+                   <div className="size-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
                 </div>
               ) : (
                 <>
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="size-full rounded-[1rem] border border-white/10 object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                    className="size-full rounded-[1.5rem] object-cover shadow-inner"
                   />
                   <button
                     onClick={removeImage}
-                    className="absolute -top-2 -right-2 size-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all hover:scale-110 shadow-lg z-10"
+                    className="absolute -right-2 -top-2 flex size-8 items-center justify-center rounded-full bg-red-500 text-white shadow-xl transition-all hover:scale-110 hover:bg-red-600"
                     type="button"
                   >
-                    <X size={14} strokeWidth={3} />
+                    <X size={16} strokeWidth={3} />
                   </button>
-                  <div className="absolute inset-0 bg-black/20 rounded-[1rem] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 </>
               )}
             </div>
@@ -110,44 +109,41 @@ const MessageInput = () => {
 
       {/* Emoji Picker Overlay */}
       {showEmojiPicker && (
-        <div className="absolute bottom-full right-0 mb-4 z-50 animate-slide-up w-full max-w-[320px] sm:max-w-[350px]">
-           <div className="rounded-[2rem] overflow-hidden border border-primary shadow-[0_0_50px_rgba(0,0,0,0.4)] bg-secondary">
+        <div className="absolute bottom-full right-0 z-50 mb-6 w-full max-w-[340px] animate-slide-up sm:max-w-[380px]">
+           <div className="overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-black/5">
               <EmojiPicker 
                 onEmojiClick={onEmojiClick}
                 theme={isLightMode ? "light" : "dark"}
                 lazyLoadEmojis={true}
-                searchPlaceholder="Search emojis..."
+                searchPlaceholder="Search expressions..."
                 width="100%"
-                height={350}
+                height={400}
               />
            </div>
         </div>
       )}
 
       {/* Main Console Input */}
-      <form onSubmit={handleSendMessage} className="relative group">
-        
-
-
-        <div className="relative flex items-center gap-1.5 overflow-hidden rounded-full border border-primary bg-secondary/90 p-1 shadow-lg backdrop-blur-2xl transition-all duration-500">
+      <form onSubmit={handleSendMessage} className="relative">
+        <div className="relative flex items-center gap-3 overflow-hidden rounded-[2rem] border-none bg-white/60 p-2 shadow-2xl backdrop-blur-3xl transition-all duration-500 focus-within:bg-white focus-within:ring-1 focus-within:ring-accent/20">
            
            {/* Utility Buttons Area */}
-           <div className="ml-1 flex items-center gap-0.5">
+           <div className="flex items-center gap-1 pl-1">
               <button
                 type="button"
-                className={`rounded-full p-2 transition-all ${imagePreview ? "bg-green-500/10 text-green-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+                className={`flex size-11 items-center justify-center rounded-2xl transition-all ${imagePreview ? "bg-accent text-black shadow-lg" : "text-gray-400 hover:bg-accent/10 hover:text-accent"}`}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSending || isProcessingImage}
               >
-                <Image size={18} />
+                <Image size={22} />
               </button>
               <button
                 type="button"
-                className={`rounded-full p-2 transition-all ${showEmojiPicker ? "bg-yellow-500/10 text-yellow-500" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
+                className={`flex size-11 items-center justify-center rounded-2xl transition-all ${showEmojiPicker ? "bg-accent text-black shadow-lg" : "text-gray-400 hover:bg-accent/10 hover:text-accent"}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 disabled={isSending || isProcessingImage}
               >
-                <Smile size={18} />
+                <Smile size={22} />
               </button>
            </div>
 
@@ -163,27 +159,25 @@ const MessageInput = () => {
            <div className="relative flex-1">
               <input
                 type="text"
-                className="w-full bg-transparent border-none px-1 py-1.5 text-[14px] font-medium text-primary placeholder:text-gray-500 focus:outline-none"
-                placeholder="Type a message..."
+                className="w-full bg-transparent border-none px-2 py-3.5 text-[15px] font-bold text-primary placeholder:font-medium placeholder:text-gray-400 focus:outline-none"
+                placeholder="Compose a message..."
                 value={text}
                 onChange={handleTyping}
                 disabled={isSending}
               />
            </div>
 
-           {/* Transmission Button - Compact Pill */}
+           {/* Transmission Button */}
            <button
              type="submit"
              disabled={isSending || isProcessingImage || (!text.trim() && !imagePreview)}
-             className="mr-0.5 flex size-8 flex-shrink-0 items-center justify-center rounded-full shadow-xl transition-all group/btn disabled:grayscale disabled:opacity-20"
+             className="flex size-12 flex-shrink-0 items-center justify-center rounded-[1.25rem] shadow-xl transition-all hover:scale-105 active:scale-95 disabled:grayscale disabled:opacity-20"
              style={{ backgroundColor: themeColor }}
            >
-              <Send size={16} className="text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" strokeWidth={3} />
+              <Send size={20} className="text-black transition-transform group-hover:translate-x-1" strokeWidth={3} />
            </button>
-
         </div>
       </form>
-
     </div>
   );
 };

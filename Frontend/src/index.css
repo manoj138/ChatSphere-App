@@ -13,14 +13,15 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f0fdfa;
   --bg-secondary: #ffffff;
-  --bg-surface: rgba(0, 0, 0, 0.02);
+  --bg-surface: rgba(255, 255, 255, 0.7);
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-primary: rgba(0, 0, 0, 0.05);
-  --scrollbar-thumb: rgba(0, 0, 0, 0.05);
-  --shadow-primary: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --text-secondary: #475569;
+  --border-primary: rgba(20, 184, 166, 0.1);
+  --scrollbar-thumb: rgba(20, 184, 166, 0.2);
+  --shadow-primary: 0 10px 40px -10px rgba(20, 184, 166, 0.15);
+  --accent-color: #2dd4bf;
 }
 
 html {
@@ -30,7 +31,51 @@ html {
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* Premium Mint Aesthetic Background */
+[data-theme="light"] body {
+  background: 
+    radial-gradient(circle at top left, #ccfbf1 0%, transparent 40%),
+    radial-gradient(circle at bottom right, #f0fdf4 0%, transparent 40%),
+    #f0fdfa;
+  position: relative;
+  overflow-x: hidden;
+}
+
+[data-theme="light"] body::before {
+  content: "";
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
+  animation: float 20s infinite alternate ease-in-out;
+}
+
+[data-theme="light"] body::after {
+  content: "";
+  position: fixed;
+  bottom: -5%;
+  left: -5%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: -1;
+  animation: float 15s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(5%, 5%) rotate(10deg); }
 }
 
 /* Custom Utilities */
@@ -53,6 +98,12 @@ body {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-primary);
+  backdrop-filter: blur(16px);
+}
+
+[data-theme="light"] .app-panel {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .app-hero-panel {
@@ -73,67 +124,21 @@ body {
 }
 
 .app-button {
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  border-radius: 1rem;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .app-button:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
 .app-button-danger {
-  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.app-button-danger::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transform: skewX(-25deg);
-  pointer-events: none;
-}
-
-.app-button-danger:hover::before {
-  animation: shine 0.75s ease-in-out;
-}
-
-.app-button-danger::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.app-button-danger:hover {
-  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
-  box-shadow: 0 12px 24px -6px rgba(239, 68, 68, 0.5);
-  transform: translateY(-2px) scale(1.02);
-}
-
-.app-button-danger:hover::after {
-  opacity: 1;
+  border: none;
+  box-shadow: 0 10px 20px -5px rgba(239, 68, 68, 0.4);
 }
 
 .app-button-secondary {
@@ -144,9 +149,10 @@ body {
 }
 
 .app-button-secondary:hover {
-  background: var(--border-primary);
-  border-color: var(--text-secondary);
-  transform: translateY(-1px);
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -160,17 +166,19 @@ body {
 
 .bubble-mine {
   background-color: var(--accent-color);
-  color: #000;
+  color: #fff;
+  box-shadow: 0 4px 12px -2px rgba(45, 212, 191, 0.3);
 }
 
-.bubble-other {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+[data-theme="light"] .bubble-other {
+  background-color: #fff;
+  border: 1px solid rgba(20, 184, 166, 0.05);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
 }
 
 /* Base animations */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -179,4 +187,5 @@ body {
   100% { left: 100%; }
 }
 
-.animate-slide-up { animation: slideUp 0.3s ease forwards; }
+.animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
