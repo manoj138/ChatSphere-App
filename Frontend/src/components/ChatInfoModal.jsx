@@ -144,14 +144,14 @@ const ChatInfoModal = ({ onClose }) => {
         <div className="relative border-b border-primary/10 bg-surface/30 px-5 pb-8 pt-5 sm:px-8">
           <button
             onClick={onClose}
-            className="absolute right-5 top-5 rounded-2xl bg-surface/50 p-2.5 text-secondary transition hover:bg-white hover:text-primary hover:shadow-lg"
+            className="absolute right-5 top-5 rounded-2xl bg-black/10 p-2.5 text-secondary transition hover:bg-black/20 hover:text-primary hover:shadow-lg"
           >
             <X size={20} />
           </button>
 
           <div className="flex flex-col items-center pt-6">
             <div className="relative">
-              <div className="size-32 overflow-hidden rounded-[2.5rem] border-4 border-white bg-white shadow-2xl transition-transform hover:scale-105 sm:size-36">
+              <div className="size-32 overflow-hidden rounded-[2.5rem] border-4 border-black/5 bg-black/10 shadow-2xl transition-transform hover:scale-105 sm:size-36">
                 <img src={getAvatarSrc(info)} className={`size-full object-cover ${isUpdating ? "opacity-50" : ""}`} alt="" />
                 {isUpdating && (
                   <div className="absolute inset-0 flex items-center justify-center bg-white/40">
@@ -163,7 +163,7 @@ const ChatInfoModal = ({ onClose }) => {
               {isAdmin && !isUpdating && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 flex size-10 items-center justify-center rounded-2xl text-black shadow-xl ring-4 ring-white"
+                  className="absolute -bottom-1 -right-1 flex size-10 items-center justify-center rounded-2xl text-black shadow-xl ring-4 ring-black/5"
                   style={{ backgroundColor: themeColor }}
                 >
                   <Camera size={16} />
@@ -173,7 +173,7 @@ const ChatInfoModal = ({ onClose }) => {
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
 
               {!isGroup && onlineUsers.includes(info._id) && (
-                <div className="absolute bottom-1 right-1 flex size-6 items-center justify-center rounded-full bg-white ring-4 ring-white shadow-lg">
+                <div className="absolute bottom-1 right-1 flex size-6 items-center justify-center rounded-full bg-secondary ring-4 ring-black/5 shadow-lg">
                   <div className="size-3 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" />
                 </div>
               )}
@@ -200,7 +200,7 @@ const ChatInfoModal = ({ onClose }) => {
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-3">
-                  <h2 className="break-words text-3xl font-black tracking-tight text-primary">
+                  <h2 className="break-words text-3xl font-bold tracking-tight text-primary">
                     {isGroup ? info.name : info.username}
                   </h2>
                   {isAdmin && (
@@ -212,9 +212,9 @@ const ChatInfoModal = ({ onClose }) => {
               )}
 
               <div className="mt-3 flex flex-col items-center gap-1">
-                <p className="text-[11px] font-black uppercase tracking-[0.25em] text-accent">
+                <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-accent">
                   {isGroup
-                    ? `Public Community`
+                    ? `Open Group`
                     : onlineUsers.includes(info._id)
                       ? "Online Now"
                       : "Recently Active"}
@@ -234,7 +234,7 @@ const ChatInfoModal = ({ onClose }) => {
           {isGroup ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-1">
-                <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Members</h4>
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Members</h4>
                 <span className="text-[11px] font-bold text-accent">{info.members?.length} people</span>
               </div>
 
@@ -243,8 +243,8 @@ const ChatInfoModal = ({ onClose }) => {
                   const isMemberAdmin = member._id === (info.admin?._id || info.admin);
 
                   return (
-                    <div key={member._id} className="group flex items-center gap-4 rounded-[1.5rem] bg-surface/30 p-3 transition-all hover:bg-white hover:shadow-lg">
-                      <div className="relative size-12 overflow-hidden rounded-[1.25rem] border-2 border-white bg-white shadow-sm transition-transform group-hover:scale-105">
+                    <div key={member._id} className="glass-card group flex items-center gap-4 rounded-[1.5rem] p-3 transition-all">
+                      <div className="relative size-12 overflow-hidden rounded-[1.25rem] border-2 border-black/5 bg-black/10 shadow-sm transition-transform group-hover:scale-105">
                         <img
                           src={member.profilePicture || (member._id.charCodeAt(member._id.length - 1) % 2 === 0 ? "/boy_1.png" : "/girl_1.png")}
                           className="size-full object-cover"
@@ -259,7 +259,7 @@ const ChatInfoModal = ({ onClose }) => {
                         {isMemberAdmin && (
                           <div className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-500">
                             <ShieldCheck size={12} />
-                            Moderator
+                            Admin
                           </div>
                         )}
                       </div>
@@ -283,29 +283,29 @@ const ChatInfoModal = ({ onClose }) => {
                   className="mt-4 flex w-full items-center justify-center gap-3 rounded-[1.5rem] bg-red-500/5 px-4 py-4 text-[13px] font-black uppercase tracking-[0.15em] text-red-500 transition-all hover:bg-red-500/10 hover:shadow-xl"
                 >
                   <Trash2 size={16} />
-                  Terminate Community
+                  Delete Group
                 </button>
               )}
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="group flex items-center gap-5 rounded-[1.5rem] bg-surface/30 p-5 transition-all hover:bg-white hover:shadow-lg">
-                <div className="flex size-14 items-center justify-center rounded-2xl bg-white text-accent shadow-sm transition-transform group-hover:scale-110">
+              <div className="glass-card group flex items-center gap-5 rounded-[1.5rem] p-5 transition-all">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-black/10 text-accent shadow-sm transition-transform group-hover:scale-110">
                   <Mail size={24} />
                 </div>
                 <div className="min-w-0 flex-1 text-left">
-                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Email Address</p>
-                  <p className="mt-1 truncate text-[15px] font-bold text-primary">{info.email}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Email Address</p>
+                  <p className="mt-1 truncate text-[15px] font-medium text-primary">{info.email}</p>
                 </div>
               </div>
 
-              <div className="group flex items-start gap-5 rounded-[1.5rem] bg-surface/30 p-5 transition-all hover:bg-white hover:shadow-lg">
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white text-accent shadow-sm transition-transform group-hover:scale-110">
+              <div className="glass-card group flex items-start gap-5 rounded-[1.5rem] p-5 transition-all">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-black/10 text-accent shadow-sm transition-transform group-hover:scale-110">
                   <Info size={24} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">About Me</p>
-                  <p className="mt-1 text-[14px] font-medium leading-relaxed text-secondary">{info.bio || "No bio added yet."}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">About Me</p>
+                  <p className="mt-1 text-[14px] font-normal leading-relaxed text-secondary">{info.bio || "No bio added yet."}</p>
                 </div>
               </div>
             </div>

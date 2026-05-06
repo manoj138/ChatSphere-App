@@ -7,7 +7,7 @@ const HomePage = () => {
   const { selectedUser, selectedGroup } = useChatStore();
 
   return (
-    <div className="app-shell flex h-[100dvh] w-full overflow-hidden bg-white/50 transition-colors duration-700">
+    <div className="app-shell flex h-[100dvh] w-full overflow-hidden bg-primary/50 transition-colors duration-700">
       
       {/* Sidebar Area */}
       <div className={`

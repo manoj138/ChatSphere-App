@@ -15,7 +15,7 @@ const SignUpPage = () => {
   });
 
   const { signup, isSigningUp } = useAuthStore();
-  const { themeColor } = useThemeStore();
+  const { themeColor, isLightMode } = useThemeStore();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -45,11 +45,11 @@ const SignUpPage = () => {
         <ArrowLeft size={24} />
       </button>
 
-      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="relative w-full max-w-5xl overflow-hidden rounded-[2.5rem] bg-white/40 shadow-2xl backdrop-blur-3xl ring-1 ring-black/5 lg:grid lg:grid-cols-[1.1fr_1fr]">
+      <div className="flex min-h-screen items-center justify-center p-4 py-12 sm:p-6 lg:p-8">
+        <div className="relative w-full max-w-4xl overflow-hidden rounded-[2.5rem] bg-white/40 shadow-2xl backdrop-blur-3xl ring-1 ring-black/5 lg:grid lg:grid-cols-[1.1fr_1fr]">
           
           {/* Left Side: Visual Content */}
-          <section className="relative hidden flex-col justify-center bg-white/30 p-8 backdrop-blur-2xl lg:flex lg:p-10">
+          <section className="relative hidden flex-col justify-center bg-white/30 p-6 backdrop-blur-2xl lg:flex lg:p-8">
             <div className="absolute inset-x-20 top-0 h-48 opacity-20 blur-[100px]" style={{ backgroundColor: themeColor }} />
             
             <div className="relative space-y-6">
@@ -58,12 +58,12 @@ const SignUpPage = () => {
                 Evolutionary Interface
               </div>
               
-              <div className="space-y-4">
-                <h2 className="text-5xl font-black leading-tight tracking-tight text-primary">
+              <div className="space-y-3">
+                <h2 className="text-4xl font-black leading-tight tracking-tight text-primary">
                   Begin Your<br />Digital Journey.
                 </h2>
-                <p className="max-w-md text-[15px] font-medium leading-relaxed text-secondary opacity-70">
-                  Step into a workspace designed for precision. Join a network where every pixel is tuned for clarity and every interaction feels premium.
+                <p className="max-w-md text-[14px] font-medium leading-relaxed text-secondary opacity-70">
+                  Step into a workspace designed for precision. Join a network where every pixel is tuned for clarity.
                 </p>
               </div>
 
@@ -84,70 +84,67 @@ const SignUpPage = () => {
 
               <div className="relative group">
                 <div className="absolute -inset-4 rounded-[3rem] bg-accent/10 opacity-0 blur-3xl transition-opacity group-hover:opacity-100" />
-                <img src="/signup-png.png" alt="Signup visual" className="relative mx-auto max-h-[280px] w-full object-contain transition-transform duration-700 group-hover:scale-110" />
+                <img src="/signup-png.png" alt="Signup visual" className="relative mx-auto max-h-[180px] w-full object-contain transition-transform duration-700 group-hover:scale-110" />
               </div>
             </div>
           </section>
 
           {/* Right Side: Form */}
-          <section className="relative flex flex-col justify-center p-6 sm:p-8 lg:p-10">
+          <section className="relative flex flex-col justify-center p-6 sm:p-8 lg:p-8">
             <div className="absolute right-0 top-0 h-32 w-52 opacity-20 blur-[80px]" style={{ backgroundColor: themeColor }} />
             
-            <div className="relative space-y-6">
+            <div className="relative space-y-5">
               <div className="flex items-center gap-5">
                 <div className="flex size-14 items-center justify-center rounded-2xl shadow-2xl transition-transform hover:rotate-12" style={{ backgroundColor: themeColor }}>
                   <MessageSquare className="h-7 w-7 text-black" fill="currentColor" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-black tracking-tight text-primary">ChatSphere</h2>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-accent">Identity Creation</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-accent" style={{ textShadow: isLightMode ? "0.5px 0.5px 1px rgba(0,0,0,0.15)" : "none" }}>Join Us</p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <span className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-accent">
-                   New Operator
-                </span>
                 <h1 className="text-4xl font-black tracking-tight text-primary sm:text-5xl">Register</h1>
                 <p className="text-sm font-medium leading-relaxed text-secondary opacity-70">
-                  Establish your unique signature within the encrypted stream.
+                  Create your account to get started.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <label className="block">
-                    <span className="mb-2 ml-1 block text-[10px] font-black uppercase tracking-widest text-accent">Operator Name</span>
+                    <span className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Username</span>
                     <input
                       type="text"
                       required
-                      className="w-full rounded-2xl border-none bg-white/60 px-6 py-4 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
-                      placeholder="Choose your handle"
+                      className="w-full rounded-2xl border-none bg-white/60 px-6 py-3.5 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
+                      placeholder="Choose a username"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     />
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 ml-1 block text-[10px] font-black uppercase tracking-widest text-accent">Email Node</span>
+                    <span className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Email Address</span>
                     <input
                       type="email"
                       required
-                      className="w-full rounded-2xl border-none bg-white/60 px-6 py-4 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
-                      placeholder="operator@matrix.com"
+                      className="w-full rounded-2xl border-none bg-white/60 px-6 py-3.5 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
+                      placeholder="Enter your email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     />
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 ml-1 block text-[10px] font-black uppercase tracking-widest text-accent">Access Key</span>
+                    <span className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Password</span>
                     <div className="relative flex items-center">
                       <input
                         type={showPassword ? "text" : "password"}
                         required
-                        className="w-full rounded-2xl border-none bg-white/60 px-6 py-4 pr-14 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
-                        placeholder="Create credentials"
+                        className="w-full rounded-2xl border-none bg-white/60 px-6 py-3.5 pr-14 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
+                        placeholder="Create a password"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       />
@@ -164,18 +161,18 @@ const SignUpPage = () => {
 
                 <button
                   type="submit"
-                  className="w-full rounded-[1.5rem] py-4 text-sm font-black uppercase tracking-widest text-black shadow-2xl transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+                  className="w-full rounded-[1.5rem] py-3.5 text-sm font-black uppercase tracking-widest text-black shadow-2xl transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
                   style={{ backgroundColor: themeColor }}
                   disabled={isSigningUp}
                 >
-                  {isSigningUp ? "Architecting..." : "Initialize Profile"}
+                  {isSigningUp ? "Creating..." : "Create Account"}
                 </button>
               </form>
 
-              <p className="text-sm font-bold text-gray-400">
-                Already registered?{" "}
-                <Link to="/login" className="text-accent hover:underline">
-                  Sign In
+              <p className="text-sm font-bold text-primary/60">
+                Already have an account?{" "}
+                <Link to="/login" className="text-primary underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent">
+                  Login
                 </Link>
               </p>
             </div>

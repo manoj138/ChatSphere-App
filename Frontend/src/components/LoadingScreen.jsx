@@ -5,7 +5,7 @@ const LoadingScreen = () => {
   const { themeColor } = useThemeStore();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white/50 backdrop-blur-xl transition-colors duration-700">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-primary/50 backdrop-blur-xl transition-colors duration-700">
       <div className="relative flex items-center justify-center">
         {/* Animated Blob Background */}
         <div 
@@ -14,7 +14,7 @@ const LoadingScreen = () => {
         />
         
         {/* Core Loader Shape */}
-        <div className="relative flex size-24 items-center justify-center overflow-hidden rounded-[2.5rem] bg-white shadow-2xl transition-all duration-500 ring-4 ring-white">
+        <div className="relative flex size-24 items-center justify-center overflow-hidden rounded-[2.5rem] bg-secondary shadow-2xl transition-all duration-500 ring-4 ring-white/5">
           <div 
             className="absolute inset-0 animate-pulse opacity-10"
             style={{ backgroundColor: themeColor }}

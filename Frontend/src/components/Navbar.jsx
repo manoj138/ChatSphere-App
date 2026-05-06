@@ -23,7 +23,7 @@ const Navbar = () => {
               <h1 className="text-xl font-black tracking-tight text-primary">
                 ChatSphere<span style={{ color: themeColor }}>.</span>
               </h1>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Realtime Pulse</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Chat & Connect</p>
             </div>
           </Link>
 

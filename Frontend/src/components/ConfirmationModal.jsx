@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { LogOut, Trash2 } from "lucide-react";
 
 import { useThemeStore } from "../store/useThemeStore";
@@ -16,9 +17,9 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onCancel]);
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[500] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md animate-in fade-in duration-500"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md animate-in fade-in duration-500"
       onClick={(event) => {
         if (event.target === event.currentTarget) onCancel();
       }}
@@ -58,7 +59,8 @@ const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "da
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

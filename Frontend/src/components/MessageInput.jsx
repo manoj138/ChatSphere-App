@@ -125,7 +125,7 @@ const MessageInput = () => {
 
       {/* Main Console Input */}
       <form onSubmit={handleSendMessage} className="relative">
-        <div className="relative flex items-center gap-3 overflow-hidden rounded-[2rem] border-none bg-white/60 p-2 shadow-2xl backdrop-blur-3xl transition-all duration-500 focus-within:bg-white focus-within:ring-1 focus-within:ring-accent/20">
+        <div className="glass-card relative flex items-center gap-3 overflow-hidden rounded-[2rem] border-none p-2 shadow-2xl transition-all duration-500 focus-within:bg-white/10 focus-within:ring-1 focus-within:ring-accent/20">
            
            {/* Utility Buttons Area */}
            <div className="flex items-center gap-1 pl-1">

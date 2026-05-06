@@ -41,33 +41,33 @@ const NoChatSelected = () => {
         {/* Action Grid */}
         <div className="animate-in slide-in-from-bottom-12 grid grid-cols-1 gap-6 duration-1000 delay-300 md:grid-cols-2">
            
-           <div className="group flex flex-col gap-4 rounded-2xl bg-white/40 p-5 shadow-lg backdrop-blur-3xl transition-all hover:bg-white hover:scale-[1.02] ring-1 ring-black/5">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent transition-all group-hover:scale-110 shadow-lg shadow-accent/10">
-                 <MessageSquarePlus size={18} />
-              </div>
-              <div>
-                 <h4 className="mb-1 text-base font-black text-primary uppercase tracking-tight">Initiate Stream</h4>
-                 <p className="text-xs font-medium leading-relaxed text-secondary opacity-70">Access your secure channels via the terminal sidebar.</p>
-              </div>
-           </div>
+            <div className="glass-card group flex flex-col gap-4 rounded-2xl p-5 shadow-xl transition-all hover:scale-[1.02]">
+               <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent transition-all group-hover:scale-110 shadow-lg shadow-accent/10">
+                  <MessageSquarePlus size={18} />
+               </div>
+               <div>
+                  <h4 className="mb-1 text-base font-bold text-primary uppercase tracking-tight">Start Chatting</h4>
+                  <p className="text-xs font-normal leading-relaxed text-secondary opacity-70">Message your friends or groups from the sidebar.</p>
+               </div>
+            </div>
 
-           <div className="group flex flex-col gap-4 rounded-2xl bg-white/40 p-5 shadow-lg backdrop-blur-3xl transition-all hover:bg-white hover:scale-[1.02] ring-1 ring-black/5">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 transition-all group-hover:scale-110 shadow-lg shadow-emerald-500/10">
-                 <UserPlus size={18} />
-              </div>
-              <div>
-                 <h4 className="mb-1 text-base font-black text-primary uppercase tracking-tight">Expand Network</h4>
-                 <p className="text-xs font-medium leading-relaxed text-secondary opacity-70">Locate new operators or fine-tune your core parameters.</p>
-              </div>
-           </div>
+            <div className="glass-card group flex flex-col gap-4 rounded-2xl p-5 shadow-xl transition-all hover:scale-[1.02]">
+               <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 transition-all group-hover:scale-110 shadow-lg shadow-emerald-500/10">
+                  <UserPlus size={18} />
+               </div>
+               <div>
+                  <h4 className="mb-1 text-base font-bold text-primary uppercase tracking-tight">Find People</h4>
+                  <p className="text-xs font-normal leading-relaxed text-secondary opacity-70">Search for new users or manage your friend requests.</p>
+               </div>
+            </div>
 
-        </div>
+         </div>
 
-        {/* Global Stats Bar */}
-        <div className="animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-xl bg-white/40 px-6 py-3.5 duration-1000 delay-500 sm:flex-row sm:gap-8 shadow-lg backdrop-blur-2xl ring-1 ring-black/5">
-           <div className="flex items-center gap-2">
-              <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary opacity-60">{onlineUsers.length} Live Nodes</span>
+         {/* Global Stats Bar */}
+         <div className="glass-card animate-in fade-in flex flex-col items-center justify-center gap-4 rounded-xl px-6 py-3.5 duration-1000 delay-500 sm:flex-row sm:gap-8 shadow-xl">
+            <div className="flex items-center gap-2">
+               <div className="size-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse" />
+               <span className="text-[10px] font-bold uppercase tracking-widest text-primary opacity-60">{onlineUsers.length} Online Users</span>
            </div>
            <div className="flex items-center gap-2">
               <ShieldCheck size={14} className="text-accent" />
