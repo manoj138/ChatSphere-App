@@ -10,7 +10,8 @@ connectDB();
 const allowedOrigins = [
     "http://localhost:5173",
     process.env.FRONTEND_URL,
-    "https://chat-sphere-app-live.vercel.app"
+    "https://chat-sphere-app-live.vercel.app/",
+   
 ].filter(Boolean);
 
 app.use(cors({
