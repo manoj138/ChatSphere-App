@@ -18,6 +18,7 @@ const SidebarItem = memo(({
   isSelected, 
   online, 
   themeColor, 
+  isLightMode,
   setSelectedUser, 
   setSelectedGroup, 
   sendFriendRequest, 
@@ -51,10 +52,14 @@ const SidebarItem = memo(({
         if (activeTab === "discover" || activeTab === "requests") return;
         activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item);
       }}
-      className={`relative flex w-full items-center gap-3 px-4 py-3.5 transition-all hover:bg-white/5 active:scale-[0.98] sm:gap-4 sm:px-6 ${isSelected ? "bg-white/10 shadow-xl ring-1 ring-white/10" : ""}`}
+      className={`relative flex w-full items-center gap-3 px-4 py-3.5 transition-all active:scale-[0.98] sm:gap-4 sm:px-6 ${
+        isSelected 
+          ? (isLightMode ? "bg-black/5 shadow-sm ring-1 ring-black/5" : "bg-white/10 shadow-md ring-1 ring-white/10") 
+          : ""
+      }`}
     >
       <div className="relative flex-shrink-0">
-        <div className={`size-12 overflow-hidden rounded-2xl bg-white shadow-lg transition-all ${isSelected ? "ring-2 ring-accent ring-offset-2" : "ring-1 ring-black/5"}`}>
+        <div className={`size-12 overflow-hidden rounded-2xl bg-white shadow-lg transition-all ${isSelected ? "ring-2 ring-accent ring-offset-2 scale-105" : "ring-1 ring-black/5"}`}>
           <img src={getAvatarSrc()} loading="lazy" className="size-full object-cover" />
         </div>
         {online && (
@@ -340,6 +345,7 @@ const Sidebar = () => {
                   isSelected={activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id}
                   online={activeTab === "chats" ? isOnline(item._id) : false}
                   themeColor={themeColor}
+                  isLightMode={isLightMode}
                   setSelectedUser={setSelectedUser}
                   setSelectedGroup={setSelectedGroup}
                   sendFriendRequest={sendFriendRequest}

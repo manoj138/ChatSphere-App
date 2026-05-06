@@ -277,7 +277,7 @@ const ChatContainer = () => {
       <div className="pointer-events-none absolute -right-24 top-1/4 size-96 opacity-20 blur-[150px]" style={{ backgroundColor: themeColor }} />
       <div className="pointer-events-none absolute -left-24 bottom-1/4 size-96 opacity-10 blur-[150px] bg-emerald-400" />
 
-      <header className={`sticky top-0 z-30 flex h-[72px] items-center justify-between gap-3 px-4 py-4 backdrop-blur-3xl sm:px-6 lg:px-8 ${isLightMode ? "bg-white/60" : "bg-black/40"}`}>
+      <header className={`sticky top-0 z-30 flex h-[72px] items-center justify-between gap-3 border-b px-4 py-4 backdrop-blur-3xl sm:px-6 lg:px-8 ${isLightMode ? "border-black/5 bg-white/95" : "border-white/10 bg-black/40"}`}>
         {!isSearching ? (
           <div className="animate-in slide-in-from-left-6 flex items-center gap-4 duration-500 lg:gap-6">
             <button
