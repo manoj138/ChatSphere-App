@@ -3,7 +3,7 @@ import { axiosInstance } from "../services/api";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+const BASE_URL = "https://chatsphere-app-mbj0.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
     authUser: null,
