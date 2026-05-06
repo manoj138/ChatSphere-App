@@ -318,7 +318,7 @@ const Sidebar = () => {
         </div>
 
         {/* Search Pill */}
-        <div className="sticky top-[140px] z-20 bg-transparent px-5 pb-4 pt-1 lg:top-[72px]">
+        <div className="sticky top-[140px] z-20 bg-transparent px-5 pb-3 pt-3 lg:top-[72px]">
           <div className="relative group">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
               <Search size={18} className="text-gray-400 transition-colors group-focus-within:text-accent" />
@@ -328,7 +328,7 @@ const Sidebar = () => {
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full rounded-2xl border-none ${isLightMode ? "bg-white ring-black/5" : "bg-black/20 ring-white/5"} px-5 py-3.5 pl-12 text-[14px] font-semibold text-primary shadow-xl transition-all focus:ring-1 focus:ring-accent/20 placeholder:text-gray-400`}
+              className={`w-full rounded-2xl border-none ${isLightMode ? "bg-white ring-black/5" : "bg-black/20 ring-white/5"} px-5 py-2.5 pl-12 text-[14px] font-semibold text-primary shadow-xl transition-all focus:ring-1 focus:ring-accent/20 placeholder:text-gray-400`}
             />
           </div>
         </div>
