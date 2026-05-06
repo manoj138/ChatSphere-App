@@ -83,6 +83,72 @@ body {
   transform: scale(0.98);
 }
 
+.app-button-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.app-button-danger::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+}
+
+.app-button-danger:hover::before {
+  animation: shine 0.75s ease-in-out;
+}
+
+.app-button-danger::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.app-button-danger:hover {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+  box-shadow: 0 12px 24px -6px rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.app-button-danger:hover::after {
+  opacity: 1;
+}
+
+.app-button-secondary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+}
+
+.app-button-secondary:hover {
+  background: var(--border-primary);
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -106,6 +172,11 @@ body {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
 .animate-slide-up { animation: slideUp 0.3s ease forwards; }

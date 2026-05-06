@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 import {
   ArrowLeft,
   CheckCheck,
@@ -17,11 +17,189 @@ import { useThemeStore } from "../store/useThemeStore";
 import MessageInput from "./MessageInput";
 import ForwardModal from "./ForwardModal";
 import ChatInfoModal from "./ChatInfoModal";
-import ConfirmationModal from "./ConfirmationModal";
 import ImageModal from "./ImageModal";
 import DeleteMessageModal from "./DeleteMessageModal";
 
 const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
+
+const MessageItem = memo(({ 
+  message, 
+  authUser, 
+  isLightMode, 
+  themeColor, 
+  selectedGroup, 
+  activeMessageMenu, 
+  setActiveMessageMenu, 
+  setMessageToDelete, 
+  setForwardingMessage, 
+  setPreviewImage,
+  reactToMessage,
+  searchQuery
+}) => {
+  const getEmojiCount = (str) => {
+    if (!str) return 0;
+    const emojiMatch = str.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g);
+    if (emojiMatch && emojiMatch.length === [...str].length) return emojiMatch.length;
+    return 0;
+  };
+
+  const getAvatarSrc = (user) => {
+    if (!user) return "/boy_1.png";
+    const photo = typeof user === "object" ? user.profilePicture : null;
+    if (photo) return photo;
+    const userId = typeof user === "object" ? user._id : user;
+    const idNum = userId ? userId.toString().charCodeAt(userId.toString().length - 1) : 0;
+    return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
+  };
+
+  const getUserColor = (username) => {
+    if (!username) return "#777";
+    const colors = ["#ff4d4d", "#4da6ff", "#4dff88", "#ffcc00", "#ff4dff", "#00ffff"];
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
+  const senderIdString = (message.senderId?._id || message.senderId)?.toString();
+  const myIdString = authUser?._id?.toString();
+  const isMine = senderIdString === myIdString;
+
+  const emojiCount = getEmojiCount(message.text);
+  const isBigEmoji = emojiCount > 0 && emojiCount <= 3 && !message.image && !message.isDeleted;
+
+  return (
+    <div className={`group/msg relative mb-6 flex w-full animate-slide-up ${isMine ? "justify-end" : "justify-start"}`}>
+      <div className={`flex max-w-[92%] items-end gap-2 sm:max-w-[85%] sm:gap-3 lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+        {!isMine && (selectedGroup || message.groupId) && (
+          <div className="relative z-10 mb-6 size-9 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-xl">
+            <img src={getAvatarSrc(message.senderId)} className="h-full w-full object-cover" alt="Avatar" />
+          </div>
+        )}
+
+        <div className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}>
+          {!isMine && (selectedGroup || message.groupId) && (
+            <span className="mb-1.5 ml-1 text-[11px] font-semibold" style={{ color: getUserColor(message.senderId?.username) }}>
+              {message.senderId?.username || "Unknown user"}
+            </span>
+          )}
+
+          <div className="group relative flex items-center gap-2">
+            <button
+              onClick={() => setMessageToDelete(message._id)}
+              className={`${isMine ? "order-last" : "order-first"} p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-red-400 active:scale-90`}
+            >
+              <Trash2 size={16} />
+            </button>
+
+            {!isMine && !message.isDeleted && (
+              <button
+                onClick={() => setForwardingMessage(message)}
+                className="order-first p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-white"
+              >
+                <Forward size={16} />
+              </button>
+            )}
+
+            <div
+              className={`relative transition-all duration-300 ${
+                isBigEmoji
+                  ? "bg-transparent"
+                  : `rounded-2xl border ${message.image && !message.text ? "p-1.5" : "px-4 py-3"} shadow-2xl ${message.image && !message.text ? "sm:p-2" : "sm:px-6 sm:py-4"} ${
+                      isMine
+                        ? "rounded-tr-none bubble-mine text-primary"
+                        : "rounded-tl-none bubble-other text-primary"
+                    } ${message.isDeleted ? "opacity-40 italic" : ""}`
+              }`}
+            >
+              <div className={`absolute -bottom-3 z-20 flex items-center gap-1 ${isMine ? "right-4" : "left-4"}`}>
+                {message.reactions?.map((reaction, rIdx) => (
+                  <div key={rIdx} className="rounded-full border border-primary bg-secondary px-1.5 py-0.5 text-[12px] shadow-lg animate-in zoom-in">
+                    {reaction.emoji}
+                  </div>
+                ))}
+              </div>
+
+              {!message.isDeleted && (
+                <button
+                  onClick={() => setActiveMessageMenu(activeMessageMenu === message._id ? null : message._id)}
+                  className={`absolute -top-3 z-30 flex size-8 items-center justify-center rounded-full border border-primary bg-primary text-secondary opacity-0 transition-all group-hover:opacity-100 hover:text-accent ${isMine ? "-left-3" : "-right-3"}`}
+                >
+                  <SmilePlus size={16} />
+                </button>
+              )}
+
+              {activeMessageMenu === message._id && (
+                <div className={`absolute bottom-full z-[100] mb-3 flex items-center gap-0.5 rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl animate-in slide-in-from-bottom-2 duration-300 ${isMine ? "right-0" : "left-0"}`}>
+                  {QUICK_REACTIONS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => {
+                        reactToMessage(message._id, emoji);
+                        setActiveMessageMenu(null);
+                      }}
+                      className="flex size-9 items-center justify-center rounded-full text-xl transition-all hover:scale-110 hover:bg-white/[0.05] active:scale-150"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {message.text && (
+                <p
+                  className={`relative z-10 whitespace-pre-wrap leading-relaxed ${
+                    isBigEmoji
+                      ? `drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] ${emojiCount > 1 ? "text-5xl" : "text-7xl"}`
+                      : "text-[14px] font-medium tracking-tight"
+                  }`}
+                >
+                  {searchQuery
+                    ? message.text.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                        part.toLowerCase() === searchQuery.toLowerCase() ? (
+                          <mark key={i} className="rounded-sm bg-yellow-500/30 p-0 text-yellow-300">
+                            {part}
+                          </mark>
+                        ) : (
+                          part
+                        )
+                      )
+                    : message.text}
+                </p>
+              )}
+
+              {message.image && (
+                <div 
+                  className={`group/img relative ${message.text ? "mt-3" : ""} cursor-zoom-in overflow-hidden rounded-2xl border border-white/5 shadow-inner`}
+                  onClick={() => setPreviewImage(message.image)}
+                >
+                  <img src={message.image} loading="lazy" className="h-auto max-w-[200px] sm:max-w-[250px] max-h-[300px] object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100 flex items-end justify-center pb-4">
+                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 translate-y-2 transition-transform group-hover/img:translate-y-0">Click to expand</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={`mt-2.5 flex items-center gap-3 px-3 ${isMine ? "justify-end" : "justify-start"}`}>
+            <span className="text-[10px] font-medium text-gray-500">
+              {message.createdAt
+                ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "NOW"}
+            </span>
+            {isMine && !selectedGroup && !message.isDeleted && (
+              <div className="flex items-center gap-1">
+                <CheckCheck size={14} className={message.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 const ChatContainer = () => {
   const {
@@ -61,16 +239,17 @@ const ChatContainer = () => {
 
   useEffect(() => {
     if (scrollRef.current && messages?.length > 0 && !isSearching) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+      const scrollOptions = { behavior: messages.length > 50 ? "auto" : "smooth" };
+      scrollRef.current.scrollIntoView(scrollOptions);
     }
-  }, [messages, isTyping, isSearching]);
+  }, [messages.length, isTyping, isSearching]);
 
-  const getEmojiCount = (str) => {
-    if (!str) return 0;
-    const emojiMatch = str.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g);
-    if (emojiMatch && emojiMatch.length === [...str].length) return emojiMatch.length;
-    return 0;
-  };
+  const filteredMessages = useMemo(() => 
+    messages.filter(
+      (m) => !searchQuery || (m.text && m.text.toLowerCase().includes(searchQuery.toLowerCase()))
+    ),
+    [messages, searchQuery]
+  );
 
   const getAvatarSrc = (user) => {
     if (!user) return "/boy_1.png";
@@ -80,20 +259,6 @@ const ChatContainer = () => {
     const idNum = userId ? userId.toString().charCodeAt(userId.toString().length - 1) : 0;
     return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
   };
-
-  const getUserColor = (username) => {
-    if (!username) return "#777";
-    const colors = ["#ff4d4d", "#4da6ff", "#4dff88", "#ffcc00", "#ff4dff", "#00ffff"];
-    let hash = 0;
-    for (let i = 0; i < username.length; i++) {
-      hash = username.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
-  };
-
-  const filteredMessages = messages.filter(
-    (m) => !searchQuery || (m.text && m.text.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
 
   if (isMessagesLoading) {
     return (
@@ -209,145 +374,23 @@ const ChatContainer = () => {
 
       <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 sm:space-y-10 sm:p-4 lg:p-8 space-y-6">
         {filteredMessages.length > 0 ? (
-          filteredMessages.map((message) => {
-            const senderIdString = (message.senderId?._id || message.senderId)?.toString();
-            const myIdString = authUser?._id?.toString();
-            const isMine = senderIdString === myIdString;
-
-            const emojiCount = getEmojiCount(message.text);
-            const isBigEmoji = emojiCount > 0 && emojiCount <= 3 && !message.image && !message.isDeleted;
-
-            return (
-              <div key={message._id} className={`group/msg relative mb-6 flex w-full animate-scale-in ${isMine ? "justify-end" : "justify-start"}`}>
-                <div className={`flex max-w-[92%] items-end gap-2 sm:max-w-[85%] sm:gap-3 lg:max-w-[70%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
-                  {!isMine && (selectedGroup || message.groupId) && (
-                    <div className="relative z-10 mb-6 size-9 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-xl">
-                      <img src={getAvatarSrc(message.senderId)} className="h-full w-full object-cover" alt="Avatar" />
-                    </div>
-                  )}
-
-                  <div className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}>
-                    {!isMine && (selectedGroup || message.groupId) && (
-                      <span className="mb-1.5 ml-1 text-[11px] font-semibold" style={{ color: getUserColor(message.senderId?.username) }}>
-                        {message.senderId?.username || "Unknown user"}
-                      </span>
-                    )}
-
-                    <div className="group relative flex items-center gap-2">
-                      <button
-                        onClick={() => setMessageToDelete(message._id)}
-                        className={`${isMine ? "order-last" : "order-first"} p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-red-400 active:scale-90`}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-
-                      {!isMine && !message.isDeleted && (
-                        <button
-                          onClick={() => setForwardingMessage(message)}
-                          className="order-first p-2 text-gray-500 opacity-0 transition-all group-hover:opacity-100 hover:text-white"
-                        >
-                          <Forward size={16} />
-                        </button>
-                      )}
-
-                      <div
-                        className={`relative transition-premium ${
-                          isBigEmoji
-                            ? "bg-transparent"
-                            : `rounded-2xl border ${message.image && !message.text ? "p-1.5" : "px-4 py-3"} shadow-2xl ${message.image && !message.text ? "sm:p-2" : "sm:px-6 sm:py-4"} ${
-                                isMine
-                                  ? "rounded-tr-none bubble-mine text-primary"
-                                  : "rounded-tl-none bubble-other text-primary"
-                              } ${message.isDeleted ? "opacity-40 italic" : ""}`
-                        }`}
-                      >
-                        <div className={`absolute -bottom-3 z-20 flex items-center gap-1 ${isMine ? "right-4" : "left-4"}`}>
-                          {message.reactions?.map((reaction, rIdx) => (
-                            <div key={rIdx} className="rounded-full border border-primary bg-secondary px-1.5 py-0.5 text-[12px] shadow-lg animate-in zoom-in">
-                              {reaction.emoji}
-                            </div>
-                          ))}
-                        </div>
-
-                        {!message.isDeleted && (
-                          <button
-                            onClick={() => setActiveMessageMenu(activeMessageMenu === message._id ? null : message._id)}
-                            className={`absolute -top-3 z-30 flex size-8 items-center justify-center rounded-full border border-primary bg-primary text-secondary opacity-0 transition-all group-hover:opacity-100 hover:text-accent ${isMine ? "-left-3" : "-right-3"}`}
-                          >
-                            <SmilePlus size={16} />
-                          </button>
-                        )}
-
-                        {activeMessageMenu === message._id && (
-                          <div className={`absolute bottom-full z-[100] mb-3 flex items-center gap-0.5 rounded-full border border-primary bg-secondary/95 p-1.5 shadow-2xl animate-in slide-in-from-bottom-2 duration-300 ${isMine ? "right-0" : "left-0"}`}>
-                            {QUICK_REACTIONS.map((emoji) => (
-                              <button
-                                key={emoji}
-                                onClick={() => {
-                                  reactToMessage(message._id, emoji);
-                                  setActiveMessageMenu(null);
-                                }}
-                                className="flex size-9 items-center justify-center rounded-full text-xl transition-all hover:scale-110 hover:bg-white/[0.05] active:scale-150"
-                              >
-                                {emoji}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {message.text && (
-                          <p
-                            className={`relative z-10 whitespace-pre-wrap leading-relaxed ${
-                              isBigEmoji
-                                ? `drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] ${emojiCount > 1 ? "text-5xl" : "text-7xl"}`
-                                : "text-[14px] font-medium tracking-tight"
-                            }`}
-                          >
-                            {searchQuery
-                              ? message.text.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                                  part.toLowerCase() === searchQuery.toLowerCase() ? (
-                                    <mark key={i} className="rounded-sm bg-yellow-500/30 p-0 text-yellow-300">
-                                      {part}
-                                    </mark>
-                                  ) : (
-                                    part
-                                  )
-                                )
-                              : message.text}
-                          </p>
-                        )}
-
-                        {message.image && (
-                          <div 
-                            className={`group/img relative ${message.text ? "mt-3" : ""} cursor-zoom-in overflow-hidden rounded-2xl border border-white/5 shadow-inner`}
-                            onClick={() => setPreviewImage(message.image)}
-                          >
-                            <img src={message.image} className="h-auto max-w-[200px] sm:max-w-[250px] max-h-[300px] object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Sent asset" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover/img:opacity-100 flex items-end justify-center pb-4">
-                               <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 translate-y-2 transition-transform group-hover/img:translate-y-0">Click to expand</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={`mt-2.5 flex items-center gap-3 px-3 ${isMine ? "justify-end" : "justify-start"}`}>
-                      <span className="text-[10px] font-medium text-gray-500">
-                        {message.createdAt
-                          ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                          : "NOW"}
-                      </span>
-                      {isMine && !selectedGroup && !message.isDeleted && (
-                        <div className="flex items-center gap-1">
-                          <CheckCheck size={14} className={message.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
+          filteredMessages.map((message) => (
+            <MessageItem 
+              key={message._id}
+              message={message}
+              authUser={authUser}
+              isLightMode={isLightMode}
+              themeColor={themeColor}
+              selectedGroup={selectedGroup}
+              activeMessageMenu={activeMessageMenu}
+              setActiveMessageMenu={setActiveMessageMenu}
+              setMessageToDelete={setMessageToDelete}
+              setForwardingMessage={setForwardingMessage}
+              setPreviewImage={setPreviewImage}
+              reactToMessage={reactToMessage}
+              searchQuery={searchQuery}
+            />
+          ))
         ) : (
           <div className="flex h-full select-none flex-col items-center justify-center space-y-6 px-4 text-center opacity-30">
             <div className="rounded-[3rem] border-2 border-dashed border-primary p-10">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo, useMemo } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
@@ -11,6 +11,146 @@ import {
 import { Link } from "react-router-dom";
 import CreateGroupModal from "./CreateGroupModal";
 import ConfirmationModal from "./ConfirmationModal";
+
+const SidebarItem = memo(({ 
+  item, 
+  activeTab, 
+  isSelected, 
+  online, 
+  themeColor, 
+  setSelectedUser, 
+  setSelectedGroup, 
+  sendFriendRequest, 
+  respondToRequest 
+}) => {
+  const getAvatarSrc = () => {
+    let photo;
+    if (activeTab === "groups") photo = item.groupImage;
+    else if (activeTab === "requests") photo = item.requestType === "incoming" ? item.sender?.profilePicture : item.receiver?.profilePicture;
+    else photo = item.profilePicture;
+
+    if (photo) return photo;
+    if (activeTab === "groups") return "/favicon.svg";
+    
+    const userItem = activeTab === "requests" ? (item.requestType === "incoming" ? item.sender : item.receiver) : item;
+    const idNum = userItem?._id ? userItem._id.charCodeAt(userItem._id.length - 1) : 0;
+    return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
+  };
+
+  const formatTime = (date) => {
+    if (!date) return "";
+    const msgDate = new Date(date);
+    return msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const lastMsg = item.lastMessage;
+
+  return (
+    <button
+      onClick={() => {
+        if (activeTab === "discover" || activeTab === "requests") return;
+        activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item);
+      }}
+      className={`relative flex w-full items-center gap-3 px-4 py-4 transition-premium hover:scale-[1.01] active:scale-[0.99] sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
+    >
+      <div className="relative flex-shrink-0">
+        <div className="size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-xl transition-transform group-hover:scale-105 sm:size-14">
+          <img src={getAvatarSrc()} loading="lazy" className="w-full h-full object-cover" />
+        </div>
+        {online && (
+          <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-secondary p-0.5 transition-colors">
+            <div className="size-full bg-green-500 rounded-full shadow-[0_0_100px_rgba(34,197,94,1)] animate-pulse" />
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0 text-left">
+        <div className="flex items-center justify-between mb-0.5">
+          <h3 className="truncate text-sm font-black tracking-tight text-primary">
+            {activeTab === "groups" ? item.name : (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username)}
+          </h3>
+          {activeTab !== "discover" && activeTab !== "requests" && (
+            <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
+              <span className="text-[10px] font-semibold text-secondary/60">
+                {formatTime(lastMsg?.createdAt) || "NEW"}
+              </span>
+              {item.unreadCount > 0 && (
+                <span 
+                  className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
+                  style={{ backgroundColor: themeColor }}
+                >
+                  {item.unreadCount}
+                </span>
+              )}
+            </div>
+          )}
+          {activeTab === "requests" && (
+            <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${item.requestType === "incoming" ? "bg-blue-500/10 text-blue-500" : "bg-orange-500/10 text-orange-500"}`}>
+              {item.requestType}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-1 items-center gap-1.5 min-w-0">
+            {activeTab === "chats" && lastMsg && (
+              <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
+            )}
+            <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
+              {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.requestType === "incoming" ? (item.sender?.email || "Wants to connect") : (item.receiver?.email || "Request sent")) : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
+            </p>
+          </div>
+
+          {activeTab === "discover" && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                sendFriendRequest(item._id);
+              }}
+              className="flex items-center gap-1 rounded-lg bg-surface px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-secondary transition-all hover:bg-primary/10 hover:text-primary active:scale-90"
+            >
+              <UserPlus size={14} />
+              Add
+            </button>
+          )}
+
+          {activeTab === "requests" && item.requestType === "incoming" && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  respondToRequest(item._id, "accepted");
+                }}
+                className="rounded-lg bg-green-500/10 p-1.5 text-green-500 transition-all hover:bg-green-500/20 active:scale-90"
+              >
+                <Check size={16} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  respondToRequest(item._id, "rejected");
+                }}
+                className="rounded-lg bg-red-500/10 p-1.5 text-red-500 transition-all hover:bg-red-500/20 active:scale-90"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+
+          {activeTab === "requests" && item.requestType === "outgoing" && (
+            <div className="flex items-center gap-1.5 rounded-lg bg-secondary/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-secondary">
+              <CheckCheck size={12} className="text-gray-400" />
+              Sent
+            </div>
+          )}
+        </div>
+      </div>
+      {isSelected && activeTab !== "discover" && activeTab !== "requests" && (
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-l-full" style={{ backgroundColor: themeColor }} />
+      )}
+    </button>
+  );
+});
 
 const Sidebar = () => {
   const {
@@ -42,39 +182,22 @@ const Sidebar = () => {
 
   const isOnline = (userId) => onlineUsers.includes(userId);
 
-  const getAvatarSrc = (item) => {
-    let photo;
-    if (activeTab === "groups") photo = item.groupImage;
-    else if (activeTab === "requests") photo = item.requestType === "incoming" ? item.sender?.profilePicture : item.receiver?.profilePicture;
-    else photo = item.profilePicture;
-
-    if (photo) return photo;
-    if (activeTab === "groups") return "/favicon.svg";
-    
-    const userItem = activeTab === "requests" ? (item.requestType === "incoming" ? item.sender : item.receiver) : item;
-    const idNum = userItem?._id ? userItem._id.charCodeAt(userItem._id.length - 1) : 0;
-    return idNum % 2 === 0 ? `/boy_${(idNum % 5) + 1}.png?v=3` : `/girl_${(idNum % 4) + 1}.png?v=3`;
-  };
-
-  const formatTime = (date) => {
-    if (!date) return "";
-    const msgDate = new Date(date);
-    return msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const filteredItems = (
-    activeTab === "chats" ? (users || []) :
-    activeTab === "groups" ? (groups || []) :
-    activeTab === "requests" ? [
-      ...(friendRequests?.incoming || []).map(r => ({ ...r, requestType: "incoming" })),
-      ...(friendRequests?.outgoing || []).map(r => ({ ...r, requestType: "outgoing" }))
-    ] :
-    (allUsers || [])
-  ).filter((item) => {
-    const name = activeTab === "groups" ? item.name : 
-                 (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username);
-    return name?.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  const filteredItems = useMemo(() => {
+    const items = (
+      activeTab === "chats" ? (users || []) :
+      activeTab === "groups" ? (groups || []) :
+      activeTab === "requests" ? [
+        ...(friendRequests?.incoming || []).map(r => ({ ...r, requestType: "incoming" })),
+        ...(friendRequests?.outgoing || []).map(r => ({ ...r, requestType: "outgoing" }))
+      ] :
+      (allUsers || [])
+    );
+    return items.filter((item) => {
+      const name = activeTab === "groups" ? item.name : 
+                   (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username);
+      return name?.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  }, [activeTab, users, groups, friendRequests, allUsers, searchQuery]);
 
   const hasUnreadChats = (users || []).some(u => u.unreadCount > 0);
   const hasUnreadGroups = (groups || []).some(g => g.unreadCount > 0);
@@ -118,9 +241,9 @@ const Sidebar = () => {
             className={`relative rounded-2xl p-3 transition-all ${activeTab === "requests" ? "border border-primary bg-surface text-primary" : "text-secondary hover:bg-secondary/10 hover:text-primary"}`}
           >
             <UserPlus size={22} />
-            {friendRequests.length > 0 && (
+            {totalRequests > 0 && (
               <div className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white ring-2 ring-secondary">
-                {friendRequests.length}
+                {totalRequests}
               </div>
             )}
           </button>
@@ -260,118 +383,20 @@ const Sidebar = () => {
         {/* List Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-6 lg:pb-10">
           {filteredItems.length > 0 ? (
-            filteredItems.map((item) => {
-              const isSelected = activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id;
-              const online = activeTab === "chats" ? isOnline(item._id) : false;
-              const lastMsg = item.lastMessage;
-
-              return (
-                <button
-                  key={item._id}
-                  onClick={() => {
-                    if (activeTab === "discover" || activeTab === "requests") return;
-                    activeTab === "chats" ? setSelectedUser(item) : setSelectedGroup(item);
-                  }}
-                  className={`relative flex w-full items-center gap-3 px-4 py-4 transition-premium hover:scale-[1.01] active:scale-[0.99] sm:gap-4 sm:px-6 ${isSelected ? "bg-secondary" : "hover:bg-secondary/40"}`}
-                >
-                  <div className="relative flex-shrink-0">
-                    <div className="size-12 overflow-hidden rounded-[1.2rem] border border-white/10 shadow-xl transition-transform group-hover:scale-105 sm:size-14">
-                      <img src={getAvatarSrc(item)} className="w-full h-full object-cover" />
-                    </div>
-                    {online && (
-                      <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-secondary p-0.5 transition-colors">
-                        <div className="size-full bg-green-500 rounded-full shadow-[0_0_100px_rgba(34,197,94,1)] animate-pulse" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <h3 className="truncate text-sm font-black tracking-tight text-primary">
-                        {activeTab === "groups" ? item.name : (activeTab === "requests" ? (item.requestType === "incoming" ? item.sender?.username : item.receiver?.username) : item.username)}
-                      </h3>
-                      {activeTab !== "discover" && activeTab !== "requests" && (
-                        <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
-                          <span className="text-[10px] font-semibold text-secondary/60">
-                            {formatTime(lastMsg?.createdAt) || "NEW"}
-                          </span>
-                          {item.unreadCount > 0 && (
-                            <span 
-                              className="flex size-5 items-center justify-center rounded-full text-[10px] font-black text-black animate-in zoom-in duration-300"
-                              style={{ backgroundColor: themeColor }}
-                            >
-                              {item.unreadCount}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      {activeTab === "requests" && (
-                        <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${item.requestType === "incoming" ? "bg-blue-500/10 text-blue-500" : "bg-orange-500/10 text-orange-500"}`}>
-                          {item.requestType}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex flex-1 items-center gap-1.5 min-w-0">
-                        {activeTab === "chats" && lastMsg && (
-                          <CheckCheck size={14} className={lastMsg?.isSeen ? "text-blue-500" : "text-gray-600"} strokeWidth={3} />
-                        )}
-                        <p className="truncate text-xs font-medium text-gray-400 sm:text-[13px]">
-                          {activeTab === "discover" ? (item.email || "Available to chat") : (activeTab === "requests" ? (item.requestType === "incoming" ? (item.sender?.email || "Wants to connect") : (item.receiver?.email || "Request sent")) : (lastMsg ? (activeTab === "groups" ? `${lastMsg.senderName || "Someone"}: ${lastMsg.text}` : lastMsg.text) : "No messages yet"))}
-                        </p>
-                      </div>
-
-                      {activeTab === "discover" && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            sendFriendRequest(item._id);
-                          }}
-                          className="flex items-center gap-1 rounded-lg bg-surface px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-secondary transition-all hover:bg-primary/10 hover:text-primary active:scale-90"
-                        >
-                          <UserPlus size={14} />
-                          Add
-                        </button>
-                      )}
-
-                      {activeTab === "requests" && item.requestType === "incoming" && (
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              respondToRequest(item._id, "accepted");
-                            }}
-                            className="rounded-lg bg-green-500/10 p-1.5 text-green-500 transition-all hover:bg-green-500/20 active:scale-90"
-                          >
-                            <Check size={16} />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              respondToRequest(item._id, "rejected");
-                            }}
-                            className="rounded-lg bg-red-500/10 p-1.5 text-red-500 transition-all hover:bg-red-500/20 active:scale-90"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      )}
-
-                      {activeTab === "requests" && item.requestType === "outgoing" && (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-secondary/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-secondary">
-                          <CheckCheck size={12} className="text-gray-400" />
-                          Sent
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {isSelected && activeTab !== "discover" && activeTab !== "requests" && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-l-full" style={{ backgroundColor: themeColor }} />
-                  )}
-                </button>
-              );
-            })
+            filteredItems.map((item) => (
+              <SidebarItem 
+                key={item._id}
+                item={item}
+                activeTab={activeTab}
+                isSelected={activeTab === "chats" ? selectedUser?._id === item._id : selectedGroup?._id === item._id}
+                online={activeTab === "chats" ? isOnline(item._id) : false}
+                themeColor={themeColor}
+                setSelectedUser={setSelectedUser}
+                setSelectedGroup={setSelectedGroup}
+                sendFriendRequest={sendFriendRequest}
+                respondToRequest={respondToRequest}
+              />
+            ))
           ) : (
             <div className="py-20 text-center opacity-30 px-4">
               <MessageSquare size={60} className="mx-auto" />

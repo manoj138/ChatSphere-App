@@ -101,9 +101,11 @@ export const useChatStore = create((set, get) => ({
       const newMessage = res.data.data;
       get().appendMessageIfMissing(newMessage);
       
-      const sendAudio = new Audio("/send-tone.mp3");
-      sendAudio.volume = 0.5;
-      sendAudio.play().catch(e => console.log("Send sound blocked:", e));
+      if (import("./useThemeStore").then(mod => mod.useThemeStore.getState().soundEnabled)) {
+        const sendAudio = new Audio("/send-tone.mp3");
+        sendAudio.volume = 0.5;
+        sendAudio.play().catch(e => console.log("Send sound blocked:", e));
+      }
 
       // Silent refresh to update last message in sidebar without skeleton flicker
       get().getUsers(true); 
@@ -185,8 +187,12 @@ export const useChatStore = create((set, get) => ({
         
         const myId = useAuthStore.getState().authUser?._id;
         if (newMessage.senderId !== myId) {
-            const audio = new Audio("/recieve-tone.mp3");
-            audio.play().catch(e => console.log("Receive sound failed"));
+            import("./useThemeStore").then(mod => {
+                if (mod.useThemeStore.getState().soundEnabled) {
+                    const audio = new Audio("/recieve-tone.mp3");
+                    audio.play().catch(e => console.log("Receive sound failed"));
+                }
+            });
         }
     });
 
@@ -195,8 +201,12 @@ export const useChatStore = create((set, get) => ({
         import("./useFriendStore").then((mod) => {
             mod.useFriendStore.getState().getFriendRequests();
         });
-        const audio = new Audio("/recieve-tone.mp3");
-        audio.play().catch(e => console.log("Sound blocked"));
+        import("./useThemeStore").then(mod => {
+            if (mod.useThemeStore.getState().soundEnabled) {
+                const audio = new Audio("/recieve-tone.mp3");
+                audio.play().catch(e => console.log("Sound blocked"));
+            }
+        });
     });
 
     socket.on("friendRequestAccepted", () => {
@@ -218,8 +228,12 @@ export const useChatStore = create((set, get) => ({
 
         const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
         if (!isMyMessage) {
-            const audio = new Audio("/recieve-tone.mp3");
-            audio.play().catch(e => console.log("Receive sound failed"));
+            import("./useThemeStore").then(mod => {
+                if (mod.useThemeStore.getState().soundEnabled) {
+                    const audio = new Audio("/recieve-tone.mp3");
+                    audio.play().catch(e => console.log("Receive sound failed"));
+                }
+            });
         }
     });
 
