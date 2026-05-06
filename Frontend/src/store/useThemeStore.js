@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useThemeStore = create((set) => ({
+export const useThemeStore = create((set, get) => ({
   themeColor: localStorage.getItem("chat-sphere-theme") || "#bef264",
   isLightMode: localStorage.getItem("chat-sphere-mode") === "light",
   soundEnabled: localStorage.getItem("chat-sphere-sound") !== "false",
@@ -13,20 +13,20 @@ export const useThemeStore = create((set) => ({
   },
 
   toggleThemeMode: () => {
-    const newMode = !useThemeStore.getState().isLightMode;
+    const newMode = !get().isLightMode;
     localStorage.setItem("chat-sphere-mode", newMode ? "light" : "dark");
     document.documentElement.setAttribute("data-theme", newMode ? "light" : "dark");
     set({ isLightMode: newMode });
   },
 
   toggleSound: () => {
-    const newVal = !useThemeStore.getState().soundEnabled;
+    const newVal = !get().soundEnabled;
     localStorage.setItem("chat-sphere-sound", newVal.toString());
     set({ soundEnabled: newVal });
   },
 
   toggleNotifications: () => {
-    const newVal = !useThemeStore.getState().notificationsEnabled;
+    const newVal = !get().notificationsEnabled;
     localStorage.setItem("chat-sphere-notifications", newVal.toString());
     set({ notificationsEnabled: newVal });
   },
