@@ -3,14 +3,12 @@ const cors = require("cors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./src/config/database");
-const { app, server, io } = require("./src/lib/socket");
+const { corsOptions } = require("./src/config/cors");
+const { app, server } = require("./src/lib/socket");
 
 connectDB();
 
-app.use(cors({
-    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : "http://localhost:5173",
-    credentials: true
-}));
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));

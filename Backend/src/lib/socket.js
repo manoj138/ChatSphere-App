@@ -3,13 +3,14 @@ const http = require("http");
 const express = require("express");
 const User = require("../models/userModel");
 const Group = require("../models/groupModel");
+const { allowedOrigins } = require("../config/cors");
 
 const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+        origin: allowedOrigins,
         credentials: true
     },
 });
