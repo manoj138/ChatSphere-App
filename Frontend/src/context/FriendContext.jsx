@@ -26,7 +26,7 @@ export const FriendProvider = ({ children }) => {
         } finally {
             setIsUsersLoading(false);
         }
-    }, []);
+    }, [authUser]);
 
     const getFriendRequests = useCallback(async () => {
         if (!authUser) return;
@@ -39,7 +39,7 @@ export const FriendProvider = ({ children }) => {
         } finally {
             setIsRequestsLoading(false);
         }
-    }, []);
+    }, [authUser]);
 
     const sendFriendRequest = useCallback(async (userId) => {
         try {

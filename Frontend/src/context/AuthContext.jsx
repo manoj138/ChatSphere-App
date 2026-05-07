@@ -5,7 +5,14 @@ import { io } from "socket.io-client";
 
 const AuthContext = createContext();
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const getBaseUrl = () => {
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+    return window.location.hostname === "localhost" 
+        ? "http://localhost:3001" 
+        : "https://chatsphere-app-wala.onrender.com";
+};
+
+const BASE_URL = getBaseUrl();
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);

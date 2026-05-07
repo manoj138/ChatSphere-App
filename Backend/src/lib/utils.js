@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 
 const getAuthCookieOptions = () => {
-    // Force cross-site cookies for production (Render/Vercel)
+    const isProd = process.env.NODE_ENV === "production";
     return {
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd,
     };
 };
 

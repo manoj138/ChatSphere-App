@@ -34,7 +34,9 @@ export const requestForToken = async () => {
             await axiosInstance.put("/auth/update-fcm-token", { token });
             console.log("FCM Token synchronized.");
           } catch (syncErr) {
-            console.error("Token sync failed:", syncErr.message);
+            if (syncErr.response?.status !== 401) {
+              console.error("Token sync failed:", syncErr.message);
+            }
           }
         }
       }

@@ -208,6 +208,7 @@ const ChatContainer = () => {
     deleteMessage,
     reactToMessage,
   } = useChat();
+  const { setSelectedUser, setSelectedGroup } = useChat();
 
   const { authUser, socket, onlineUsers } = useAuth();
   const { themeColor, isLightMode } = useTheme();

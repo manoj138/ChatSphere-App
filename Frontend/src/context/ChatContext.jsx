@@ -40,7 +40,7 @@ export const ChatProvider = ({ children }) => {
     } finally {
       if (!silent) setIsUsersLoading(false);
     }
-  }, []);
+  }, [authUser]);
 
   const getGroups = useCallback(async (silent = false) => {
     if (!authUser) return;
@@ -53,7 +53,7 @@ export const ChatProvider = ({ children }) => {
     } finally {
       if (!silent) setIsGroupsLoading(false);
     }
-  }, []);
+  }, [authUser]);
 
   const createGroup = useCallback(async (groupData) => {
     try {
@@ -78,7 +78,7 @@ export const ChatProvider = ({ children }) => {
     } finally {
       setIsMessagesLoading(false);
     }
-  }, []);
+  }, [authUser]);
 
   const getGroupMessages = useCallback(async (groupId) => {
     if (!authUser) return;
@@ -91,7 +91,7 @@ export const ChatProvider = ({ children }) => {
     } finally {
       setIsMessagesLoading(false);
     }
-  }, []);
+  }, [authUser]);
 
   const markMessagesAsSeen = useCallback(async (userId) => {
     try {
