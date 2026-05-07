@@ -83,7 +83,7 @@ const NoChatSelected = () => {
             <div className="text-center animate-in fade-in duration-1000 delay-700 flex flex-col items-center gap-4">
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-accent animate-pulse">Awaiting operator input...</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-               <Link to="/profile" className="w-full sm:w-auto rounded-xl bg-white px-6 py-3 text-xs font-black uppercase tracking-widest text-primary shadow-lg transition-all hover:scale-105 active:scale-95">
+               <Link to="/profile" className="w-full sm:w-auto rounded-xl bg-bg-secondary px-6 py-3 text-xs font-black uppercase tracking-widest text-primary shadow-lg transition-all hover:scale-105 active:scale-95">
                  Identity
                </Link>
                <Link to="/settings" className="w-full sm:w-auto rounded-xl px-6 py-3 text-xs font-black uppercase tracking-widest text-black shadow-xl transition-all hover:scale-105 active:scale-95 hover:brightness-110" style={{ backgroundColor: themeColor }}>

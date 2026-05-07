@@ -244,13 +244,13 @@ const Sidebar = () => {
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <Link to="/profile" className="size-10 overflow-hidden rounded-xl bg-white shadow-xl ring-2 ring-white transition-all active:scale-95">
+              <Link to="/profile" className="size-10 overflow-hidden rounded-xl bg-bg-secondary shadow-xl ring-2 ring-primary/10 transition-all active:scale-95">
                 <img
                   src={authUser?.profilePicture || (authUser?._id?.charCodeAt(authUser?._id.length - 1) % 2 === 0 ? `/boy_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 5) + 1}.png?v=3` : `/girl_${(authUser?._id?.charCodeAt(authUser?._id.length - 1) % 4) + 1}.png?v=3`)}
                   className="size-full object-cover"
                 />
               </Link>
-              <Link to="/settings" className="flex size-10 items-center justify-center rounded-xl bg-white text-gray-400 shadow-lg transition-all active:scale-90 hover:text-accent">
+              <Link to="/settings" className="flex size-10 items-center justify-center rounded-xl bg-bg-secondary text-primary/40 shadow-lg transition-all active:scale-90 hover:text-accent">
                 <Settings size={18} />
               </Link>
             </div>

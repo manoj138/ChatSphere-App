@@ -34,7 +34,7 @@ const LoginPage = () => {
       </button>
 
       <div className="flex min-h-screen items-center justify-center p-4 py-12 sm:p-6 lg:p-8">
-        <div className="relative w-full max-w-4xl overflow-hidden rounded-[2.5rem] bg-white/40 shadow-2xl backdrop-blur-3xl ring-1 ring-black/5 lg:grid lg:grid-cols-[1fr_1.1fr]">
+        <div className="relative w-full max-w-4xl overflow-hidden rounded-[2.5rem] bg-surface/90 shadow-2xl backdrop-blur-3xl ring-1 ring-primary/5 lg:grid lg:grid-cols-[1fr_1.1fr]">
           
           {/* Left Side: Form */}
           <section className="relative flex flex-col justify-center p-6 sm:p-8 lg:p-8">
@@ -65,7 +65,7 @@ const LoginPage = () => {
                     <input
                       type="email"
                       required
-                      className="w-full rounded-2xl border-none bg-white/60 px-6 py-3.5 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
+                      className="w-full rounded-2xl border-none bg-bg-secondary px-6 py-3.5 text-[15px] font-bold text-primary shadow-lg transition-all focus:ring-4 focus:ring-accent/10"
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -78,7 +78,7 @@ const LoginPage = () => {
                       <input
                         type={showPassword ? "text" : "password"}
                         required
-                        className="w-full rounded-2xl border-none bg-white/60 px-6 py-3.5 pr-14 text-[15px] font-bold text-primary shadow-xl backdrop-blur-xl transition-all focus:bg-white focus:ring-4 focus:ring-accent/5"
+                        className="w-full rounded-2xl border-none bg-bg-secondary px-6 py-3.5 pr-14 text-[15px] font-bold text-primary shadow-lg transition-all focus:ring-4 focus:ring-accent/10"
                         placeholder="Enter your password"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -114,7 +114,7 @@ const LoginPage = () => {
           </section>
 
           {/* Right Side: Visual Content */}
-          <section className="relative hidden flex-col justify-center bg-white/30 p-8 backdrop-blur-2xl lg:flex lg:p-10">
+          <section className="relative hidden flex-col justify-center bg-surface/40 p-8 backdrop-blur-2xl lg:flex lg:p-10">
             <div className="absolute inset-x-20 top-0 h-48 opacity-20 blur-[100px]" style={{ backgroundColor: themeColor }} />
             
             <div className="relative space-y-6">
