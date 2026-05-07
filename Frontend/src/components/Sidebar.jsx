@@ -1,8 +1,8 @@
 import { useEffect, useState, memo, useMemo } from "react";
-import { useChatStore } from "../store/useChatStore";
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
-import { useFriendStore } from "../store/useFriendStore";
+import { useChat } from "../context/ChatContext";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import { useFriend } from "../context/FriendContext";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import {
   MessageSquare, Settings, LogOut, Plus,
@@ -116,14 +116,14 @@ const Sidebar = () => {
   const {
     getUsers, users = [], selectedUser, setSelectedUser, isUsersLoading,
     getGroups, groups = [], selectedGroup, setSelectedGroup, isGroupsLoading,
-  } = useChatStore();
+  } = useChat();
 
   const {
     getAllUsers, allUsers = [], getFriendRequests, friendRequests = []
-  } = useFriendStore();
+  } = useFriend();
 
-  const { authUser, logout, onlineUsers = [] } = useAuthStore();
-  const { themeColor, isLightMode, toggleThemeMode } = useThemeStore();
+  const { authUser, logout, onlineUsers = [] } = useAuth();
+  const { themeColor, isLightMode, toggleThemeMode } = useTheme();
 
   const [activeTab, setActiveTab] = useState("chats");
   const [searchQuery, setSearchQuery] = useState("");

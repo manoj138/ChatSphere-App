@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { X, Search, Image as ImageIcon, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { useChatStore } from "../store/useChatStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useChat } from "../context/ChatContext";
+import { useTheme } from "../context/ThemeContext";
 import { optimizeImageFile } from "../lib/image";
 
 const CreateGroupModal = ({ onClose }) => {
-  const { createGroup } = useChatStore();
-  const { users = [] } = useChatStore();
-  const { themeColor } = useThemeStore();
+  const { createGroup, users = [] } = useChat();
+  const { themeColor } = useTheme();
 
   const [name, setName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Search, X, Send, Users } from "lucide-react";
 
-import { useChatStore } from "../store/useChatStore";
+import { useChat } from "../context/ChatContext";
 
 const ForwardModal = ({ message, onClose }) => {
-  const { users = [], sendMessage } = useChatStore();
+  const { users = [], sendMessage } = useChat();
   const [searchQuery, setSearchQuery] = useState("");
   const [sendingTo, setSendingTo] = useState(null);
 

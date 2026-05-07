@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
-import { useAuthStore } from "./store/useAuthStore";
-import { useChatStore } from "./store/useChatStore";
-import { useThemeStore } from "./store/useThemeStore";
+import { useAuth } from "./context/AuthContext";
+import { useChat } from "./context/ChatContext";
+import { useTheme } from "./context/ThemeContext";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
@@ -14,9 +14,9 @@ import SettingsPage from "./pages/SettingsPage";
 import LoadingScreen from "./components/LoadingScreen";
 
 function App() {
-  const { authUser, checkAuth, isCheckingAuth, socket } = useAuthStore();
-  const { subscribeToEvents, unsubscribeFromEvents } = useChatStore();
-  const { themeColor, initTheme } = useThemeStore();
+  const { authUser, checkAuth, isCheckingAuth, socket } = useAuth();
+  const { subscribeToEvents, unsubscribeFromEvents, selectedUser } = useChat();
+  const { themeColor, initTheme } = useTheme();
   const { pathname } = useLocation();
   const isHomeRoute = pathname === "/";
 
@@ -46,8 +46,8 @@ function App() {
             const senderId = payload.data?.senderId;
 
             // Don't show toast if we are already chatting with this person
-            const currentSelectedId = useChatStore.getState().selectedUser?._id;
-            if (senderId && currentSelectedId === senderId) return;
+
+            if (senderId && selectedUser?._id === senderId) return;
 
             toast(
               () => (
@@ -68,7 +68,7 @@ function App() {
     }
 
     return () => unsubscribeFromEvents();
-  }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents]);
+  }, [authUser, socket, subscribeToEvents, unsubscribeFromEvents, selectedUser]);
 
   if (isCheckingAuth && !authUser) {
     return <LoadingScreen />;

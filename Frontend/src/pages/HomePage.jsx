@@ -1,10 +1,10 @@
-import { useChatStore } from "../store/useChatStore";
+import { useChat } from "../context/ChatContext";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 
 const HomePage = () => {
-  const { selectedUser, selectedGroup } = useChatStore();
+  const { selectedUser, selectedGroup } = useChat();
 
   return (
     <div className="app-shell flex h-[100dvh] w-full overflow-hidden bg-primary/50 transition-colors duration-700">

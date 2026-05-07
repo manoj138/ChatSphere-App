@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { LogOut, Trash2 } from "lucide-react";
 
-import { useThemeStore } from "../store/useThemeStore";
+import { useTheme } from "../context/ThemeContext";
 
 const ConfirmationModal = ({ title, description, onConfirm, onCancel, type = "danger" }) => {
-  const { themeColor } = useThemeStore();
+  const { themeColor } = useTheme();
   const isLogout = title.toLowerCase().includes("logout") || title.toLowerCase().includes("disconnect");
 
   useEffect(() => {

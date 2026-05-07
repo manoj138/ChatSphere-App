@@ -1,9 +1,9 @@
 import { X, Download, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useThemeStore } from "../store/useThemeStore";
+import { useTheme } from "../context/ThemeContext";
 
 const ImageModal = ({ src, onClose }) => {
-  const { themeColor } = useThemeStore();
+  const { themeColor } = useTheme();
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
 

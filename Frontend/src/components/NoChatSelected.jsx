@@ -1,11 +1,11 @@
-import { useThemeStore } from "../store/useThemeStore";
-import { useAuthStore } from "../store/useAuthStore";
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { ShieldCheck, Globe, UserPlus, MessageSquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const NoChatSelected = () => {
-  const { themeColor } = useThemeStore();
-  const { authUser, onlineUsers = [] } = useAuthStore();
+  const { themeColor } = useTheme();
+  const { authUser, onlineUsers = [] } = useAuth();
 
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-transparent p-6 font-sans transition-all duration-500 sm:p-12">

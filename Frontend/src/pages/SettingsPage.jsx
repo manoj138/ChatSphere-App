@@ -16,8 +16,8 @@ import {
 
 import ConfirmationModal from "../components/ConfirmationModal";
 import { optimizeImageFile } from "../lib/image";
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const NEON_PRESETS = [
   { name: "MINT", color: "#bef264" },
@@ -31,11 +31,11 @@ const NEON_PRESETS = [
 const cardClass = "glass-panel rounded-[2rem]";
 
 const SettingsPage = () => {
-  const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile, logout } = useAuth();
   const { 
     themeColor, setThemeColor, isLightMode, toggleThemeMode,
     soundEnabled, toggleSound, notificationsEnabled, toggleNotifications 
-  } = useThemeStore();
+  } = useTheme();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const fileInputRef = useRef(null);
 

@@ -1,9 +1,9 @@
 import { useRef, useState } from "react"; 
-import { useChatStore } from "../store/useChatStore";
+import { useChat } from "../context/ChatContext";
 import { Image, Send, X, Smile } from "lucide-react";
 import toast from "react-hot-toast";
 import EmojiPicker from 'emoji-picker-react';
-import { useThemeStore } from "../store/useThemeStore";
+import { useTheme } from "../context/ThemeContext";
 import { optimizeImageFile } from "../lib/image";
 
 const MessageInput = () => {
@@ -13,8 +13,8 @@ const MessageInput = () => {
   const [isSending, setIsSending] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const fileInputRef = useRef(null);
-  const { sendMessage, sendTypingStatus } = useChatStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { sendMessage, sendTypingStatus } = useChat();
+  const { themeColor, isLightMode } = useTheme();
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];

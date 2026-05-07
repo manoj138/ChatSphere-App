@@ -19,13 +19,13 @@ import {
 
 import ImageModal from "../components/ImageModal";
 
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { optimizeImageFile } from "../lib/image";
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
-  const { themeColor } = useThemeStore();
+  const { authUser, isUpdatingProfile, updateProfile } = useAuth();
+  const { themeColor } = useTheme();
   const [selectedImg, setSelectedImg] = useState(null);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingUsername, setIsEditingUsername] = useState(false);

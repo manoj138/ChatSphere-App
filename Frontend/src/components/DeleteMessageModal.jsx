@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Trash2, User, Users } from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuth } from "../context/AuthContext";
 
 const DeleteMessageModal = ({ message, onConfirm, onCancel }) => {
-  const { authUser } = useAuthStore();
+  const { authUser } = useAuth();
   const isMine = (message?.senderId?._id || message?.senderId) === authUser?._id;
 
   useEffect(() => {

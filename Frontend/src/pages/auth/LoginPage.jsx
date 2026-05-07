@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, MessageSquare } from "lucide-react";
 
-import { useAuthStore } from "../../store/useAuthStore";
-import { useThemeStore } from "../../store/useThemeStore";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,8 +12,8 @@ const LoginPage = () => {
     password: "",
   });
 
-  const { login, isLoggingIn } = useAuthStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { login, isLoggingIn } = useAuth();
+  const { themeColor, isLightMode } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

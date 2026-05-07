@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { LogOut, MessageSquare, Settings, Sparkles } from "lucide-react";
 
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const Navbar = () => {
-  const { logout, authUser } = useAuthStore();
-  const { themeColor } = useThemeStore();
+  const { logout, authUser } = useAuth();
+  const { themeColor } = useTheme();
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-black/5 bg-secondary/70 backdrop-blur-3xl transition-all duration-500">

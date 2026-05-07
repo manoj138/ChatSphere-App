@@ -15,15 +15,15 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { useChatStore } from "../store/useChatStore";
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useChat } from "../context/ChatContext";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { optimizeImageFile } from "../lib/image";
 
 const ChatInfoModal = ({ onClose }) => {
-  const { selectedUser, selectedGroup, updateGroup, deleteGroup, kickMember } = useChatStore();
-  const { authUser, onlineUsers } = useAuthStore();
-  const { themeColor } = useThemeStore();
+  const { selectedUser, selectedGroup, updateGroup, deleteGroup, kickMember } = useChat();
+  const { authUser, onlineUsers } = useAuth();
+  const { themeColor } = useTheme();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(selectedGroup?.name || "");

@@ -10,9 +10,9 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { useChatStore } from "../store/useChatStore";
-import { useAuthStore } from "../store/useAuthStore";
-import { useThemeStore } from "../store/useThemeStore";
+import { useChat } from "../context/ChatContext";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import MessageInput from "./MessageInput";
 import ForwardModal from "./ForwardModal";
 import ChatInfoModal from "./ChatInfoModal";
@@ -207,10 +207,10 @@ const ChatContainer = () => {
     typingStatus,
     deleteMessage,
     reactToMessage,
-  } = useChatStore();
+  } = useChat();
 
-  const { authUser } = useAuthStore();
-  const { themeColor, isLightMode } = useThemeStore();
+  const { authUser, socket, onlineUsers } = useAuth();
+  const { themeColor, isLightMode } = useTheme();
   const scrollRef = useRef(null);
   const [activeMessageMenu, setActiveMessageMenu] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -279,7 +279,7 @@ const ChatContainer = () => {
           <div className="animate-in slide-in-from-left-6 flex items-center gap-4 duration-500 lg:gap-6">
             <button
               onClick={() => {
-                const { setSelectedUser, setSelectedGroup } = useChatStore.getState();
+
                 setSelectedUser(null);
                 setSelectedGroup(null);
               }}
@@ -314,7 +314,7 @@ const ChatContainer = () => {
                       </div>
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent">Transmitting...</span>
                     </div>
-                  ) : selectedUser && useAuthStore.getState().onlineUsers.includes(selectedUser._id) ? (
+                  ) : selectedUser && onlineUsers.includes(selectedUser._id) ? (
                     <div className="flex items-center gap-2">
                       <div className="size-2 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)] animate-pulse" />
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-green-500">Live Connection</span>

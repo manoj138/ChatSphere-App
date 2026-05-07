@@ -1,8 +1,8 @@
 import { MessageSquare } from "lucide-react";
-import { useThemeStore } from "../store/useThemeStore";
+import { useTheme } from "../context/ThemeContext";
 
 const LoadingScreen = () => {
-  const { themeColor } = useThemeStore();
+  const { themeColor } = useTheme();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-primary/50 backdrop-blur-xl transition-colors duration-700">
