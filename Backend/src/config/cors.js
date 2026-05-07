@@ -16,6 +16,7 @@ const envAllowedOrigins = [
 const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
 const allowedOriginPatterns = [
     /^https:\/\/chat-sphere.*\.vercel\.app$/,
+    /^https:\/\/chatsphere.*\.onrender\.com$/,
 ];
 
 const isAllowedOrigin = (origin) => (
