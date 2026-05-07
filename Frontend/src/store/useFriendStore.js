@@ -53,8 +53,9 @@ export const useFriendStore = create((set, get) => ({
             
             // If accepted, also refresh the Chat sidebar users list
             if (status === "accepted") {
-                const { useChatStore } = await import("./useChatStore");
-                useChatStore.getState().getUsers(true);
+                const mod = await import("./useChatStore");
+                const chatStore = mod.useChatStore || mod.default?.useChatStore;
+                if (chatStore) chatStore.getState().getUsers(true);
             }
         } catch (error) {
             toast.error("Failed to respond to request");

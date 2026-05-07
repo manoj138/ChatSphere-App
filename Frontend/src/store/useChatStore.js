@@ -119,13 +119,14 @@ export const useChatStore = create((set, get) => ({
 
   sendTypingStatus: (isTyping) => {
     const { selectedUser } = get();
-    const socket = useAuthStore.getState().socket;
+    const authStore = useAuthStore.getState();
+    const socket = authStore.socket;
     if (!socket || !selectedUser) return;
 
     if (isTyping) {
-        socket.emit("typing", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id, typing: true });
+        socket.emit("typing", { receiverId: selectedUser._id, senderId: authStore.authUser._id, typing: true });
     } else {
-        socket.emit("stopTyping", { receiverId: selectedUser._id, senderId: useAuthStore.getState().authUser._id });
+        socket.emit("stopTyping", { receiverId: selectedUser._id, senderId: authStore.authUser._id });
     }
   },
 
@@ -164,7 +165,8 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToEvents: () => {
-    const socket = useAuthStore.getState().socket;
+    const authStore = useAuthStore.getState();
+    const socket = authStore.socket;
     if (!socket) return;
 
     socket.off("newMessage");
@@ -186,7 +188,8 @@ export const useChatStore = create((set, get) => ({
         // Silent refresh on receiving message
         get().getUsers(true);
         
-        const myId = useAuthStore.getState().authUser?._id;
+        const authStore = useAuthStore.getState();
+        const myId = authStore.authUser?._id;
         if (newMessage.senderId !== myId) {
             if (useThemeStore.getState().soundEnabled) {
                 const audio = new Audio("/recieve-tone.mp3");
@@ -198,7 +201,8 @@ export const useChatStore = create((set, get) => ({
     socket.on("newFriendRequest", () => {
         // Silently refresh friend requests if store exists
         import("./useFriendStore").then((mod) => {
-            mod.useFriendStore.getState().getFriendRequests();
+            const friendStore = mod.useFriendStore || mod.default?.useFriendStore;
+            if (friendStore) friendStore.getState().getFriendRequests();
         });
         if (useThemeStore.getState().soundEnabled) {
             const audio = new Audio("/recieve-tone.mp3");
@@ -223,7 +227,8 @@ export const useChatStore = create((set, get) => ({
         }
         get().getGroups(true);
 
-        const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
+        const authStore = useAuthStore.getState();
+        const isMyMessage = newMessage.senderId?._id === authStore.authUser?._id || newMessage.senderId === authStore.authUser?._id;
         if (!isMyMessage) {
             if (useThemeStore.getState().soundEnabled) {
                 const audio = new Audio("/recieve-tone.mp3");
@@ -271,7 +276,8 @@ export const useChatStore = create((set, get) => ({
   },
 
   unsubscribeFromEvents: () => {
-    const socket = useAuthStore.getState().socket;
+    const authStore = useAuthStore.getState();
+    const socket = authStore.socket;
     if (!socket) return;
     socket.off("newMessage");
     socket.off("newGroupMessage");
