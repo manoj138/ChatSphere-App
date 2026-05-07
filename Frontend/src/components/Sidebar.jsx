@@ -131,10 +131,12 @@ const Sidebar = () => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    getUsers();
+    if (authUser) {
+      getUsers();
     getGroups();
     getFriendRequests();
-  }, [getUsers, getGroups, getFriendRequests]);
+    }
+  }, [getUsers, getGroups, getFriendRequests, authUser]);
 
   useEffect(() => {
     if (activeTab === "discover") getAllUsers();

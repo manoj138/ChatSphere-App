@@ -112,6 +112,22 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [checkAuth]);
 
+  // Global Interceptor for 401 handling
+  useEffect(() => {
+    const interceptor = axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          setAuthUser(null);
+          disconnectSocket();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axiosInstance.interceptors.response.eject(interceptor);
+  }, [disconnectSocket]);
+
   return (
     <AuthContext.Provider
       value={{

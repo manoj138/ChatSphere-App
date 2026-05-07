@@ -29,7 +29,8 @@ function App() {
   }, [themeColor]);
 
   useEffect(() => {
-    checkAuth();
+    // redundant checkAuth removed
+
   }, [checkAuth]);
 
   useEffect(() => {

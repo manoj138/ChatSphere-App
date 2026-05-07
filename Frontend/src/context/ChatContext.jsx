@@ -30,6 +30,7 @@ export const ChatProvider = ({ children }) => {
   }, []);
 
   const getUsers = useCallback(async (silent = false) => {
+    if (!authUser) return;
     if (!silent) setIsUsersLoading(true);
     try {
       const res = await axiosInstance.get("/messages/users-sidebar");
@@ -42,6 +43,7 @@ export const ChatProvider = ({ children }) => {
   }, []);
 
   const getGroups = useCallback(async (silent = false) => {
+    if (!authUser) return;
     if (!silent) setIsGroupsLoading(true);
     try {
       const res = await axiosInstance.get("/groups/my-groups");
@@ -66,6 +68,7 @@ export const ChatProvider = ({ children }) => {
   }, []);
 
   const getMessages = useCallback(async (userId) => {
+    if (!authUser) return;
     setIsMessagesLoading(true);
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
@@ -78,6 +81,7 @@ export const ChatProvider = ({ children }) => {
   }, []);
 
   const getGroupMessages = useCallback(async (groupId) => {
+    if (!authUser) return;
     setIsMessagesLoading(true);
     try {
       const res = await axiosInstance.get(`/messages/group/${groupId}`);

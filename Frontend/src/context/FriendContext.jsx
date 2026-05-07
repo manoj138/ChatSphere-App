@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from "react";
 import { axiosInstance } from "../services/api";
 import toast from "react-hot-toast";
 import { useChat } from "./ChatContext";
+import { useAuth } from "./AuthContext";
 
 const FriendContext = createContext();
 
@@ -12,8 +13,10 @@ export const FriendProvider = ({ children }) => {
     const [isRequestsLoading, setIsRequestsLoading] = useState(false);
 
     const { getUsers } = useChat();
+    const { authUser } = useAuth();
 
     const getAllUsers = useCallback(async () => {
+        if (!authUser) return;
         setIsUsersLoading(true);
         try {
             const res = await axiosInstance.get("/friends/all-users");
@@ -26,6 +29,7 @@ export const FriendProvider = ({ children }) => {
     }, []);
 
     const getFriendRequests = useCallback(async () => {
+        if (!authUser) return;
         setIsRequestsLoading(true);
         try {
             const res = await axiosInstance.get("/friends/pending");
