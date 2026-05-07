@@ -159,7 +159,7 @@ export const useChatStore = create((set, get) => ({
           m._id === messageId ? { ...m, reactions: res.data.data.reactions } : m
         ),
       }));
-    } catch (error) {
+    } catch {
       console.log("Error reacting to message");
     }
   },
@@ -193,7 +193,7 @@ export const useChatStore = create((set, get) => ({
         if (newMessage.senderId !== myId) {
             if (useThemeStore.getState().soundEnabled) {
                 const audio = new Audio("/recieve-tone.mp3");
-                audio.play().catch(e => console.log("Receive sound failed"));
+                audio.play().catch(() => console.log("Receive sound failed"));
             }
         }
     });
@@ -206,7 +206,7 @@ export const useChatStore = create((set, get) => ({
         });
         if (useThemeStore.getState().soundEnabled) {
             const audio = new Audio("/recieve-tone.mp3");
-            audio.play().catch(e => console.log("Sound blocked"));
+            audio.play().catch(() => console.log("Sound blocked"));
         }
     });
 
@@ -232,7 +232,7 @@ export const useChatStore = create((set, get) => ({
         if (!isMyMessage) {
             if (useThemeStore.getState().soundEnabled) {
                 const audio = new Audio("/recieve-tone.mp3");
-                audio.play().catch(e => console.log("Receive sound failed"));
+                audio.play().catch(() => console.log("Receive sound failed"));
             }
         }
     });
@@ -293,7 +293,7 @@ export const useChatStore = create((set, get) => ({
   markMessagesAsSeen: async (userId) => {
     try {
       await axiosInstance.put(`/messages/seen/${userId}`);
-    } catch (error) {
+    } catch {
       console.log("Error marking messages as seen");
     }
   },

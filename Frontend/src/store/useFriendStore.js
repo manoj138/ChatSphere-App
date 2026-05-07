@@ -57,7 +57,7 @@ export const useFriendStore = create((set, get) => ({
                 const chatStore = mod.useChatStore || mod.default?.useChatStore;
                 if (chatStore) chatStore.getState().getUsers(true);
             }
-        } catch (error) {
+        } catch {
             toast.error("Failed to respond to request");
         }
     },

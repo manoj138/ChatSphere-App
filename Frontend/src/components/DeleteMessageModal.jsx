@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 import { Trash2, User, Users } from "lucide-react";
-import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
 
 const DeleteMessageModal = ({ message, onConfirm, onCancel }) => {
-  const { themeColor } = useThemeStore();
   const { authUser } = useAuthStore();
   const isMine = (message?.senderId?._id || message?.senderId) === authUser?._id;
 

@@ -6,7 +6,7 @@ import { useFriendStore } from "../store/useFriendStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import {
   MessageSquare, Settings, LogOut, Plus,
-  Search, CheckCheck, Users, UserPlus, Check, X, Sun, Moon
+  Search, CheckCheck, Users, UserPlus, Sun, Moon
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CreateGroupModal from "./CreateGroupModal";
@@ -20,9 +20,7 @@ const SidebarItem = memo(({
   themeColor, 
   isLightMode,
   setSelectedUser, 
-  setSelectedGroup, 
-  sendFriendRequest, 
-  respondToRequest 
+  setSelectedGroup
 }) => {
   const getAvatarSrc = () => {
     let photo;
@@ -121,7 +119,7 @@ const Sidebar = () => {
   } = useChatStore();
 
   const {
-    getAllUsers, allUsers = [], getFriendRequests, sendFriendRequest, friendRequests = [], respondToRequest
+    getAllUsers, allUsers = [], getFriendRequests, friendRequests = []
   } = useFriendStore();
 
   const { authUser, logout, onlineUsers = [] } = useAuthStore();
@@ -348,8 +346,6 @@ const Sidebar = () => {
                   isLightMode={isLightMode}
                   setSelectedUser={setSelectedUser}
                   setSelectedGroup={setSelectedGroup}
-                  sendFriendRequest={sendFriendRequest}
-                  respondToRequest={respondToRequest}
                 />
               ))}
             </div>

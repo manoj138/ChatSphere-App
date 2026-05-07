@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   Bell,
   Camera,
-  Check,
   LogOut,
   Moon,
   Palette,

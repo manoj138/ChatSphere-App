@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { Loader } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 
 import { useAuthStore } from "./store/useAuthStore";

@@ -8,7 +8,6 @@ import {
   Edit3,
   Grid,
   Loader2,
-  Shield,
   Star,
   User,
   X,
@@ -35,10 +34,12 @@ const ProfilePage = () => {
   const [showAvatarGallery, setShowAvatarGallery] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- Keep local edit fields synced when authUser is loaded or refreshed. */
   useEffect(() => {
     if (authUser?.bio) setBio(authUser.bio);
     if (authUser?.username) setEditedUsername(authUser.username);
   }, [authUser]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const boyAvatars = ["/boy_1.png", "/boy_2.png", "/boy_3.png", "/boy_4.png", "/boy_5.png"];
   const girlAvatars = ["/girl_1.png", "/girl_2.png", "/girl_3.png", "/girl_4.png"];
@@ -63,7 +64,7 @@ const ProfilePage = () => {
       await updateProfile({ profilePicture: path });
       setShowAvatarGallery(false);
       toast.success("Avatar updated successfully!");
-    } catch (err) {
+    } catch {
       toast.error("Failed to set avatar.");
     }
   };

@@ -4,7 +4,7 @@ import { ShieldCheck, Globe, UserPlus, MessageSquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const NoChatSelected = () => {
-  const { themeColor, isLightMode } = useThemeStore();
+  const { themeColor } = useThemeStore();
   const { authUser, onlineUsers = [] } = useAuthStore();
 
   return (

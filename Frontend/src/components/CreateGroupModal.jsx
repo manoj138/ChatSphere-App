@@ -61,7 +61,7 @@ const CreateGroupModal = ({ onClose }) => {
         groupImage,
       });
       onClose();
-    } catch (error) {
+    } catch {
       console.log("Failed to create group");
     }
   };

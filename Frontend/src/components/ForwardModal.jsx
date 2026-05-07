@@ -24,7 +24,7 @@ const ForwardModal = ({ message, onClose }) => {
         user._id
       );
       onClose();
-    } catch (error) {
+    } catch {
       console.log("Forward failed");
     } finally {
       setSendingTo(null);

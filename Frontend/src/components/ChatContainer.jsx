@@ -6,7 +6,6 @@ import {
   Info,
   MessageSquare,
   Search,
-  ShieldCheck,
   SmilePlus,
   Trash2,
 } from "lucide-react";
@@ -25,8 +24,6 @@ const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 const MessageItem = memo(({
   message,
   authUser,
-  isLightMode,
-  themeColor,
   selectedGroup,
   activeMessageMenu,
   setActiveMessageMenu,
@@ -373,8 +370,6 @@ const ChatContainer = () => {
               key={message._id}
               message={message}
               authUser={authUser}
-              isLightMode={isLightMode}
-              themeColor={themeColor}
               selectedGroup={selectedGroup}
               activeMessageMenu={activeMessageMenu}
               setActiveMessageMenu={setActiveMessageMenu}
