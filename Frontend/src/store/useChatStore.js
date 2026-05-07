@@ -2,6 +2,7 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../services/api";
 import { useAuthStore } from "./useAuthStore";
+import { useThemeStore } from "./useThemeStore";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -101,7 +102,7 @@ export const useChatStore = create((set, get) => ({
       const newMessage = res.data.data;
       get().appendMessageIfMissing(newMessage);
       
-      if (import("./useThemeStore").then(mod => mod.useThemeStore.getState().soundEnabled)) {
+      if (useThemeStore.getState().soundEnabled) {
         const sendAudio = new Audio("/send-tone.mp3");
         sendAudio.volume = 0.5;
         sendAudio.play().catch(e => console.log("Send sound blocked:", e));
@@ -187,12 +188,10 @@ export const useChatStore = create((set, get) => ({
         
         const myId = useAuthStore.getState().authUser?._id;
         if (newMessage.senderId !== myId) {
-            import("./useThemeStore").then(mod => {
-                if (mod.useThemeStore.getState().soundEnabled) {
-                    const audio = new Audio("/recieve-tone.mp3");
-                    audio.play().catch(e => console.log("Receive sound failed"));
-                }
-            });
+            if (useThemeStore.getState().soundEnabled) {
+                const audio = new Audio("/recieve-tone.mp3");
+                audio.play().catch(e => console.log("Receive sound failed"));
+            }
         }
     });
 
@@ -201,12 +200,10 @@ export const useChatStore = create((set, get) => ({
         import("./useFriendStore").then((mod) => {
             mod.useFriendStore.getState().getFriendRequests();
         });
-        import("./useThemeStore").then(mod => {
-            if (mod.useThemeStore.getState().soundEnabled) {
-                const audio = new Audio("/recieve-tone.mp3");
-                audio.play().catch(e => console.log("Sound blocked"));
-            }
-        });
+        if (useThemeStore.getState().soundEnabled) {
+            const audio = new Audio("/recieve-tone.mp3");
+            audio.play().catch(e => console.log("Sound blocked"));
+        }
     });
 
     socket.on("friendRequestAccepted", () => {
@@ -228,12 +225,10 @@ export const useChatStore = create((set, get) => ({
 
         const isMyMessage = newMessage.senderId?._id === useAuthStore.getState().authUser?._id || newMessage.senderId === useAuthStore.getState().authUser?._id;
         if (!isMyMessage) {
-            import("./useThemeStore").then(mod => {
-                if (mod.useThemeStore.getState().soundEnabled) {
-                    const audio = new Audio("/recieve-tone.mp3");
-                    audio.play().catch(e => console.log("Receive sound failed"));
-                }
-            });
+            if (useThemeStore.getState().soundEnabled) {
+                const audio = new Audio("/recieve-tone.mp3");
+                audio.play().catch(e => console.log("Receive sound failed"));
+            }
         }
     });
 
