@@ -1,6 +1,7 @@
 const defaultAllowedOrigins = [
     "http://localhost:5173",
     "https://chat-sphere-app-one.vercel.app",
+    "https://chatsphere-app-omega.onrender.com",
 ];
 
 const envAllowedOrigins = [
