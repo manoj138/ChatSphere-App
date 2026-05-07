@@ -30,7 +30,7 @@ const LoginPage = () => {
         onClick={() => navigate("/")}
         className="fixed left-4 top-5 z-20 flex size-10 items-center justify-center rounded-xl bg-white text-gray-400 shadow-lg transition-all hover:scale-110 hover:text-accent active:scale-90"
       >
-        <ArrowLeft size={24} />
+        <ArrowLeft size={24} /> 
       </button>
 
       <div className="flex min-h-screen items-center justify-center p-4 py-12 sm:p-6 lg:p-8">
