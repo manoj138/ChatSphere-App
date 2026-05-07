@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
-const { generateToken } = require("../lib/utils");
+const { generateToken, getAuthCookieOptions } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { formatMongoError, handle422, handle500 } = require("../helper/errorHandler");
 const { handle201, handle200 } = require("../helper/successHandler");
 const cloudinary = require("../lib/cloudinary");
@@ -56,7 +57,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.cookie("jwt", "", { maxAge: 0 })
+        res.cookie("jwt", "", { ...getAuthCookieOptions(), maxAge: 0 })
         handle200(res, null, "User logged out successfully")
     } catch (error) {
         formatMongoError(res, error)
@@ -66,8 +67,27 @@ const logout = async (req, res) => {
 
 const checkAuth = async (req, res) => {
     try {
-        handle200(res, req.user)
+        const token = req.cookies.jwt;
+
+        if (!token) {
+            return handle200(res, null, "No authenticated user");
+        }
+
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decodedToken.userId).select("-password");
+
+        if (!user) {
+            res.cookie("jwt", "", { ...getAuthCookieOptions(), maxAge: 0 });
+            return handle200(res, null, "No authenticated user");
+        }
+
+        handle200(res, user)
     } catch (error) {
+        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+            res.cookie("jwt", "", { ...getAuthCookieOptions(), maxAge: 0 });
+            return handle200(res, null, "No authenticated user");
+        }
+
         console.log("Error in checkAuth controller: ", error);
         formatMongoError(res, error);
     }

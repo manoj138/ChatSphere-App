@@ -6,7 +6,7 @@ router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.post("/logout", authController.logout);
 
-router.get("/check", protectRoute, authController.checkAuth);
+router.get("/check", authController.checkAuth);
 
 router.put("/update-profile", protectRoute, authController.updateProfile);
 router.put("/update-fcm-token", protectRoute, authController.updateFCMToken);

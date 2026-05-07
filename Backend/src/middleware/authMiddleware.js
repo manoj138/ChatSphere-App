@@ -26,6 +26,10 @@ const protectRoute = async (req,res,next) =>{
         next()
     } catch (error) {
         console.log("Error in protectRoute middleware: ", error.message);
+        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+            return handle401(res, "Session expired. Please login again");
+        }
+
         handle500(res, error)
     }
 }
