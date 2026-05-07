@@ -1,17 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 const getAuthCookieOptions = () => {
-    const isProduction = process.env.NODE_ENV === "production";
-
+    // Force cross-site cookies for production (Render/Vercel)
     return {
         httpOnly: true,
-        sameSite: isProduction ? "none" : "lax",
-        secure: isProduction,
+        sameSite: "none",
+        secure: true,
     };
 };
 
 const generateToken = (userId, res) => { 
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { // 'userId' match kara
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
         expiresIn: "15d"
     });
 
