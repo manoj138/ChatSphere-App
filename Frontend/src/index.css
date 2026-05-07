@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --color-accent: var(--accent-color);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-surface: var(--bg-surface);
+  --color-border-primary: var(--border-primary);
+}
+
+/* 
+  Manual Opacity Utilities for Primary Background & Borders 
+  (Since 'primary' in Tailwind theme is mapped to 'text-primary' for text opacity support)
+*/
+.bg-primary\/50 { background-color: color-mix(in srgb, var(--bg-primary), transparent 50%); }
+.bg-primary\/10 { background-color: color-mix(in srgb, var(--bg-primary), transparent 90%); }
+.bg-secondary\/70 { background-color: color-mix(in srgb, var(--bg-secondary), transparent 30%); }
+.bg-secondary\/10 { background-color: color-mix(in srgb, var(--bg-secondary), transparent 90%); }
+.border-primary\/10 { border-color: color-mix(in srgb, var(--border-primary), transparent 90%); }
+.border-primary\/20 { border-color: color-mix(in srgb, var(--border-primary), transparent 80%); }
+
 :root {
   --accent-color: #bef264;
   --bg-primary: #020617;
