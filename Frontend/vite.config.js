@@ -5,4 +5,18 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      output: {
+        // Mothya libraries na veg-vegya chunks madhe vibhagnya sathi
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        },
+      },
+    },
+    // Garaj bhaslyas limit thodi vadhvli aahe
+    chunkSizeWarningLimit: 1000,
+  },
 })
