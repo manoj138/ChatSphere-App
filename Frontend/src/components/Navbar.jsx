@@ -40,7 +40,7 @@ const Navbar = () => {
               <>
                 <Link
                   to="/profile"
-                  className="group flex items-center gap-3 rounded-[1.25rem] bg-white px-4 py-2.5 shadow-xl shadow-black/[0.03] ring-1 ring-black/[0.02] transition-all hover:scale-105 active:scale-95"
+                  className="group flex items-center gap-3 rounded-[1.25rem] bg-bg-secondary px-4 py-2.5 shadow-xl shadow-black/[0.03] ring-1 ring-black/[0.02] transition-all hover:scale-105 active:scale-95"
                 >
                   <div className="size-8 overflow-hidden rounded-xl border-2 border-white shadow-inner">
                     <img src={authUser.profilePicture || "/boy_1.png"} className="h-full w-full object-cover" alt="" />
@@ -59,7 +59,7 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-2.5 shadow-xl ring-1 ring-black/5">
+              <div className="flex items-center gap-3 rounded-2xl bg-bg-secondary px-5 py-2.5 shadow-xl ring-1 ring-black/5">
                 <Sparkles size={16} className="animate-pulse" style={{ color: themeColor }} />
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">Elevate Now</span>
               </div>

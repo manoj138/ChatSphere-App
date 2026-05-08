@@ -22,7 +22,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="app-shell min-h-screen text-primary selection:bg-accent selection:text-black">
+    <div className="app-shell relative min-h-screen overflow-hidden text-primary selection:bg-accent selection:text-black">
       <div className="pointer-events-none absolute -left-24 top-1/4 size-96 opacity-20 blur-[150px]" style={{ backgroundColor: themeColor }} />
       <div className="pointer-events-none absolute -right-24 bottom-1/4 size-96 opacity-10 blur-[150px] bg-emerald-400" />
 
@@ -118,7 +118,7 @@ const LoginPage = () => {
             <div className="absolute inset-x-20 top-0 h-48 opacity-20 blur-[100px]" style={{ backgroundColor: themeColor }} />
             
             <div className="relative space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-[1.25rem] bg-white px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-primary shadow-xl">
+              <div className="inline-flex items-center gap-2 rounded-[1.25rem] bg-bg-secondary px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-primary shadow-xl">
                 <div className="size-2 rounded-full bg-accent animate-pulse" />
                 Secure Protocol Active
               </div>
@@ -133,15 +133,15 @@ const LoginPage = () => {
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                <div className="rounded-3xl bg-white p-5 text-center shadow-xl transition-transform hover:scale-105">
+                <div className="rounded-3xl bg-bg-secondary p-5 text-center shadow-xl transition-transform hover:scale-105">
                   <p className="text-[10px] font-black uppercase tracking-widest text-accent">Sync</p>
                   <p className="mt-1 text-xs font-black text-primary">Realtime</p>
                 </div>
-                <div className="rounded-3xl bg-white p-5 text-center shadow-xl transition-transform hover:scale-105">
+                <div className="rounded-3xl bg-bg-secondary p-5 text-center shadow-xl transition-transform hover:scale-105">
                   <p className="text-[10px] font-black uppercase tracking-widest text-accent">UI</p>
                   <p className="mt-1 text-xs font-black text-primary">Premium</p>
                 </div>
-                <div className="rounded-3xl bg-white p-5 text-center shadow-xl transition-transform hover:scale-105">
+                <div className="rounded-3xl bg-bg-secondary p-5 text-center shadow-xl transition-transform hover:scale-105">
                   <p className="text-[10px] font-black uppercase tracking-widest text-accent">Privacy</p>
                   <p className="mt-1 text-xs font-black text-primary">Encrypted</p>
                 </div>
