@@ -1,11 +1,13 @@
 const jwt = require("jsonwebtoken");
 
 const getAuthCookieOptions = () => {
-    const isProd = process.env.NODE_ENV === "production";
+    // Better production detection: check NODE_ENV or if we are not on localhost
+    const isProd = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+    
     return {
         httpOnly: true,
         sameSite: isProd ? "none" : "lax",
-        secure: isProd,
+        secure: isProd, // Must be true for sameSite: "none"
     };
 };
 
