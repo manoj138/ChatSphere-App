@@ -18,9 +18,9 @@ const signup = async (req, res) => {
             password
         });
 
-        generateToken(newUser._id, res);
+        const token = generateToken(newUser._id, res);
 
-        handle201(res, newUser, "User created successfully");
+        handle201(res, { user: newUser, token }, "User created successfully");
     } catch (error) {
         formatMongoError(res, error);
     }
@@ -46,9 +46,9 @@ const login = async (req, res) => {
             return handle422(res, { password: "invalid credentials" })
         }
 
-        generateToken(user._id, res);
+        const token = generateToken(user._id, res);
 
-        handle200(res, user, "User logged in successfully")
+        handle200(res, { user, token }, "User logged in successfully")
     } catch (error) {
         console.log("Error in login controller: ", error)
         formatMongoError(res, error);
@@ -67,27 +67,9 @@ const logout = async (req, res) => {
 
 const checkAuth = async (req, res) => {
     try {
-        const token = req.cookies.jwt;
-
-        if (!token) {
-            return handle200(res, null, "No authenticated user");
-        }
-
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decodedToken.userId).select("-password");
-
-        if (!user) {
-            res.cookie("jwt", "", { ...getAuthCookieOptions(), maxAge: 0 });
-            return handle200(res, null, "No authenticated user");
-        }
-
-        handle200(res, user)
+        // middleware already set req.user
+        handle200(res, req.user)
     } catch (error) {
-        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
-            res.cookie("jwt", "", { ...getAuthCookieOptions(), maxAge: 0 });
-            return handle200(res, null, "No authenticated user");
-        }
-
         console.log("Error in checkAuth controller: ", error);
         formatMongoError(res, error);
     }
