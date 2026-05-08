@@ -234,7 +234,7 @@ const Sidebar = () => {
 
       {/* 2. Content Area */}
       <div className="flex flex-1 flex-col bg-transparent">
-        <div className="sticky top-0 z-20 bg-white/60 px-5 pb-5 pt-5 backdrop-blur-3xl lg:hidden">
+        <div className={`sticky top-0 z-20 px-5 pb-5 pt-5 backdrop-blur-3xl lg:hidden transition-all duration-500 ${isLightMode ? "bg-white/60" : "bg-black/20"}`}>
           <div className="flex items-center justify-between gap-3 mb-2">
             <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight text-primary">
@@ -259,28 +259,28 @@ const Sidebar = () => {
           <div className="grid grid-cols-4 gap-2">
             <button
               onClick={() => setActiveTab("chats")}
-              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "chats" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "chats" ? (isLightMode ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "bg-white/10 text-accent shadow-xl ring-1 ring-white/10") : "text-gray-400 hover:text-primary"}`}
             >
               <MessageSquare size={18} fill={activeTab === "chats" ? "currentColor" : "none"} />
               <span className="mt-1.5 text-[8px] font-bold uppercase tracking-widest">Chats</span>
             </button>
             <button
               onClick={() => setActiveTab("groups")}
-              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "groups" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "groups" ? (isLightMode ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "bg-white/10 text-accent shadow-xl ring-1 ring-white/10") : "text-gray-400 hover:text-primary"}`}
             >
               <Users size={18} fill={activeTab === "groups" ? "currentColor" : "none"} />
               <span className="mt-1.5 text-[8px] font-bold uppercase tracking-widest">Groups</span>
             </button>
             <button
               onClick={() => setActiveTab("discover")}
-              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "discover" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
+              className={`group flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "discover" ? (isLightMode ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "bg-white/10 text-accent shadow-xl ring-1 ring-white/10") : "text-gray-400 hover:text-primary"}`}
             >
               <Search size={18} />
               <span className="mt-1.5 text-[8px] font-bold uppercase tracking-widest">Global</span>
             </button>
             <button
               onClick={() => setActiveTab("requests")}
-              className={`group relative flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "requests" ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "text-gray-400"}`}
+              className={`group relative flex flex-col items-center justify-center rounded-xl py-3 transition-all ${activeTab === "requests" ? (isLightMode ? "bg-white text-accent shadow-2xl ring-1 ring-black/5" : "bg-white/10 text-accent shadow-xl ring-1 ring-white/10") : "text-gray-400 hover:text-primary"}`}
             >
               <UserPlus size={18} />
               <span className="mt-1.5 text-[8px] font-bold uppercase tracking-widest">Requests</span>
@@ -353,7 +353,7 @@ const Sidebar = () => {
             </div>
           ) : (
             <div className="py-24 text-center px-8">
-              <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl bg-white shadow-xl">
+              <div className={`mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl ${isLightMode ? "bg-white" : "bg-white/5"} shadow-xl`}>
                 <MessageSquare size={32} className="text-accent opacity-20" />
               </div>
               <h3 className="text-lg font-bold text-primary">No items found</h3>
