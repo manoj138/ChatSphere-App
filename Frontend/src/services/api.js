@@ -11,3 +11,17 @@ export const axiosInstance = axios.create({
     baseURL: `${getBaseUrl()}/api`,
     withCredentials: true, 
 });
+
+// Add a request interceptor to add the JWT token to headers
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("chat-token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);

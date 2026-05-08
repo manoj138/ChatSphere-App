@@ -64,7 +64,10 @@ export const AuthProvider = ({ children }) => {
   const signup = useCallback(async (data, navigate) => {
     setIsSigningUp(true);
     try {
-      await axiosInstance.post("/auth/signup", data);
+      const res = await axiosInstance.post("/auth/signup", data);
+      const { token } = res.data.data;
+      if (token) localStorage.setItem("chat-token", token);
+      
       toast.success("Account created successfully. Please login.");
       navigate("/login");
     } catch (error) {
@@ -78,9 +81,13 @@ export const AuthProvider = ({ children }) => {
     setIsLoggingIn(true);
     try {
       const res = await axiosInstance.post("/auth/login", data);
-      setAuthUser(res.data.data);
+      const { user, token } = res.data.data;
+      
+      if (token) localStorage.setItem("chat-token", token);
+      setAuthUser(user);
+      
       toast.success("Logged in successfully");
-      connectSocket(res.data.data);
+      connectSocket(user);
     } catch (error) {
       toast.error(error.response?.data?.message || "Server connection failed");
     } finally {
@@ -90,6 +97,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     setAuthUser(null);
+    localStorage.removeItem("chat-token");
     try {
       await axiosInstance.post("/auth/logout");
       toast.success("Logged out successfully");
@@ -126,6 +134,7 @@ export const AuthProvider = ({ children }) => {
       (error) => {
         if (error.response?.status === 401) {
           setAuthUser(null);
+          localStorage.removeItem("chat-token");
           disconnectSocket();
         }
         return Promise.reject(error);
