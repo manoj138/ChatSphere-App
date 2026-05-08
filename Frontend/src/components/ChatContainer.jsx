@@ -85,7 +85,7 @@ const MessageItem = memo(({
           <div className="group relative flex items-center gap-3">
             <button
               onClick={() => setMessageToDelete(message._id)}
-              className={`${isMine ? "order-last" : "order-first"} rounded-xl bg-red-500/5 p-2.5 text-red-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-500 hover:text-white hover:shadow-lg active:scale-90`}
+              className={`${isMine ? "order-last" : "order-first"} rounded-xl bg-red-500/5 p-2.5 text-red-400 transition-all hover:bg-red-500 hover:text-white hover:shadow-lg active:scale-90`}
             >
               <Trash2 size={16} />
             </button>
@@ -93,7 +93,7 @@ const MessageItem = memo(({
             {!isMine && !message.isDeleted && (
               <button
                 onClick={() => setForwardingMessage(message)}
-                className="order-first rounded-xl bg-accent/5 p-2.5 text-accent opacity-0 transition-all group-hover:opacity-100 hover:bg-accent hover:text-black hover:shadow-lg"
+                className="order-first rounded-xl bg-accent/5 p-2.5 text-accent transition-all hover:bg-accent hover:text-black hover:shadow-lg"
               >
                 <Forward size={16} />
               </button>
@@ -233,11 +233,23 @@ const ChatContainer = () => {
   }, [selectedUser?._id, selectedGroup?._id, getMessages, getGroupMessages, markMessagesAsSeen]);
 
   useEffect(() => {
-    if (scrollRef.current && messages?.length > 0 && !isSearching) {
-      const scrollOptions = { behavior: messages.length > 50 ? "auto" : "smooth" };
-      scrollRef.current.scrollIntoView(scrollOptions);
-    }
-  }, [messages.length, isTyping, isSearching]);
+    const scrollToBottom = () => {
+      if (scrollRef.current && messages?.length > 0 && !isSearching) {
+        scrollRef.current.scrollIntoView({ 
+          behavior: messages.length > 50 ? "auto" : "smooth",
+          block: "end"
+        });
+      }
+    };
+
+    // Immediate scroll
+    scrollToBottom();
+    
+    // Delayed scroll to handle rendering lags or image loads
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [messages, isTyping, isSearching, selectedUser?._id, selectedGroup?._id, isMessagesLoading]);
 
   const filteredMessages = useMemo(() =>
     messages.filter(
@@ -275,7 +287,7 @@ const ChatContainer = () => {
       <div className="pointer-events-none absolute -right-24 top-1/4 size-96 opacity-20 blur-[150px]" style={{ backgroundColor: themeColor }} />
       <div className="pointer-events-none absolute -left-24 bottom-1/4 size-96 opacity-10 blur-[150px] bg-emerald-400" />
 
-      <header className={`sticky top-0 z-30 flex h-[72px] items-center justify-between gap-3 border-b px-4 py-4 backdrop-blur-3xl sm:px-6 lg:px-8 ${isLightMode ? "border-black/5 bg-white/95" : "border-white/10 bg-black/40"}`}>
+      <header className={`sticky top-0 z-40 flex h-[72px] shrink-0 items-center justify-between gap-3 border-b px-4 py-4 backdrop-blur-3xl sm:px-6 lg:px-8 ${isLightMode ? "border-black/5 bg-white/95" : "border-white/10 bg-black/40"}`}>
         {!isSearching ? (
           <div className="animate-in slide-in-from-left-6 flex items-center gap-4 duration-500 lg:gap-6">
             <button
@@ -364,7 +376,7 @@ const ChatContainer = () => {
         </div>
       </header>
 
-      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-8 lg:p-12 space-y-10">
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 pb-2 sm:p-8 sm:pb-4 lg:p-12 lg:pb-6 space-y-10">
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => (
             <MessageItem
@@ -392,7 +404,7 @@ const ChatContainer = () => {
             </div>
           </div>
         )}
-        <div ref={scrollRef} className="h-4 w-full" />
+        <div ref={scrollRef} className="h-2 w-full" />
       </div>
 
       {forwardingMessage && <ForwardModal message={forwardingMessage} onClose={() => setForwardingMessage(null)} />}
@@ -411,7 +423,7 @@ const ChatContainer = () => {
 
       {previewImage && <ImageModal src={previewImage} onClose={() => setPreviewImage(null)} />}
 
-      <div className="sticky bottom-0 z-40 w-full shrink-0 bg-transparent px-4 pb-6 pt-2 sm:px-12 sm:pb-10 lg:px-20">
+      <div className="sticky bottom-0 z-50 w-full shrink-0 bg-transparent px-4 pb-3 pt-2 sm:px-12 sm:pb-6 lg:px-20">
         <div className="mx-auto max-w-5xl">
           <MessageInput />
         </div>
